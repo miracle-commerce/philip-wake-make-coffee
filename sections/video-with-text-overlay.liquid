@@ -1,0 +1,879 @@
+<section
+  class="grid text-scheme-text bg-scheme-background {% if section.settings.use_gradient_background %}bg-scheme-gradient{% endif %} {% unless section.settings.style == 'inset' %}full-bleed-section{% endunless %}"
+  data-color-scheme="{{ section.settings.color_scheme }}"
+>
+  <div class="section-content {% if  section.settings.style == 'inset' %}py-section-vertical-spacing{% endif %} ">
+    {% liquid
+      if section.settings.video != blank
+        render 'video-with-text-overlay', video: section.settings.video, place_content: section.settings.place_content, text_align: section.settings.text_align, color_scheme: section.settings.color_scheme, text_overlay_color: section.settings.text_overlay_color, use_gradient_background: section.settings.use_gradient_background, title: section.settings.title, richtext: section.settings.richtext, cta_url: section.settings.cta_url, cta_text: section.settings.cta_text, display_on_card: section.settings.display_on_card, style: section.settings.style, crop: section.settings.crop, crop_desktop: section.settings.crop_desktop, display_content_below_image_on_mobile: section.settings.display_content_below_image_on_mobile, heading_size: section.settings.heading_size
+      else
+        render 'embedded-video-with-text-overlay', video: section.settings.video_url, fallback_image: section.settings.fallback_image, place_content: section.settings.place_content, text_align: section.settings.text_align, color_scheme: section.settings.color_scheme, text_overlay_color: section.settings.text_overlay_color, use_gradient_background: section.settings.use_gradient_background, title: section.settings.title, richtext: section.settings.richtext, cta_url: section.settings.cta_url, cta_text: section.settings.cta_text, display_on_card: section.settings.display_on_card, style: section.settings.style, crop: section.settings.crop, crop_desktop: section.settings.crop_desktop, heading_size: section.settings.heading_size
+      endif
+    %}
+  </div>
+</section>
+
+{%- liquid
+  assign stickers = section.blocks | where: 'type', 'sticker'
+  assign shape_dividers = section.blocks | where: 'type', 'shape_divider'
+  assign no_padding = true
+  if section.settings.style == 'inset'
+    assign no_padding = false
+  endif
+  for sticker in stickers
+    render 'block-sticker' with block: sticker, section: section
+  endfor
+  for shape_divider in shape_dividers
+    render 'block-shape-divider' with block: shape_divider, section: section, no_padding: no_padding
+  endfor
+-%}
+
+{% schema %}
+{
+  "name": "t:sections.video_with_text_overlay.name",
+  "class": "banner-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:common.settings.header_video"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.video_with_text_overlay.settings.paragraph_if_set_will"
+    },
+    {
+      "id": "video",
+      "type": "video",
+      "label": "t:common.settings.video"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.video_with_text_overlay.settings.header_embedded_youtube_video"
+    },
+    {
+      "id": "video_url",
+      "type": "video_url",
+      "label": "t:sections.video_with_text_overlay.settings.video_url.label",
+      "accept": [
+        "youtube"
+      ],
+      "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+    },
+    {
+      "id": "fallback_image",
+      "type": "image_picker",
+      "label": "t:sections.video_with_text_overlay.settings.fallback_image.label",
+      "info": "t:sections.video_with_text_overlay.settings.fallback_image.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.video_with_text_overlay.settings.header_aspect_ratio"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.video_with_text_overlay.settings.paragraph_natural_will_use"
+    },
+    {
+      "type": "select",
+      "id": "crop",
+      "label": "t:common.settings.aspect_ratio__mobile.label",
+      "options": [
+        {
+          "value": "natural",
+          "label": "t:common.options.natural.label"
+        },
+        {
+          "value": "vertical",
+          "label": "t:common.options.vertical_9_16.label"
+        },
+        {
+          "value": "four-three",
+          "label": "t:common.options.standard_4_3.label"
+        },
+        {
+          "value": "widescreen",
+          "label": "t:common.options.widescreen_16_9.label"
+        },
+        {
+          "value": "cinematic",
+          "label": "t:common.options.extra_wide_235_1.label"
+        },
+        {
+          "value": "full-screen",
+          "label": "t:common.options.full_screen.label"
+        }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "select",
+      "id": "crop_desktop",
+      "label": "t:sections.video_with_text_overlay.settings.crop_desktop.label",
+      "options": [
+        {
+          "value": "same",
+          "label": "t:common.options.same_as_mobile.label"
+        },
+        {
+          "value": "natural",
+          "label": "t:common.options.natural.label"
+        },
+        {
+          "value": "four-three",
+          "label": "t:common.options.standard_4_3.label"
+        },
+        {
+          "value": "widescreen",
+          "label": "t:common.options.widescreen_16_9.label"
+        },
+        {
+          "value": "cinematic",
+          "label": "t:common.options.extra_wide_235_1.label"
+        },
+        {
+          "value": "full-screen",
+          "label": "t:common.options.full_screen.label"
+        }
+      ],
+      "default": "same"
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "display_on_card",
+      "label": "t:common.settings.display_on_card.label",
+      "default": false
+    },
+    {
+      "type": "radio",
+      "id": "style",
+      "label": "t:common.settings.style.label",
+      "default": "full",
+      "options": [
+        {
+          "value": "inset",
+          "label": "t:common.options.inset.label"
+        },
+        {
+          "value": "full",
+          "label": "t:common.options.full_width.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "place_content",
+      "label": "t:common.settings.place_content.label",
+      "options": [
+        {
+          "value": "place-content-start-start",
+          "label": "t:common.options.top_left.label"
+        },
+        {
+          "value": "place-content-start-center",
+          "label": "t:common.options.top_center.label"
+        },
+        {
+          "value": "place-content-start-end",
+          "label": "t:common.options.top_right.label"
+        },
+        {
+          "value": "place-content-center-start",
+          "label": "t:common.options.middle_left.label"
+        },
+        {
+          "value": "place-content-center-center",
+          "label": "t:common.options.middle_center.label"
+        },
+        {
+          "value": "place-content-center-end",
+          "label": "t:common.options.middle_right.label"
+        },
+        {
+          "value": "place-content-end-start",
+          "label": "t:common.options.bottom_left.label"
+        },
+        {
+          "value": "place-content-end-center",
+          "label": "t:common.options.bottom_center.label"
+        },
+        {
+          "value": "place-content-end-end",
+          "label": "t:common.options.bottom_right.label"
+        }
+      ],
+      "default": "place-content-center-center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "t:common.settings.text_align.label",
+      "options": [
+        {
+          "value": "text-left",
+          "label": "t:common.options.left.label"
+        },
+        {
+          "value": "text-center",
+          "label": "t:common.options.center.label"
+        },
+        {
+          "value": "text-right",
+          "label": "t:common.options.right.label"
+        }
+      ],
+      "default": "text-center"
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.video_with_text_overlay.settings.title.label",
+      "default": "Video with text overlay"
+    },
+    {
+      "type": "radio",
+      "id": "heading_size",
+      "label": "t:common.settings.heading_size.label",
+      "options": [
+        {
+          "value": "heading-standard",
+          "label": "t:common.options.standard.label"
+        },
+        {
+          "value": "heading-feature",
+          "label": "t:common.options.feature.label"
+        }
+      ],
+      "default": "heading-standard"
+    },
+    {
+      "type": "richtext",
+      "id": "richtext",
+      "label": "t:common.settings.richtext.label"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "t:common.settings.cta_url.label"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "t:common.settings.cta_text.label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:common.settings.color_scheme.label",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:common.options.primary.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:common.options.secondary.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:common.options.tertiary.label"
+        },
+        {
+          "value": "quaternary",
+          "label": "t:common.options.quaternary.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_background",
+      "label": "t:common.settings.use_gradient_background.label"
+    },
+    {
+      "type": "select",
+      "id": "text_overlay_color",
+      "label": "t:common.settings.text_overlay_color.label",
+      "default": "same_as_section",
+      "options": [
+        {
+          "value": "same_as_section",
+          "label": "t:common.options.follow_color_scheme.label"
+        },
+        {
+          "value": "white",
+          "label": "t:common.options.white.label"
+        },
+        {
+          "value": "black",
+          "label": "t:common.options.black.label"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "name": "t:common.blocks.sticker.name",
+      "type": "sticker",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:common.blocks.sticker.settings.text.label",
+          "default": "Sticker"
+        },
+        {
+          "type": "select",
+          "id": "shape",
+          "label": "t:common.blocks.sticker.settings.shape.label",
+          "options": [
+            {
+              "value": "fit_to_text",
+              "label": "t:common.blocks.sticker.settings.shape.options.fit_to_text.label"
+            },
+            {
+              "value": "circle",
+              "label": "t:common.options.circle.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_1",
+              "label": "t:common.options.star_1.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_2",
+              "label": "t:common.options.star_2.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_3",
+              "label": "t:common.options.star_3.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_4",
+              "label": "t:common.options.star_4.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_1",
+              "label": "t:common.options.scalloped_circle_1.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_2",
+              "label": "t:common.options.scalloped_circle_2.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_3",
+              "label": "t:common.options.scalloped_circle_3.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_4",
+              "label": "t:common.options.scalloped_circle_4.label",
+              "group": "Circular"
+            },
+            {
+              "value": "parallelogram",
+              "label": "t:common.options.parallelogram.label",
+              "group": "Square"
+            },
+            {
+              "value": "scalloped_square",
+              "label": "t:common.options.scalloped.label",
+              "group": "Square"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label",
+              "group": "Square"
+            },
+            {
+              "value": "clipped_square",
+              "label": "t:common.options.clipped.label",
+              "group": "Square"
+            },
+            {
+              "value": "convex_square",
+              "label": "t:common.options.convex.label",
+              "group": "Square"
+            },
+            {
+              "value": "twisted_square",
+              "label": "t:common.options.twisted.label",
+              "group": "Square"
+            },
+            {
+              "value": "trapeze",
+              "label": "t:common.options.trapeze.label",
+              "group": "Square"
+            },
+            {
+              "value": "ellipse",
+              "label": "t:common.options.ellipse.label",
+              "group": "Wide"
+            },
+            {
+              "value": "diamond_wide",
+              "label": "t:common.options.diamond.label",
+              "group": "Wide"
+            },
+            {
+              "value": "rounded_diamond_wide",
+              "label": "t:common.options.rounded_diamond.label",
+              "group": "Wide"
+            },
+            {
+              "value": "triangle_wide",
+              "label": "t:common.options.triangle.label",
+              "group": "Wide"
+            },
+            {
+              "value": "hexagon_wide",
+              "label": "t:common.options.hexagon.label",
+              "group": "Wide"
+            },
+            {
+              "value": "rounded_hexagon",
+              "label": "t:common.options.rounded_hexagon.label",
+              "group": "Wide"
+            },
+            {
+              "value": "uneven_star_wide",
+              "label": "t:common.options.uneven_star.label",
+              "group": "Wide"
+            },
+            {
+              "value": "star_wide",
+              "label": "t:common.options.star.label",
+              "group": "Wide"
+            },
+            {
+              "value": "semicircle",
+              "label": "t:common.options.semicircle.label",
+              "group": "Wide"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label",
+              "group": "Wide"
+            },
+            {
+              "value": "parallelogram_wide",
+              "label": "t:common.options.parallelogram.label",
+              "group": "Wide"
+            },
+            {
+              "value": "ribbon",
+              "label": "t:common.options.ribbon.label",
+              "group": "Wide"
+            },
+            {
+              "value": "ticket_stub",
+              "label": "t:common.options.ticket_stub.label",
+              "group": "Wide"
+            },
+            {
+              "value": "wave_ribbon",
+              "label": "t:common.options.wave_ribbon.label",
+              "group": "Wide"
+            },
+            {
+              "value": "zig_zag_ribbon",
+              "label": "t:common.options.zig_zag_ribbon.label",
+              "group": "Wide"
+            }
+          ],
+          "default": "star_1"
+        },
+        {
+          "type": "range",
+          "id": "width",
+          "min": 100,
+          "max": 300,
+          "step": 10,
+          "unit": "px",
+          "label": "t:common.blocks.sticker.settings.width.label",
+          "default": 150
+        },
+        {
+          "type": "select",
+          "id": "sticker_font_size",
+          "label": "t:common.settings.sticker_font_size.label",
+          "options": [
+            {
+              "value": "1rem",
+              "label": "t:common.options.extra_small.label"
+            },
+            {
+              "value": "1.25rem",
+              "label": "t:common.options.small.label"
+            },
+            {
+              "value": "1.563rem",
+              "label": "t:common.options.medium.label"
+            },
+            {
+              "value": "1.953rem",
+              "label": "t:common.options.large.label"
+            },
+            {
+              "value": "2.441rem",
+              "label": "t:common.options.extra_large.label"
+            }
+          ],
+          "default": "1.563rem",
+          "info": "t:common.settings.sticker_font_size.info"
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_custom_image"
+        },
+        {
+          "type": "paragraph",
+          "content": "t:common.blocks.sticker.settings.paragraph_using_an_image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:common.settings.image.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "half_image_width_on_mobile",
+          "label": "t:common.blocks.sticker.settings.half_image_width_on_mobile.label",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_position"
+        },
+        {
+          "type": "range",
+          "id": "horizontal_position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.blocks.sticker.settings.horizontal_position.label",
+          "default": 80
+        },
+        {
+          "type": "range",
+          "id": "vertical_position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.blocks.sticker.settings.vertical_position.label",
+          "default": 80
+        },
+        {
+          "type": "range",
+          "id": "rotate",
+          "min": -90,
+          "max": 90,
+          "step": 2,
+          "unit": "deg",
+          "label": "t:common.settings.rotate.label",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_layout"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_sticker_on_mobile",
+          "label": "t:common.blocks.sticker.settings.show_sticker_on_mobile.label",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_sticker_on_desktop",
+          "label": "t:common.blocks.sticker.settings.show_sticker_on_desktop.label",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_animation"
+        },
+        {
+          "type": "select",
+          "id": "rotation_animation",
+          "label": "t:common.blocks.sticker.settings.rotation_animation.label",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:common.blocks.sticker.settings.rotation_animation.options.no_rotation.label"
+            },
+            {
+              "value": "constantly_rotate",
+              "label": "t:common.blocks.sticker.settings.rotation_animation.options.constantly_rotate.label"
+            },
+            {
+              "value": "rotate_when_scrolling",
+              "label": "t:common.blocks.sticker.settings.rotation_animation.options.rotate_only_when_page_is_scrolling.label"
+            }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_parallax",
+          "label": "t:common.blocks.sticker.settings.enable_parallax.label",
+          "default": false,
+          "info": "t:common.blocks.sticker.settings.enable_parallax.info"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "t:common.settings.parallax_speed.label",
+          "default": 3
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_color"
+        },
+        {
+          "type": "select",
+          "id": "color",
+          "label": "t:common.settings.color.label",
+          "default": "bg-scheme-accent-1 text-scheme-accent-1-overlay",
+          "options": [
+            {
+              "value": "bg-scheme-text text-scheme-text-overlay",
+              "label": "t:common.options.text.label"
+            },
+            {
+              "value": "bg-scheme-accent-1 text-scheme-accent-1-overlay",
+              "label": "t:common.options.accent_1.label"
+            },
+            {
+              "value": "bg-scheme-accent-2 text-scheme-accent-2-overlay",
+              "label": "t:common.options.accent_2.label"
+            },
+            {
+              "value": "bg-scheme-card text-scheme-text",
+              "label": "t:common.options.card.label"
+            },
+            {
+              "value": "bg-scheme-background text-scheme-text",
+              "label": "t:common.options.background.label"
+            },
+            {
+              "value": "bg-scheme-gradient text-scheme-text",
+              "label": "t:common.options.gradient.label"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "color_scheme",
+          "label": "t:common.settings.color_scheme.label",
+          "default": "same_as_section",
+          "options": [
+            {
+              "value": "same_as_section",
+              "label": "t:common.options.same_as_section.label"
+            },
+            {
+              "value": "primary",
+              "label": "t:common.options.primary.label"
+            },
+            {
+              "value": "secondary",
+              "label": "t:common.options.secondary.label"
+            },
+            {
+              "value": "tertiary",
+              "label": "t:common.options.tertiary.label"
+            },
+            {
+              "value": "quaternary",
+              "label": "t:common.options.quaternary.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "t:common.blocks.shape_divider.name",
+      "type": "shape_divider",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "radio",
+          "label": "t:common.blocks.shape_divider.settings.target_section.label",
+          "id": "target_section",
+          "default": "above",
+          "options": [
+            {
+              "value": "above",
+              "label": "t:common.blocks.shape_divider.settings.target_section.options.section_above.label"
+            },
+            {
+              "value": "below",
+              "label": "t:common.blocks.shape_divider.settings.target_section.options.section_below.label"
+            }
+          ],
+          "info": "t:common.blocks.shape_divider.settings.target_section.info"
+        },
+        {
+          "type": "select",
+          "label": "t:common.blocks.shape_divider.settings.target_section_color_scheme.label",
+          "id": "target_section_color_scheme",
+          "default": "secondary",
+          "options": [
+            {
+              "value": "primary",
+              "label": "t:common.options.primary.label"
+            },
+            {
+              "value": "secondary",
+              "label": "t:common.options.secondary.label"
+            },
+            {
+              "value": "tertiary",
+              "label": "t:common.options.tertiary.label"
+            },
+            {
+              "value": "quaternary",
+              "label": "t:common.options.quaternary.label"
+            }
+          ],
+          "info": "t:common.blocks.shape_divider.settings.target_section_color_scheme.info"
+        },
+        {
+          "type": "select",
+          "label": "t:common.blocks.shape_divider.settings.style.label",
+          "id": "style",
+          "default": "large-waves_1200x84",
+          "options": [
+            {
+              "value": "large-waves_1200x84",
+              "label": "t:common.blocks.shape_divider.settings.style.options.large_waves.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "medium-waves_1200x43",
+              "label": "t:common.blocks.shape_divider.settings.style.options.medium_waves.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "small-waves_1200x20",
+              "label": "t:common.blocks.shape_divider.settings.style.options.small_waves.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "large-zig-zag_1200x65",
+              "label": "t:common.blocks.shape_divider.settings.style.options.large_zig_zag.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "medium-zig-zag_1200x37",
+              "label": "t:common.blocks.shape_divider.settings.style.options.medium_zig_zag.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "small-zig-zag_1200x21",
+              "label": "t:common.blocks.shape_divider.settings.style.options.small_zig_zag.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "waves-1-asymmetrical_1440x261",
+              "label": "t:common.blocks.shape_divider.settings.style.options.waves_1.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "waves-2-asymmetrical_1440x330",
+              "label": "t:common.blocks.shape_divider.settings.style.options.waves_2.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "tilt-1-asymmetrical_1440x101",
+              "label": "t:common.blocks.shape_divider.settings.style.options.tilt_1.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "tilt-2-asymmetrical_1440x293",
+              "label": "t:common.blocks.shape_divider.settings.style.options.tilt_2.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "mountains-1-asymmetrical_1440x293",
+              "label": "t:common.blocks.shape_divider.settings.style.options.mountains_1.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "mountains-2-asymmetrical_1440x325",
+              "label": "t:common.blocks.shape_divider.settings.style.options.mountains_2.label",
+              "group": "Asymmetrical"
+            }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "flip_horizontal",
+          "label": "t:common.blocks.shape_divider.settings.flip_horizontal.label"
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_animation"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_animation",
+          "label": "t:common.blocks.shape_divider.settings.enable_animation.label",
+          "info": "t:common.blocks.shape_divider.settings.enable_animation.info"
+        },
+        {
+          "type": "radio",
+          "id": "animation_direction",
+          "label": "t:common.blocks.shape_divider.settings.animation_direction.label",
+          "options": [
+            {
+              "value": "",
+              "label": "t:common.options.right_to_left.label"
+            },
+            {
+              "value": "reverse",
+              "label": "t:common.options.left_to_right.label"
+            }
+          ],
+          "default": ""
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.video_with_text_overlay.name"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer",
+      "aside"
+    ]
+  }
+}
+{% endschema %}

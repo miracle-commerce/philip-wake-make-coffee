@@ -1,0 +1,69 @@
+<div class="section-content py-section-vertical-spacing px-section max-w-site" data-color-scheme="primary">
+  <div class="mb-10 lg:flex lg:items-center lg:justify-between">
+    <h1 class="font-heading heading-feature mb-2.5">{{ 'customer.account.title' | t }}</h1>
+    <div class="text-sm">
+      {% if customer.first_name != blank %}
+        {% capture first_name %}<a class="" href="{{ routes.account_url }}">{{ customer.first_name }}</a>{% endcapture %}
+        {{ 'layout.customer.logged_in_as_html' | t: first_name: first_name }}
+      {% else %}
+        <a class="" href="{{ routes.account_url }}">{{ 'layout.customer.account' | t }}</a>
+      {% endif %}</span> /
+      <a class="inline-block text-primary-accent-1 mb-2" href="{{ routes.account_logout_url }}">{{ 'layout.customer.log_out' | t }}</a>
+    </div>
+  </div>
+
+  <div class="lg:grid grid-cols-1 lg:grid-cols-12 max-w-screen">
+    <div class="lg:col-span-8">
+      <h2 class="font-heading heading-secondary mb-2.5">{{ 'customer.orders.title' | t }}</h2>
+
+      {% paginate customer.orders by 20 %}
+        {% if customer.orders.size != 0 %}
+          <table class="responsive-table text-sm lg:text-base">
+            <thead class="text-sm">
+              <tr>
+                <th scope="col">{{ 'customer.orders.order_number' | t }}</th>
+                <th scope="col">{{ 'customer.orders.date' | t }}</th>
+                <th scope="col">{{ 'customer.orders.payment_status' | t }}</th>
+                <th scope="col">{{ 'customer.orders.fulfillment_status' | t }}</th>
+                <th scope="col">{{ 'customer.orders.total' | t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in customer.orders %}
+                <tr class="responsive-table-row lg:border-none">
+                  <td class="text-primary-accent-1" data-label="{{ 'customer.orders.order_number' | t }}"><span class="underline">{{ order.name | link_to: order.customer_url }}</span></td>
+                  <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | date: format: 'month_day_year' }}</td>
+                  <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
+                  <td data-label="{{ 'customer.orders.fulfillment_status' | t }}">{{ order.fulfillment_status_label }}</td>
+                  <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>{{ 'customer.orders.none' | t }}</p>
+        {% endif %}
+
+        {% if paginate.pages > 1 %}
+          {% render 'pagination' with paginate, section_color: 'primary' %}
+        {% endif %}
+
+      {% endpaginate %}
+    </div>
+
+    <div class="mt-8 lg:mt-0 lg:col-span-3 lg:col-start-10 mb-2">
+      <div class="card-container">
+        <div class="card p-5 relative z-shape-divider">
+          <h2 class="font-heading heading-secondary mb-2.5">{{ 'customer.account.details' | t }}</h2>
+<p><a href="/pages/my-subscriptions" class="text-link">My Subscriptions</a></p>
+          <div class="mb-4">{{ customer.default_address | format_address }}</div>
+          {%- capture address_link -%}{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }}){%- endcapture -%}
+          <a class="inline-block push-btn w-full theme-button" href="{{ routes.account_addresses_url }}">
+            <span class="push-btn-surface w-full">{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</span>
+          </a>
+        </div>
+        <div class="card-border"></div>
+      </div>
+    </div>
+  </div>
+</div>

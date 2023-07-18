@@ -1,0 +1,108 @@
+{% unless product.has_only_default_variant %}
+  <div
+    class="{{ block_base_classes }} space-y-2.5"
+    {{ block.shopify_attributes }}
+  >
+    {% assign option_style = block.settings.option_style %}
+    {% for option in product.options_with_values %}
+      {% liquid
+        if block.settings.enable_color_swatches
+          assign is_color = false
+          assign swatch_trigger = 'products.product.color_swatch_trigger' | t | downcase
+          assign option_downcase = option.name | downcase
+          if option_downcase contains swatch_trigger
+            assign is_color = true
+          elsif swatch_trigger == 'color' and option_downcase contains 'colour'
+            assign is_color = true
+          endif
+        endif
+      %}
+      {% assign option_array_index = forloop.index0 %}
+
+      <fieldset class="product-variant-picker-block {% if is_color %}-mx-color-fieldset-offset {% endif %} js-enabled">
+        {%- unless is_color or option_style == 'buttons' -%}
+          <div class="my-1 lg:flex lg:items-center lg:justify-start">
+            <label class="{{ label_class }} break-words lg:w-1/4 xl:w-1/5 lg:shrink-0 pr-2.5" for="Option{{ option.position }}-{{ section.id }}">
+              {{ option.name }}
+            </label>
+            <select
+              id="Option{{ option.position }}-{{ section.id }}"
+              name="options[{{ option.name | escape }}]"
+              @change="optionChange()"
+              class="mt-2.5 lg:mt-0 single-option-selector font-body text-base text-scheme-text appearance-none input w-full "
+              data-single-option-selector
+            >
+              {% for value in option.values %}
+                <option
+                  value="{{ value | escape }}"
+                  {% if option.selected_value == value %}selected="selected"{% endif %}>
+                    {{ value }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {%- else -%}
+          <div class="my-1 lg:flex lg:items-center lg:justify-start">
+            <legend class="{{ label_class }} lg:w-1/4 xl:w-1/5 lg:shrink-0 pr-2.5">
+              {{ option.name }}{% if is_color %}:<br/><span class="mt-1 inline-block" x-text="options[{{ forloop.index0 }}]"></span>{% endif %}
+            </legend>
+            <div class="mt-2.5 flex flex-wrap lg:flex-1  gap-2.5">
+              {% for value in option.values %}
+                {%- liquid
+                  assign variant_label_state = true
+                  if product.options.size == 1
+                    unless product.variants[forloop.index0].available
+                      assign variant_label_state = false
+                    endunless
+                  endif
+                  assign color_image = value | handle | append: '.' | append: 'png' | file_img_url: '120x' | prepend: 'https:'
+                  assign color_swatch_fallback = value | split: ' ' | last | handle
+                -%}
+                <div class="inline-block relative variant-input">
+                  <input
+                    class="{% if is_color %}color-swatch{% endif %} cursor-pointer absolute top-0 left-0 w-full h-full opacity-0"
+                    @change="optionChange()"
+                    type="radio"
+                    id="Section-{{ section.id }}-Option{{ option.position }}-{{ value | escape }}" name="Section-{{ section.id }}-options[{{ option.name }}]"
+                    value="{{ value | escape }}"
+                    data-handle="{{ value | handleize }}"
+                    {% if option.selected_value == value %} checked{% endif %} data-single-option-selector
+                  >
+                  <label
+                    :class="
+                      {
+                        {% if is_color %}
+                          'shadow-none' : optionHandles[{{ option_array_index }}] !== '{{ value | handleize }}'
+                        {% else %}
+                        'bg-scheme-secondary-background text-scheme-text shadow-secondary' : optionHandles[{{ option_array_index }}] !== '{{ value | handleize }}',
+                          'bg-scheme-text text-scheme-text-overlay' : optionHandles[{{ option_array_index }}] === '{{ value | handleize }}'
+                        {% endif %}
+                      }
+                    "
+                    class="btn after:hidden
+                      {% if is_color %}p-1 bg-scheme-secondary-background{% endif %}
+                      cursor-pointer
+                      {% unless variant_label_state %}
+                        line-through
+                      {% endunless %}
+                      cursor-pointer"
+                    for="Section-{{ section.id }}-Option{{ option.position }}-{{ value | escape }}"
+                    title="{{ option.value }}"
+                    >
+                    {%- if is_color %}
+                      {%- unless variant_label_state -%}
+                        <span class="absolute left-0 bottom-0 z-10 h-[var(--input-border-width)] w-full bg-scheme-text top-1/2 -translate-y-1/2 -rotate-45"></span>
+                      {%- endunless -%}
+                      <span class="btn after:none block w-8 h-8 bg-cover" style="background-image: url({{ color_image }}); background-color: {{ color_swatch_fallback }};"></span>
+                    {%- endif -%}
+                    <span {% if is_color %}class="sr-only"{% endif %}>{{ value }}</span>
+                  </label>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {%- endunless -%}
+      </fieldset>
+    {% endfor %}
+  </div>
+{% endunless %}

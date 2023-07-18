@@ -1,0 +1,13 @@
+{
+  "wrapper": "div[data-color-scheme=primary].bg-scheme-background.text-scheme-text",
+  "sections": {
+    "cart": {
+      "type": "cart",
+      "settings": {
+      }
+    }
+  },
+  "order": [
+    "cart"
+  ]
+}

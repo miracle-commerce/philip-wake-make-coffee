@@ -1,0 +1,278 @@
+{%- liquid
+  assign wave_width = section.settings.wave_width | default: 250
+  assign wave_height = section.settings.wave_height
+  assign direction = section.settings.direction
+  assign text = section.settings.text | append: '&nbsp;'
+
+  assign speed = section.settings.speed
+  assign pause_on_hover = section.settings.pause_on_hover
+  assign link = section.settings.link
+
+-%}
+
+{%- style -%}
+
+#{{ section.id }} textPath {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+
+}
+
+#{{ section.id }} .text-measure {
+  display: inline-flex;
+  width: max-content;
+}
+
+{%- endstyle -%}
+
+
+<section
+  id="{{ section.id }}"
+  class="text-scheme-text bg-scheme-background {% if section.settings.use_gradient_background %}bg-scheme-gradient{% endif %}" data-color-scheme="{{ section.settings.color_scheme }}"
+  {%- if section.settings.enable_animation -%}
+    x-data='ThemeSection_curvedText({{ text | json }}, {{ wave_width | json }}, {{ wave_height | json }}, {{ direction | json }}, {{ speed | json }})'
+  {%- endif -%}
+>
+  <div class="js-enabled w-full overflow-hidden relative" {% if pause_on_hover %}@mouseover="pause" @mouseleave="play()"{% endif %}>
+    {% if link != blank %}
+    <a href="{{ link }}" class="absolute top-0 left-0 w-full h-full z-0 block">
+      <span class="visually-hidden">{{ section.settings.text }}</span>
+    </a>
+    {%- endif -%}
+    <svg width="100%" height="{{ wave_height }}" xmlns="http://www.w3.org/2000/svg">
+      <path
+            x-ref="path"
+            id="textPath"
+            x-bind:d="path"
+            stroke-width="1"
+            fill="transparent"
+          />
+      <text class="{{ section.settings.font }}">
+        <textPath id="pathSVG" class="top {% render 'type-scale-classes', mobile_text_scale: section.settings.mobile_text_scale, desktop_text_scale: section.settings.desktop_text_scale %}" startOffset="0"  xlink:href="#textPath" x-ref="textPath"></textPath>
+      </text>
+    </svg>
+    <div class="bg-black text-white text-measure {{ section.settings.font }} {% render 'type-scale-classes', mobile_text_scale: section.settings.mobile_text_scale, desktop_text_scale: section.settings.desktop_text_scale %} absolute invisible" x-ref="textMeasure">{{ text }}</div>
+  </div>
+
+  <noscript>
+    {%- liquid
+      assign wave_parts = 5000.0 | divided_by: wave_width | ceil
+      assign start_point = wave_width | times: 4 | times: -1
+      assign half_wave_width = wave_width | divided_by: 2
+      assign start_control_point = start_point | plus: half_wave_width
+      assign mid_point = wave_height | divided_by: 2
+      assign wave_range = wave_height | minus: mid_point
+
+      assign intensity = 100 | times: wave_range
+      assign intensity = intensity | divided_by: 100
+      assign intensity = intensity | plus: mid_point
+
+      if text.size > 50
+        assign loops = 5
+      else
+        assign loops = 20
+      endif
+    -%}
+    <svg width="100%" height="{{ wave_height }}" xmlns="http://www.w3.org/2000/svg">
+      <path
+            x-ref="path"
+            id="noJSPath"
+            d="M{{ start_point }} {{ mid_point }}
+              {%- for i in (1..wave_parts) -%}
+                {%- assign start_point = start_point | plus: wave_width -%}
+                {%- if i == 1 -%}
+                  Q{{ start_control_point }} {{ intensity }}, {{ start_point }} {{ mid_point }}
+                {%- else -%}
+                T {{ start_point }} {{ mid_point }}
+                {%- endif -%}
+              {%- endfor -%}
+              "
+            stroke-width="5"
+            fill="transparent"
+          />
+    <text class=" {{ section.settings.font }}">
+      <textPath startOffset="0" class="{% render 'type-scale-classes', mobile_text_scale: section.settings.mobile_text_scale, desktop_text_scale: section.settings.desktop_text_scale %}"  xlink:href="#noJSPath" x-ref="textPath">
+        {%- for i in (1..loops) -%}
+        <tspan alignment-baseline="middle" x-ref="textSpan">{{ text }}</tspan>
+        {%- endfor -%}
+      </textPath>
+    </text>
+    </svg>
+  </noscript>
+</section>
+
+{%- if section.settings.enable_animation -%}
+  {% unless request.design_mode %}
+    <script src="{{ 'curved-text.js' | asset_url }}" type="module"></script>
+  {% endunless %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.curved_text.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:common.settings.text.label",
+      "default": "Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store."
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:common.settings.link.label"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "range",
+      "id": "wave_height",
+      "min": 200,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Wave height",
+      "default": 250
+    },
+    {
+      "type": "range",
+      "id": "wave_width",
+      "min": 200,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Wave width",
+      "default": 250
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 0.5,
+      "max": 2,
+      "step": 0.1,
+      "unit": "x",
+      "label": "t:common.settings.speed.label",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.text.label"
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_scale",
+      "min": -2,
+      "max": 7,
+      "step": 1,
+      "unit": "n",
+      "label": "t:common.settings.mobile_text_scale.label",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "desktop_text_scale",
+      "min": -2,
+      "max": 10,
+      "step": 1,
+      "unit": "n",
+      "label": "t:common.settings.desktop_text_scale.label",
+      "default": 4
+    },
+    {
+      "type": "radio",
+      "id": "font",
+      "label": "t:common.settings.font.label",
+      "options": [
+        {
+          "value": "font-heading",
+          "label": "t:common.options.heading.label"
+        },
+        {
+          "value": "body",
+          "label": "t:common.options.body.label"
+        }
+      ],
+      "default": "font-heading",
+      "info": "Text effects will not be applied to heading font."
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animation",
+      "label": "t:common.blocks.shape_divider.settings.enable_animation.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": false
+    },
+    {
+      "type": "radio",
+      "id": "direction",
+      "label": "t:common.settings.direction.label",
+      "options": [
+        {
+          "value": "rtl",
+          "label": "t:common.options.right_to_left.label"
+        },
+        {
+          "value": "ltr",
+          "label": "t:common.options.left_to_right.label"
+        }
+      ],
+      "default": "rtl"
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:common.settings.color_scheme.label",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:common.options.primary.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:common.options.secondary.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:common.options.tertiary.label"
+        },
+        {
+          "value": "quaternary",
+          "label": "t:common.options.quaternary.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_background",
+      "label": "t:common.settings.use_gradient_background.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.curved_text.name"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer",
+      "aside"
+    ]
+  }
+}
+{% endschema %}

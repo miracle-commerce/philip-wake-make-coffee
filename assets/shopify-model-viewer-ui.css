@@ -1,0 +1,86 @@
+.shopify-model-viewer-ui {
+  --color-background: var(--color-scheme-card);
+  --color-foreground: var(--color-scheme-text);
+}
+
+.shopify-model-viewer-ui {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.shopify-model-viewer-ui__controls-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-content: center;
+  background-color: rgba(var(--color-scheme-background), 0);
+  transition: background-color 500ms;
+}
+
+.shopify-model-viewer-ui__disabled
+  ~ .shopify-model-viewer-ui__controls-overlay:hover {
+  background-color: rgba(var(--color-scheme-background), 0.3);
+}
+
+.shopify-model-viewer-ui .shopify-model-viewer-ui__controls-area {
+  background: rgb(var(--color-background));
+  border-color: rgba(var(--color-foreground), 0.04);
+}
+
+.shopify-model-viewer-ui .shopify-model-viewer-ui__button {
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+.shopify-model-viewer-ui .shopify-model-viewer-ui__button--control:hover {
+  color: rgba(var(--color-foreground), 0.55);
+}
+
+.shopify-model-viewer-ui .shopify-model-viewer-ui__button--control:active,
+.shopify-model-viewer-ui
+  .shopify-model-viewer-ui__button--control.focus-visible:focus {
+  color: rgba(var(--color-foreground), 0.55);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+.shopify-model-viewer-ui
+  .shopify-model-viewer-ui__button--control:not(:last-child):after {
+  border-color: rgba(var(--color-foreground), 0.04);
+}
+
+.shopify-model-viewer-ui .shopify-model-viewer-ui__poster-control-icon {
+  margin: auto;
+}
+
+.shopify-model-viewer-ui .shopify-model-viewer-ui__button--poster {
+  color: rgb(var(--color-foreground));
+  background: rgb(var(--color-background));
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(var(--color-foreground), 0.05);
+  position: static;
+  top: unset;
+  left: unset;
+  /* .w-16 / .h-16 */
+  width: 4rem;
+  height: 4rem;
+  transform: scale(0.95);
+  transition-property: transform;
+  transition-duration: 350ms;
+  transition-delay: 150ms;
+}
+
+.shopify-model-viewer-ui:hover .shopify-model-viewer-ui__button--poster,
+.shopify-model-viewer-ui .shopify-model-viewer-ui__button--poster:focus {
+  transform: scale(1);
+  color: rgb(var(--color-foreground));
+}

@@ -1,0 +1,14 @@
+
+{%- unless block.settings.type == 'native' and product.metafields.reviews.rating.value == blank %}
+<div
+  class="empty:hidden {{ block_base_classes }} text-sm"
+  style="--star-rating-star-color: var(--color-scheme-text); --star-rating-star-background-color: rgba(var(--color-scheme-text), 0.1); --star-rating-caption-color: rgb(var(--color-scheme-text));"
+  {{ block.shopify_attributes }}
+>
+  {%- render 'star-rating',
+    type: block.settings.type,
+    product: product,
+  -%}
+</div>
+{%- endunless -%}
+

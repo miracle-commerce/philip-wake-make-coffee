@@ -1,0 +1,29 @@
+<div x-data="ThemeModule_ModalCart({openOnAddToCart: {{ settings.open_modal_on_add_to_cart }}})" x-cloak>
+  <div>
+    <template x-teleport="#right-drawer-slot">
+      <div x-show="$store.modals.rightDrawer.contents === 'cart'" class="max-h-full flex flex-col h-screen overflow-hidden" :data-modal-label="$store.modals.rightDrawer.contents === 'cart'? '{{ 'cart.general.title' | t }}' : false">
+        <div class="relative flex items-center justify-between pt-5 pb-2.5 px-section">
+          <h2 class="font-heading text-base lg:text-xl" class="" tabindex="-1">
+            {{ 'cart.general.title' | t }}
+            <span class="sr-only">
+               -
+              <span x-text="$store.cart_count.countWithText()"></span>
+            </span>
+          </h2>
+          <button @click.prevent="$store.modals.close('cart')" class="block top-0">
+            <span class="sr-only">{{ 'general.accessibility.close_modal' | t }}</span>
+            <span class="inline-block w-5 h-5">{% render 'icon-close' %}</span>
+          </button>
+        </div>
+        <div class="flex-auto flex flex-col overflow-hidden">
+          {% render 'cart-items' %}
+          <div class="pt-5  pb-safe-bottom relative px-section">
+            <div class="-translate-y-full h-16 w-full bg-gradient-to-t from-scheme-background to-transparent absolute top-0 left-0 right-0 pointer-events-none"></div>
+            {% render 'cart-footer' %}
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>
+<script src="{{ 'modal-cart.js' | asset_url }}" type="module"></script>

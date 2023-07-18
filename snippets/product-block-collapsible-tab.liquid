@@ -1,0 +1,34 @@
+<div
+  class="{{ block_base_classes }}"
+  {{ block.shopify_attributes }}
+>
+  <details
+    class="py-2.5 border-b-input border-scheme-text appearance-none"
+    x-data="{ open: false }"
+    @toggle="open = $root.open"
+  >
+    <summary>
+      <div class="text-theme-basic flex justify-between items-center">
+        <div class="text-theme-basic flex items-center">
+          {%- unless block.settings.icon == 'none' -%}
+          <span class="mr-2 w-5 h-5">
+            {% render 'theme-icon',
+              icon: block.settings.icon,
+            %}
+          </span>
+          {%- endunless -%}
+          {{- block.settings.heading | default: block.settings.page.title | escape | strip -}}
+        </div>
+        <div class="ml-auto flex">
+          <span class="inline-block m-auto w-5 h-5 transition" :class="{ 'rotate-180' : open }">
+            {% render 'icon-chevron-down' %}
+          </span>
+        </div>
+      </div>
+    </summary>
+    <div class="my-5 rte">
+      {{ block.settings.content }}
+      {{ block.settings.page.content }}
+    </div>
+  </details>
+</div>

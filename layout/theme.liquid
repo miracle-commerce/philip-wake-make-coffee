@@ -1,0 +1,232 @@
+<!doctype html>
+  <html class="no-js" lang="{{ request.locale.iso_code }}">
+    <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta name="theme-color" content="">
+      <link rel="canonical" href="{{ canonical_url }}">
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+      <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+      <link rel="preconnect" href="https://fonts.shopify.com" crossorigin>
+      <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">
+
+      {%- liquid
+        assign main_font = settings.type_main_font
+        assign main_font_bold = main_font | font_modify: 'weight', 'bold'
+        assign heading_font = settings.type_heading_font
+        assign accent_font = settings.type_accent_font
+      -%}
+
+      {%- if settings.favicon != blank -%}
+        <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: '32x32' }}">
+      {%- endif -%}
+
+      {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
+        <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+      {%- endunless -%}
+
+      <title>
+        {{ page_title }}
+        {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+        {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+        {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      </title>
+
+      {% if page_description %}
+        <meta name="description" content="{{ page_description | escape }}">
+      {% endif %}
+
+      {%- render 'meta-tags' -%}
+
+      {{ content_for_header }}
+
+      {% render 'js-bridge' %}
+
+      <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+      <script>
+        function debounce(fn, wait) {
+          let t;
+          return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn.apply(this, args), wait);
+          };
+        }
+      </script>
+      <script src="{{ 'utils.js' | asset_url }}" defer></script>
+      <script src="{{ 'global.bundle.min.js' | asset_url }}" type="module"></script>
+      {% if template == 'cart' or settings.cart_type == 'modal' %}
+        <script src="{{ 'cart-items.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'cart-footer.js' | asset_url }}" type="module"></script>
+        {% if settings.cart_notes_enable %}
+          <script src="{{ 'cart-note.js' | asset_url }}" type="module"></script>
+        {% endif %}
+      {% endif %}
+      {% if request.design_mode %}
+        {% comment %} If theme editor, load all modules {% endcomment %}
+        <script src="{{ 'product.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'modules-video.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'background-video.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'modules-background-video-yt.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'video-with-text.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'modules-slideshow.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'theme-editor-support.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'vendor-product.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'product-quick-buy.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'header.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'call-to-action-sticker.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'sections-age-check.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'filterable.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'login.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'modules-popup.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'modules-predictive-search.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'vendor-store-availability.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'store-availability.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'product-model.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'modules-photoswipe.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'shapes-animations.js' | asset_url }}" defer></script>
+        <script src="{{ 'offset-gallery-item.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'sections-footer.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'modules-quantity.bundle.min.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'block-shape-divider.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'gift-card-recipient.js' | asset_url }}" type="module"></script>
+        <script src="{{ 'curved-text.js' | asset_url }}" type="module"></script>
+      {% endif %}
+      <script src="{{ 'alpine-extensions.js' | asset_url }}" defer></script>
+      <link rel="stylesheet" href="{{ 'base.bundle.css' | asset_url }}">
+      {% comment %}
+      <link rel="stylesheet" href="{{ 'custom.css' | asset_url }}">
+      {% endcomment %}
+      {% if template contains 'customers' %}
+        {% comment %}theme-check-disable ParserBlockingScriptTag{% endcomment %}
+        {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+        {{ "customer_area.js" | shopify_asset_url | script_tag }}
+        {% comment %}theme-check-enable ParserBlockingScriptTag{% endcomment %}
+      {% endif %}
+      <style>
+        :root {
+          --max-site-width: 1820px;
+        }
+      </style>
+      {% style %}
+        {{ main_font | font_face: font_display: 'swap' }}
+        {{ heading_font | font_face: font_display: 'swap' }}
+        {{ accent_font | font_face: font_display: 'swap' }}
+
+        {%- liquid
+          assign main_font_bolder = main_font | font_modify: 'weight', 'bolder'
+          assign main_font_italic = main_font | font_modify: 'style', 'italic'
+          assign main_font_bold_italic = main_font_bold | font_modify: 'style', 'italic'
+          if main_font_bold
+            echo main_font_bold | font_face: font_display: 'swap'
+          endif
+          if main_font_italic
+            echo main_font_italic | font_face: font_display: 'swap'
+          endif
+          if main_font_bold_italic
+            echo main_font_bold_italic | font_face: font_display: 'swap'
+          endif
+          if main_font_bolder
+            echo main_font_bolder | font_face: font_display: 'swap'
+          endif
+        -%}
+
+        {% if settings.heading_uppercase -%}
+          {%- capture heading_capitalize -%}uppercase{%- endcapture -%}
+        {% else -%}
+          {%- capture heading_capitalize -%}none{%- endcapture -%}
+        {% endif -%}
+        {%- capture heading_letterspacing -%}{{ settings.heading_letterspacing | divided_by: 1000.0 }}{% unless settings.heading_letterspacing == 0 -%}em{% endunless -%}{%- endcapture -%}
+
+        :root {
+          --heading-font-stack: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+          --heading-font-weight: {{ heading_font.weight }};
+          --heading-font-style: {{ heading_font.style }};
+          --heading-letterspacing: {{ heading_letterspacing }};
+          --heading-capitalize: {{ heading_capitalize }};
+          --main-font-stack: {{ main_font.family }}, {{ main_font.fallback_families }};
+          --main-font-weight: {{ main_font.weight }};
+          --main-font-style: {{ main_font.style }};
+          --accent-font-stack: {{ accent_font.family }}, {{ accent_font.fallback_families }};
+          --accent-font-weight: {{ accent_font.weight }};
+          --accent-font-style: {{ accent_font.style }};
+        }
+      {% endstyle %}
+      {%- render 'css-variables' %}
+
+      {% comment %}theme-check-disable MissingTemplate{% endcomment %}
+      {% render 'critical-css' %}
+      {% comment %}theme-check-enable MissingTemplate{% endcomment %}
+      <style id="manual-critical-css">
+        [x-cloak] {
+          display: none;
+        }
+        [data-parallax-container] {
+          will-change: opacity;
+          opacity: 0;
+          transition: opacity 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+        .no-js [data-parallax-container],
+        [data-parallax-container].animated {
+          opacity: 1;
+        }
+
+        @media (prefers-reduced-motion) {
+          [data-parallax-container] {
+            opacity: 1;
+          }
+        }
+      </style>
+
+      {% unless heading_font.system? %}
+        <link rel="preload" as="font" href="{{ heading_font | font_url }}" type="font/woff2" crossorigin>
+      {% endunless %}
+      {% unless main_font.system? %}
+        <link rel="preload" as="font" href="{{ main_font | font_url }}" type="font/woff2" crossorigin>
+      {% endunless %}
+      <script>
+        window.onYouTubeIframeAPIReady = () => {
+          document.body.dispatchEvent(new CustomEvent('youtubeiframeapiready'));
+        };
+      </script>
+      {%- render 'bold-subscription-widget' -%}
+</head>
+
+    <body data-color-scheme="primary">
+      {% comment %}theme-check-disable MissingTemplate{% endcomment %}
+      <a class="skip-link" href="#MainContent">{{ "general.accessibility.skip_to_content" | t }}</a>
+      {%- sections 'header-group' -%}
+      {% render 'header-group-support' %}
+      <main id="MainContent" class="overflow-hidden">
+        {{ content_for_layout }}
+      </main>
+      
+      {%- sections 'footer-group' -%}
+      {%- sections 'overlay-group' -%}
+
+      <div id="screenreader-announce" class="sr-only" aria-live="polite" role="status"></div>
+
+      <ul hidden>
+        <li id="a11y-refresh-page-message">{{ 'general.accessibility.refresh_page' | t }}</li>
+        <li id="a11y-selection-message">{{ 'general.accessibility.selection_help' | t }}</li>
+      </ul>
+
+      {% comment %} Modal containers {% endcomment %}
+      {% render 'left-drawer' %}
+      {% render 'right-drawer' %}
+      {% render 'modal' %}
+      <script src="{{ 'modals.js' | asset_url }}" type="module"></script>
+
+      {% comment %}theme-check-disable LiquidTag{% endcomment %}
+      {%- if settings.cart_type == 'modal' -%}
+      {% render 'drawer-cart' %}
+      {%- endif -%}
+      {% comment %}theme-check-enable LiquidTag{% endcomment %}
+      {%- if settings.show_on_sale_and_sold_out_badges -%}
+      {%- render 'static-sticker-defs' with shape: settings.on_sale_badge_shape, id: 'on-sale' -%}
+      {%- render 'static-sticker-defs' with shape: settings.sold_out_badge_shape, id: 'sold-out' -%}
+      {%- endif -%}
+      {%- render 'static-sticker-defs' with shape: settings.metafield_badge_shape, id: 'metafield-badge' -%}
+      {% comment %}theme-check-enable MissingTemplate{% endcomment %}
+    </body>
+  </html>

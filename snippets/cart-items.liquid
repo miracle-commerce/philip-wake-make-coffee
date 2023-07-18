@@ -1,0 +1,213 @@
+<div
+  x-data="ThemeModule_CartItems"
+  data-cart-items
+  class="flex-auto flex flex-col {% unless template == 'cart' %}overflow-hidden overflow-y-auto px-section{% endunless %}"
+>
+  {% if cart != empty %}
+    {%- liquid
+      assign cart_item_grid_container = 'grid-cols-4  gap-2.5 xl:gap-5 auto-rows-max lg:auto-rows-min'
+
+      if template == 'cart'
+        assign cart_item_grid_container = cart_item_grid_container | append: ' lg:grid-cols-14'
+      else
+        assign cart_item_grid_container = cart_item_grid_container | append: ' lg:grid-cols-5'
+      endif
+    -%}
+    <form action="{{ routes.cart_url }}" class="cart__contents critical-hidden" method="post" id="cart">
+      <div class="pt-4 pb-16 flex-auto overflow-hidden overflow-y-auto  border-t-input border-scheme-text">
+        {% if template == 'cart' %}
+          <div class="hidden lg:grid {{ cart_item_grid_container }} border-b-section border-scheme-text items-end pb-5 mb-5">
+            <p class="lg:col-span-8 justify-self-start">{{ 'cart.label.product' | t }}</p>
+            <p class="lg:col-span-3 justify-self-start">{{ 'cart.label.quantity' | t }}</p>
+            <p class="lg:col-span-3 justify-self-end">{{ 'cart.label.total' | t }}</p>
+          </div>
+        {% endif %}
+        <ul :key="cart-items" class="grid grid-cols-1 gap-gutter">
+          {% for item in cart.items %}
+
+            {%- capture quantity -%}
+
+            <div class="max-w-min">
+              <div class="ml-[0.1rem] {% if template == 'cart' %} lg:flex lg:justify-start lg:ml-0 {% else %}mt-2.5 lg:mt-5{% endif %}">
+                <label class="sr-only" for="updates_{{ item.key }}">{{ 'cart.label.quantity' | t }}:</label>
+                <div class="max-w-min flex flex-nowrap justify-center items-stretch input p-0 h-8 text-xs lg:text-base text-scheme-text">
+                  <button
+                    class="w-8 h-full"
+                    aria-label="&minus;"
+                    @click.prevent.stop="decrement()"
+                  >
+                    <div class="w-2 h-2 lg:w-4 lg:h-4 m-auto">{% render 'icon-subtract' %}</div>
+                  </button>
+                  <input
+                    type="number"
+                    class="text-center bg-transparent focus:ring-current border-0 w-12 shadow-none text-sm lg:text-base"
+                    name="updates[]"
+                    id="updates_{{ item.key }}"
+                    value="{{ item.quantity }}"
+                    size="4"
+                    data-last-value="{{ item.quantity }}"
+                    @change="itemQuantityChange()"
+                    @keyup.debounce.750ms="$dispatch('change')"
+                  >
+                  <button
+                    class="w-8 h-full"
+                    aria-label="&plus;"
+                    @click.prevent.stop="increment()"
+                  >
+                    <div class="w-2 h-2 lg:w-4 lg:h-4   m-auto">{% render 'icon-add' %}</div>
+                  </button>
+                </div>
+              </div>
+              <div>
+                <p class="text-xs {% if template == 'cart' %}lg:text-center{% endif %} mt-1.5 lg:mt-2.5">
+                  <a href="{{ item.url_to_remove }}" @click.prevent="remove()">
+                    {{ 'cart.general.remove' | t: product: item.title }}
+                  </a>
+                </p>
+              </div>
+            </div>
+            <div
+              class="cart-item__error inline-block bg-scheme-accent-1 text-scheme-accent-1-overlay p-1 rounded-button -mx-1 text-xs hidden"
+              id="Line-item-error-{{ item.key }}"
+              role="alert"
+              data-item-title="{{ item.title | escape }}"
+              data-cart-quantity-error
+            >
+            </div>
+            {%- endcapture -%}
+
+            <li
+              data-cart-item-key="{{ item.key }}"
+              key="CartItem-{{ forloop.index }}-{{ item.key }}"
+              class="grid {{ cart_item_grid_container }} py-2.5 lg:py-5"
+              :class="{ 'opacity-50': locked === $el }"
+            >
+              <div class="col-span-1 lg:col-span-2 {% if template == 'cart' %} lg:col-span-2 lg:max-w-[166px] {% endif %} row-span-2">
+                {%- if item.image != blank -%}
+                <a href="{{ item.url }}" class="block" aria-hidden="true" tabindex="-1">
+                  {{ item | image_url: width: 200 | image_tag: loading: 'lazy', sizes: '(min-width: 48em) 5rem, 3.5rem', class: 'media-style' }}
+                </a>
+                {%- endif -%}
+              </div>
+              <div class="col-span-2 {% if template == 'cart' %} lg:col-span-6 lg:row-span-3 {% endif %}">
+                <div>
+                  <a href="{{ item.url }}">
+                    <div data-product-title>
+                      <p class="text-sm leading-tight lg:text-base">{{ item.product.title }}</p>
+
+                      {% if template == 'cart' %}
+                      <p class="text-sm mt-1">
+                        {% if item.original_line_price != item.line_price %}
+                          <span class="visually-hidden">{{ 'cart.label.discounted_price' | t }}</span>
+                          {{ item.price | money }}
+                          <span class="visually-hidden">{{ 'cart.label.original_price' | t }}</span>
+                          <s>{{ item.original_price | money }}</s>
+                        {% else %}
+                          {{ item.price | money }}
+                        {% endif %}
+                      </p>
+                      {% endif %}
+
+                      {% unless item.product.has_only_default_variant %}
+                        <p class="text-xs mt-1">{{ item.variant.title }}</p>
+                      {% endunless %}
+                    </div>
+
+                    {% if settings.cart_vendor_enable %}
+                      <p class="text-xs">{{ item.vendor }}</p>
+                    {% endif %}
+
+                    {% if item.selling_plan_allocation %}
+                      <p class="text-xs">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                    {% endif %}
+
+                    {% comment %}theme-check-disable LiquidTag{% endcomment %}
+                    {%- assign property_size = item.properties | size -%}
+                    {% comment %}theme-check-enable LiquidTag{% endcomment %}
+                    {% if property_size > 0 %}
+                      {% for p in item.properties %}
+                        {% assign first_character_in_key = p.first | slice: 0 %}
+                        {% unless p.last == blank or first_character_in_key == '_' %}
+                        <p class="text-xs">
+                          {{ p.first }}:
+                          {% if p.last contains '/uploads/' %}
+                            <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                          {% else %}
+                            {{ p.last }}
+                          {% endif %}
+                        </p>
+                        {% endunless %}
+                      {% endfor %}
+                    {% endif %}
+                  </a>
+                  {%- if item.line_level_discount_allocations != blank or item.unit_price_measurement -%}
+                    <div {% if template == 'cart' %} class="lg:mb-1" {% endif %}>
+                      {%- if item.line_level_discount_allocations != blank -%}
+                        <ul class="text-xs mt-1" aria-label="{{ 'customer.order.discount' | t }}">
+                          {%- for discount_allocation in item.line_level_discount_allocations -%}
+                            <li class="order-discount__item">
+                              <span class="inline-block bg-scheme-accent-1 text-scheme-accent-1-overlay p-1 rounded-button -mx-1">{{ discount_allocation.discount_application.title }} {% if discount_allocation.amount > 0 %}(-{{ discount_allocation.amount | money }}){% endif %}</span>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                      {%- if item.unit_price_measurement -%}
+                        <div class="text-xs {% if item.original_price != item.final_price %} inline-block bg-scheme-accent-1 text-scheme-accent-1-overlay p-1 rounded-button -mx-1 {% else %} text-scheme-text {% endif %}">
+                          {{ item.unit_price | money }} /&nbsp;
+                          {%- if item.unit_price_measurement.reference_value != 1 -%}
+                            {{- item.unit_price_measurement.reference_value -}}
+                          {%- endif -%}
+                          {{ item.unit_price_measurement.reference_unit }}
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                {%- unless template == 'cart' -%}
+                  {{ quantity }}
+                {%- endunless -%}
+
+              </div>
+              <div class="{% if template == 'cart' %}col-span-2 lg:col-span-3 lg:row-span-2 {% else %} hidden {% endif %}">
+                <div class="max-w-min">
+                {{ quantity }}
+                </div>
+              </div>
+              <div class="col-start-4 row-start-1  {% if template == 'cart' %}  lg:col-span-3 lg:row-span-2 {% else %} lg:col-start-5 {% endif %} text-right text-sm leading-tight lg:text-base break-words">
+                {%- if item.original_line_price != item.final_line_price -%}
+                  <del class="block">{{ item.original_line_price | money }}</del>
+                  <span class="mt-1 block inline-block bg-scheme-accent-1 text-scheme-accent-1-overlay p-1 rounded-button">{{ item.final_line_price | money }}</span>
+                {%- else -%}
+                  {{ item.original_line_price | money }}
+                {%- endif -%}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+        {% if settings.cart_notes_enable and template != 'cart' %}
+          <div class="row-start-2 {% if template == 'cart' %} md:row-auto {% endif %} col-span-14 {% if template == 'cart' %} md:col-span-8 {% endif %} my-2 {% if template == 'cart' %} md:my-0 {% endif %}">
+            <label class="block text-sm" for="CartSpecialInstructions">{{ 'cart.general.note' | t }}</label>
+            <textarea
+              name="note"
+              id="CartSpecialInstructions"
+              class="block mt-1 mb-2 p-2 w-full input transition-opacity"
+              :class="{ 'opacity-50 cursor-progress' : updating }"
+              :disabled="updating"
+              x-data="ThemeModule_CartNote"
+              @change="updateNote"
+              @keyup.debounce.750ms="$dispatch('change')"
+            >
+              {{- cart.note -}}
+            </textarea>
+          </div>
+        {% endif %}
+      </div>
+    </form>
+  {% else %}
+    <div class="py-5 text-center">
+      <p>{{ 'cart.general.empty' | t }}</p>
+    </div>
+  {% endif %}
+</div>
+<p class="sr-only" id="cart-live-region-text" aria-live="polite" role="status" aria-hidden="true">{{ 'cart.general.new_subtotal' | t }}: {{ cart.total_price | money_with_currency }}</p>

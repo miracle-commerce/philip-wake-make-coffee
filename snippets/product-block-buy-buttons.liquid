@@ -1,0 +1,301 @@
+<div class="{{ block_base_classes }}" {{ block.shopify_attributes }}>
+  {% liquid
+    assign gift_card_recipient_feature_active = false
+
+    if block.settings.show_gift_card_recipient and product.gift_card?
+      assign gift_card_recipient_feature_active = true
+    endif
+  %}
+  {% form 'product',
+    product,
+    id: product_form_id,
+    data-product-form: '',
+    data-product-handle: product.handle,
+    data-enable-history-state: 'true',
+    data-product-form: '',
+    x-ref: 'productForm'
+  %}
+    <div class="mb-2.5">
+      {{ form | payment_terms }}
+    </div>
+
+    <div class="{% if product.has_only_default_variant %}hidden{% else %}no-js{% endif %}">
+      <label class="{{ label_class }}" for="fallback-selector-{{ section.id }}"
+        >Variant</label
+      >
+      <select
+        x-ref="singleVariantSelector"
+        name="id"
+        id="fallback-selector-{{ section.id }}"
+        class="font-secondary text-sm"
+      >
+        {% for variant in product.variants %}
+          <option
+            {% if variant == current_variant %}
+              selected="selected"
+            {% endif %}
+            {% unless variant.available %}
+              disabled="disabled"
+            {% endunless %}
+            x-bind:selected="currentVariantId === {{ variant.id }}"
+            value="{{ variant.id }}"
+          >
+            {{ variant.title }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {%- liquid
+      assign enable_payment_buttons = block.settings.enable_payment_button
+      assign button_text = 'products.product.add_to_cart' | t
+
+      if template == 'product.preorder'
+        assign enable_payment_buttons = false
+        assign button_text = 'products.product.preorder' | t
+      endif
+
+      if gift_card_recipient_feature_active == true
+        assign enable_payment_buttons = false
+      endif
+    -%}
+
+    {% if enable_payment_buttons %}
+      {% capture add_to_cart_class %}push-btn-surface push-btn-surface--secondary w-full{% endcapture %}
+    {% else %}
+      {% capture add_to_cart_class %}push-btn-surface w-full{% endcapture %}
+    {% endif %}
+
+    {% if gift_card_recipient_feature_active %}
+      <div class="my-5">
+        {% render 'gift-card-recipient-form', product: product, form: form, section: section %}
+      </div>
+    {% endif %}
+
+    <div
+      class=""
+      {% if has_sticky_buy_buttons %}
+        x-intersect:enter="stickyAddToCartShown = false"
+        x-intersect:leave="stickyAddToCartShown = true"
+      {% endif %}
+    >
+      <div class="w-full">
+        <button
+          class="
+            mb-1 add-to-cart-btn {% if product.available %}push-btn theme-button{% else %}btn text-sm lg:text-base after:hidden bg-scheme-secondary-background text-scheme-text{% endif %} theme-button w-full
+            {% unless current_variant.available %}cursor-not-allowed{% endunless %}
+          "
+          type="submit"
+          :class="{ 'cursor-not-allowed': !currentVariantAvailable }"
+          :disabled="!currentVariantAvailable"
+          :aria-label="addToCartText"
+          {% unless current_variant.available %}
+            disabled="disabled"
+          {% endunless %}
+        >
+          <span class="{% if product.available %}{{ add_to_cart_class }}{% endif %}">
+            <span x-text="addToCartText">
+              {%- if current_variant.available -%}
+                {{- button_text -}}
+              {%- else -%}
+                {{- 'products.product.sold_out' | t -}}
+              {%- endif -%}
+            </span>
+            {%- if block.settings.show_price -%}
+              <span x-show="currentVariantAvailable">&nbsp;&#8211;&nbsp;</span
+              ><span
+                x-show="currentVariantAvailable"
+                x-html="formatMoney(current_price)"
+              >
+                {{- current_variant.price | money -}}
+              </span>
+              {% if product.compare_at_price_max > product.price %}
+                <template x-if="current_variant && product.compare_at_price_max && current_variant.compare_at_price > current_variant.price">
+                  <span
+                    x-show="currentVariantAvailable"
+                    class="{{ price_text_size }}"
+                  >
+                    <span class="sr-only">
+                      {{- 'products.general.sale_price' | t -}}
+                    </span>
+                    <s
+                      data-compare-price
+                      x-html="formatMoney(current_variant.compare_at_price)"
+                    >
+                      {% if current_variant.compare_at_price
+                          > current_variant.price
+                      %}
+                        {{ current_variant.compare_at_price | money }}
+                      {% endif %}
+                    </s>
+                  </span>
+                </template>
+              {% endif %}
+            {%- endif -%}
+          </span>
+        </button>
+      </div>
+
+      {% if enable_payment_buttons %}
+        <div class="dynamic-payment-buttons mt-5 {% if settings.button_drop_shadow_size > 0 %}{{ settings.button_shadow_direction | replace: '_', ' ' }}{% endif %}">
+          {{ form | payment_button }}
+        </div>
+      {% endif %}
+    </div>
+
+    {%- if settings.cart_type == 'page'
+      or settings.open_modal_on_add_to_cart == false
+    -%}
+      <div
+        class="mt-4 mb-8 text-theme-basic rte"
+        tabindex="-1"
+        x-ref="added"
+        x-show="addedToCart"
+        x-cloak
+        x-transition:enter="transition ease duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease duration-300"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+      >
+        {{ 'products.product.added_to_cart' | t }}!
+        {{
+          'products.product.add_to_cart_confirm_html'
+          | t:
+            cart_url: routes.cart_url,
+            link_url: routes.all_products_collection_url
+        -}}
+        .
+      </div>
+    {%- endif -%}
+  {% endform %}
+
+  {% if block.settings.show_pickup_availability %}
+    {% unless request.design_mode %}
+      <script
+        src="{{ 'vendor-store-availability.bundle.min.js' | asset_url }}"
+        type="module"
+      ></script>
+      <script
+        src="{{ 'store-availability.js' | asset_url }}"
+        type="module"
+      ></script>
+    {% endunless %}
+    <template x-if="currentVariantId && currentVariantAvailable && currentVariantAvailabilityClosestLocation">
+      <div
+        class="my-8 flex items-start"
+        :class="{ 'opacity-50': $store.availability.loading }"
+        :aria-busy="$store.availability.loading"
+      >
+        <div class="w-5 h-5 mt-[.0625rem] mr-1 basis-5 grow-0 shrink-0">
+          <template x-if="currentVariantAvailabilityClosestLocation && currentVariantAvailabilityClosestLocation.available">
+            {% render 'icon-in-stock' %}
+          </template>
+          <template x-if="currentVariantAvailabilityClosestLocation &&!currentVariantAvailabilityClosestLocation.available">
+            {% render 'icon-out-of-stock' %}
+          </template>
+        </div>
+        <div class="flex-auto">
+          <h2
+            x-html="currentVariantAvailabilityClosestLocation && currentVariantAvailabilityClosestLocation.pickup_text"
+            class="text-sm"
+          ></h2>
+          <small
+            class="block mt-2 text-sm"
+            x-html="currentVariantAvailabilityClosestLocation && currentVariantAvailabilityClosestLocation.pickup_time"
+          ></small>
+          <button
+            type="button"
+            @click="$store.availability.current_variant = currentVariantId; $store.modals.open('availability')"
+            aria-haspopup="dialog"
+            class="mt-2 text-xs text-scheme-text"
+          >
+            <span
+              x-html="currentVariantAvailabilityClosestLocation && currentVariantAvailabilityClosestLocation.modal_text"
+            ></span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <div
+      class=""
+      data-product-title="{{ product.title | escape }}"
+      data-has-only-default-variant="{{ product.has_only_default_variant }}"
+      data-base-url="{{ routes.root_url }}"
+      x-ref="storeAvailabilityContainer"
+    ></div>
+
+    <div x-data="ThemeComponent_StoreAvailabilityDrawer" x-cloak>
+      <div>
+        <template data-should-teleport="#right-drawer-slot">
+          <div
+            :data-modal-label="$store.modals.rightDrawer.contents === 'availability' && $store.availability.current_variant === currentVariantId? product.title : false"
+            x-show="$store.modals.rightDrawer.contents === 'availability' && $store.availability.current_variant === currentVariantId"
+          >
+            <div class="h-screen flex flex-col">
+              <div class="px-section">
+                <div class="relative flex items-center justify-between border-scheme-text pt-5 pb-2.5 border-b-input border-scheme-text">
+                  <h1 id="ModalTitle" class="">
+                    <div class="font-heading text-lg">{{ product.title }}</div>
+                    <div x-text="currentVariantTitle"></div>
+                  </h1>
+                  <button
+                    @click.prevent="$store.modals.close('availability')"
+                    class="block top-0 ml-2.5"
+                  >
+                    <span class="sr-only">
+                      {{- 'general.accessibility.close_modal' | t -}}
+                    </span>
+                    <span class="inline-block w-6 h-6">
+                      {%- render 'icon-close' -%}
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <ul
+                class="px-section relative overflow-y-auto flex-auto"
+                role="list"
+              >
+                <template
+                  x-for="item in currentVariantAvailabilityList"
+                  :key="item.name"
+                >
+                  <li class="py-5">
+                    <p class="font-heading text-md" x-text="item.name"></p>
+                    <div class="flex items-start my-2">
+                      <div class="inline-block w-2.5 h-4 mt-[.225rem] mr-1.5">
+                        <template x-if="item.available">
+                          {% render 'icon-in-stock' %}
+                        </template>
+                        <template x-if="!item.available">
+                          {% render 'icon-out-of-stock' %}
+                        </template>
+                      </div>
+                      <div>
+                        <p class="text-sm" x-text="item.text"></p>
+                      </div>
+                    </div>
+                    <address class="block not-italic mt-2 text-sm">
+                      <div x-html="item.address"></div>
+                      <template x-if="item.phone">
+                        <div class="mt-2">
+                          <a
+                            class="theme-link text-sm"
+                            :href="`tel:${item.phone.replace(' ', '')}`"
+                            x-text="item.phone"
+                          ></a>
+                        </div>
+                      </template>
+                    </address>
+                  </li>
+                </template>
+              </ul>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  {% endif %}
+  <link rel="stylesheet" href="{{ 'payment-terms.css' | asset_url }}">
+</div>

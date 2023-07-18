@@ -1,0 +1,13 @@
+<aside x-data>
+  <template x-teleport="body">
+    <div
+      x-show="$store.modals.modal.open"
+      @keydown.escape.prevent.stop="$store.modals.close('modal')"
+      class="fixed inset-0 z-40"
+      id="modals-modal"
+      @modal-is-open.window="setTimeout(() => { $focus.first() }, 120)"
+    >
+      <div id="modal-slot"></div>
+    </div>
+  </template>
+</aside>

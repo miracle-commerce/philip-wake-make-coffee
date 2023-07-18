@@ -1,0 +1,187 @@
+<section class="text-scheme-text bg-scheme-background {% if section.settings.use_gradient_background %}bg-scheme-gradient{% endif %}" data-color-scheme="{{ section.settings.color_scheme }}">
+  {%- render 'text-marquee', section: section, class: 'py-2.5' %}
+</section>
+{{ 'section-marquee.css' | asset_url | stylesheet_tag }}
+
+{% schema %}
+{
+  "name": "t:sections.text_marquee.name",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:common.settings.paragraph_if_a_user"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:common.settings.text.label",
+      "default": "Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store."
+    },
+    {
+      "type": "checkbox",
+      "id": "repeat_text",
+      "default": true,
+      "label": "t:common.settings.repeat_text.label",
+      "info": "t:common.settings.repeat_text.info"
+    },
+    {
+      "type": "select",
+      "id": "shape_between_text",
+      "label": "t:common.settings.shape_between_text.label",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:common.options.none.label"
+        },
+        {
+          "value": "circle",
+          "label": "t:common.options.circle.label"
+        },
+        {
+          "value": "diamond",
+          "label": "t:common.options.diamond.label"
+        },
+        {
+          "value": "triangle",
+          "label": "t:common.options.triangle.label"
+        },
+        {
+          "value": "star",
+          "label": "t:common.options.star.label"
+        },
+        {
+          "value": "10_point_star",
+          "label": "t:common.options.10_point_star.label"
+        },
+        {
+          "value": "flower",
+          "label": "t:common.options.flower.label"
+        }
+      ],
+      "default": "10_point_star"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_shape_between_text",
+      "default": true,
+      "label": "t:common.settings.animate_shape_between_text.label"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:common.settings.link.label"
+    },
+    {
+      "type": "radio",
+      "id": "font",
+      "label": "t:common.settings.font.label",
+      "options": [
+        {
+          "value": "font-heading heading-secondary",
+          "label": "t:common.options.heading.label"
+        },
+        {
+          "value": "body",
+          "label": "t:common.options.body.label"
+        }
+      ],
+      "default": "font-heading heading-secondary"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_effects",
+      "label": "t:common.settings.apply_effects.label",
+      "default": false,
+      "info": "t:common.settings.apply_effects.info"
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_scale",
+      "min": -2,
+      "max": 4,
+      "step": 1,
+      "label": "t:common.settings.mobile_text_scale.label",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "desktop_text_scale",
+      "min": -2,
+      "max": 11,
+      "step": 1,
+      "label": "t:common.settings.desktop_text_scale.label",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 10,
+      "max": 400,
+      "step": 10,
+      "unit": "sec",
+      "label": "t:common.settings.speed.label",
+      "default": 120
+    },
+    {
+      "type": "radio",
+      "id": "direction",
+      "label": "t:common.settings.direction.label",
+      "options": [
+        {
+          "value": "",
+          "label": "t:common.options.right_to_left.label"
+        },
+        {
+          "value": "reverse",
+          "label": "t:common.options.left_to_right.label"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:common.settings.color_scheme.label",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:common.options.primary.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:common.options.secondary.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:common.options.tertiary.label"
+        },
+        {
+          "value": "quaternary",
+          "label": "t:common.options.quaternary.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_background",
+      "label": "t:common.settings.use_gradient_background.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.text_marquee.name"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer",
+      "aside"
+    ]
+  }
+}
+{% endschema %}

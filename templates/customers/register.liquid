@@ -1,0 +1,66 @@
+<div class="section-content py-section-vertical-spacing px-section" data-color-scheme="primary">
+  <div class="max-w-md mx-auto card-container">
+    <div class="card p-5 lg:p-10 text-left mx-auto relative z-shape-divider">
+      <h1 class="font-heading heading-standard mb-2.5">{{ 'customer.register.title' | t }}</h1>
+      {%- assign formId = 'RegisterForm' -%}
+      {% form 'create_customer', id: formId %}
+
+        {% if form.errors %}
+          <div class="mt-5" tabindex="-1">{{ form.errors | default_errors }}</div>
+        {% endif %}
+
+        <label for="FirstName" class="mt-5 mb-1 block font-secondary text-sm">
+          {{ 'customer.register.first_name' | t }}
+        </label>
+        <input type="text"
+          class="w-full"
+          name="customer[first_name]"
+          id="FirstName"
+          {% unless form.errors %}autofocus{% endunless %}
+          {% if form.first_name %}value="{{ form.first_name }}"{% endif %}>
+
+        <label for="LastName" class="mt-5 mb-1 block font-secondary text-sm">
+          {{ 'customer.register.last_name' | t }}
+        </label>
+        <input type="text"
+          class="w-full"
+          name="customer[last_name]"
+          id="LastName"
+          {% if form.last_name %}value="{{ form.last_name }}"{% endif %}>
+
+        <label for="Email" class="mt-5 mb-1 block font-secondary text-sm">
+          {{ 'customer.register.email' | t }}
+        </label>
+        <input type="email"
+          name="customer[email]"
+          id="Email"
+          class="w-full {% if form.errors contains 'email' %}border-scheme-accent{% endif %}"
+          value="{% if form.email %}{{ form.email }}{% endif %}"
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="off">
+
+        <label for="CreatePassword" class="mt-5 mb-1 block font-secondary text-sm">
+          {{ 'customer.register.password' | t }}
+        </label>
+        <input type="password"
+          class="w-full {% if form.errors contains 'password' %}border-scheme-accent{% endif %}"
+          name="customer[password]"
+          id="CreatePassword">
+
+        <div class="mt-5">
+          <button type="submit" class="push-btn w-full">
+            <span class="push-btn-surface w-full">{{ 'customer.register.submit' | t }}</span>
+          </button>
+        </div>
+
+        <div class="text-center">
+          <a class="mt-5 inline-block text-primary-accent-1 text-sm" href="{{ routes.account_login_url }}">
+            {{ 'customer.login.sign_in' | t }}
+          </a>
+        </div>
+      {% endform %}
+    </div>
+    <div class="card-border"></div>
+  </div>
+</div>

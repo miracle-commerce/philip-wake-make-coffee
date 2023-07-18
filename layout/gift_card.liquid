@@ -1,0 +1,152 @@
+<!doctype html>
+  <html class="no-js" lang="{{ request.locale.iso_code }}">
+    <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta name="theme-color" content="">
+      <link rel="canonical" href="{{ canonical_url }}">
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+      <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+      <link rel="preconnect" href="https://fonts.shopify.com" crossorigin>
+      <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">
+  
+      {%- liquid
+        assign main_font = settings.type_main_font
+        assign main_font_bold = main_font | font_modify: 'weight', 'bold'
+        assign heading_font = settings.type_heading_font
+        assign accent_font = settings.type_accent_font
+      -%}
+  
+      {%- if settings.favicon != blank -%}
+        <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: '32x32' }}">
+      {%- endif -%}
+  
+      {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
+        <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+      {%- endunless -%}
+  
+      <title>
+        {{ page_title }}
+        {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+        {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+        {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      </title>
+  
+      {% if page_description %}
+        <meta name="description" content="{{ page_description | escape }}">
+      {% endif %}
+  
+      {{ content_for_header }}
+  
+      {% render 'js-bridge' %}
+  
+      <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+      <link rel="stylesheet" href="{{ 'base.bundle.css' | asset_url }}">
+      <link rel="stylesheet" href="{{ 'global.css' | asset_url }}">
+
+      <style>
+        :root {
+          --max-site-width: 1820px;
+        }
+      </style>
+      {% style %}
+        {{ main_font | font_face: font_display: 'swap' }}
+        {{ heading_font | font_face: font_display: 'swap' }}
+        {{ accent_font | font_face: font_display: 'swap' }}
+  
+        {%- liquid
+          assign main_font_bolder = main_font | font_modify: 'weight', 'bolder'
+          assign main_font_italic = main_font | font_modify: 'style', 'italic'
+          assign main_font_bold_italic = main_font_bold | font_modify: 'style', 'italic'
+          if main_font_bold
+            echo main_font_bold | font_face: font_display: 'swap'
+          endif
+          if main_font_italic
+            echo main_font_italic | font_face: font_display: 'swap'
+          endif
+          if main_font_bold_italic
+            echo main_font_bold_italic | font_face: font_display: 'swap'
+          endif
+          if main_font_bolder
+            echo main_font_bolder | font_face: font_display: 'swap'
+          endif
+        -%}
+  
+        {% if settings.heading_uppercase -%}
+          {%- capture heading_capitalize -%}uppercase{%- endcapture -%}
+        {% else -%}
+          {%- capture heading_capitalize -%}none{%- endcapture -%}
+        {% endif -%}
+        {%- capture heading_letterspacing -%}{{ settings.heading_letterspacing | divided_by: 1000.0 }}{% unless settings.heading_letterspacing == 0 -%}em{% endunless -%}{%- endcapture -%}
+  
+        :root {
+          --heading-font-stack: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+          --heading-font-weight: {{ heading_font.weight }};
+          --heading-font-style: {{ heading_font.style }};
+          --heading-letterspacing: {{ heading_letterspacing }};
+          --heading-capitalize: {{ heading_capitalize }};
+          --main-font-stack: {{ main_font.family }}, {{ main_font.fallback_families }};
+          --main-font-weight: {{ main_font.weight }};
+          --main-font-style: {{ main_font.style }};
+          --accent-font-stack: {{ accent_font.family }}, {{ accent_font.fallback_families }};
+          --accent-font-weight: {{ accent_font.weight }};
+          --accent-font-style: {{ accent_font.style }};
+        }
+      {% endstyle %}
+      {%- render 'css-variables' %}
+  
+      {% comment %}theme-check-disable MissingTemplate{% endcomment %}
+      {% render 'critical-css' %}
+      {% comment %}theme-check-enable MissingTemplate{% endcomment %}
+
+      <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer="defer"></script>
+
+      
+      <style id="manual-critical-css">
+        [x-cloak] {
+          display: none;
+        }
+      </style>
+  
+      {% unless heading_font.system? %}
+        <link rel="preload" as="font" href="{{ heading_font | font_url }}" type="font/woff2" crossorigin>
+      {% endunless %}
+      {% unless main_font.system? %}
+        <link rel="preload" as="font" href="{{ main_font | font_url }}" type="font/woff2" crossorigin>
+      {% endunless %}
+    </head>
+  
+    <body class="template-giftcard">
+      <main role="main" id="MainContent">
+        {{ content_for_layout }}
+      </main>
+      <script>
+        document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+        window.addEventListener('DOMContentLoaded', function() {
+          var qrCode = document.getElementById('QrCode');
+    
+          new QRCode(qrCode, {
+            text: qrCode.dataset.identifier,
+            width: 120,
+            height: 120,
+            imageAltText: theme.strings.qrImageAlt
+          });
+    
+          document
+            .getElementById('GiftCardDigits')
+            .addEventListener('focus', function(event) {
+              event.target.select();
+            });
+        });
+        window.theme = {
+          strings: {
+            qrImageAlt: {{ 'gift_cards.issued.qr_image_alt' | t | json }}
+          },
+          moneyFormat: {{ shop.money_format | json }},
+          cartItemCount: {{ cart.item_count | json }}
+        };
+      </script>
+    </body>
+  </html>
+  

@@ -1,0 +1,24 @@
+{%- assign collection = link.object %}
+<ul class="grid grid-cols-1 lg:grid-cols-12 lg:gap-10 grid-flow-row-dense">
+  {%- for product in collection.products limit: 6 -%}
+    <li class="lg:col-span-2">
+      <a href="{{ product.url }}">
+        {%- if product.featured_media -%}
+          <div class="{% unless crop == '' or crop == blank %}object-wrapper {{ crop }}{% endunless %}">
+            {{ product.featured_media | image_url: width: 700 | image_tag: class: 'media-style' }}
+          </div>
+        {%- endif -%}
+        <div class="mt-2 text-center">
+          {{ product.title }}
+        </div>
+      </a>
+    </li>
+  {%- endfor -%}
+</ul>
+<div class="mt-5 text-center">
+  {%- if collection.all_products_count > 6 -%}
+    <a href="{{ collection.url }}" class="inline-block push-btn">
+      <span class="push-btn-surface">{{ 'collections.general.all_of_collection' | t: collection: collection.title }}</span>
+    </a>
+  {%- endif -%}
+</div>

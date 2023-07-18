@@ -1,0 +1,4345 @@
+{%- liquid
+  assign product = all_products[section.settings.product]
+  assign current_variant = product.selected_or_first_available_variant
+-%}
+{%- if product != blank -%}
+  {%- render 'product-template', section: section, product: product, is_feature: true -%}
+{%- else -%}
+{%- liquid
+  assign media_desktop_width = section.settings.desktop_media_width | split: '_' | first
+  assign content_desktop_width = section.settings.desktop_media_width | split: '_' | last
+-%}
+<section
+  class="text-scheme-text bg-scheme-background"
+  data-color-scheme="{{ section.settings.color_scheme }}"
+  >
+  <div class="section-content py-section-vertical-spacing lg:px-section max-w-site mx-auto relative z-10">
+
+    {% if section.settings.title != '' %}
+      <h2 class="text-center font-heading  heading-standard heading-style break-words {{ settings.heading_drop_shadow_style }}">{{ section.settings.title }}</h2>
+      {% endif %}
+
+    <div class="{% if section.settings.title != '' %}section-content-top-margin{% endif %}">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 {{ section.settings.section_desktop_width }}">
+        <div class="product-media col-span-full {{ media_desktop_width }} px-section lg:px-0">
+            <div>
+              {%- render 'media-image-placeholder',
+                container_id: section.id,
+                index: 0,
+                shape: section.settings.image_shape,
+                crop: section.settings.crop,
+                is_card: false
+              -%}
+            </div>
+        </div>
+        <div class="product-content col-span-full {{ content_desktop_width }} px-section lg:px-0 lg:flex lg:items-center">
+          <div class="product-block-container w-full max-w-full xl:grid xl:grid-cols-12">
+            <div class="xl:col-span-10 xl:col-start-2 relative">
+              <div class="product-block product-block-title">
+                <h2 class="font-heading heading-feature">{{ 'homepage.onboarding.product_title' | t }}</h2>
+              </div>
+              {%- liquid
+                if settings.desktop_feature_heading_scale > 4
+                  assign price_text_size = 'text-base lg:text-lg'
+                else
+                  assign price_text_size = 'text-base'
+                endif
+              -%}
+              <div class="product-block product-block-price">
+                <span
+                  class="text-scheme-text {{ price_text_size }}"
+                >
+                  {% if settings.currency_code_enabled == true %}{{ 1999 | money_with_currency }}{% else %}{{ 1999 | money }}{% endif %}
+                </span>
+              </div>
+              <div class="product-block">
+                <button
+                  class="mb-1 add-to-cart-btn theme-button w-full push-btn"
+                >
+                  <span class="push-btn-surface w-full">{{ 'products.product.add_to_cart' | t }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {%- liquid
+    for block in section.blocks
+      case block.type
+        when 'background_shape'
+          render 'block-background-shape' with block: block, section: section
+        when 'background_pattern'
+          render 'block-background-pattern' with block: block, section: section, scheme: section.settings.color_scheme
+      endcase
+    endfor
+  -%}
+</section>
+
+{%- liquid
+  assign stickers = section.blocks | where: "type", "sticker"
+  assign shape_dividers = section.blocks | where: "type", "shape_divider"
+  for sticker in stickers
+    render 'block-sticker' with block: sticker, section: section
+  endfor
+  for shape_divider in shape_dividers
+    render 'block-shape-divider' with block: shape_divider, section: section
+  endfor
+-%}
+
+{%- endif -%}
+{% schema %}
+{
+  "name": "t:sections.featured_product.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:common.settings.title.label"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:sections.featured_product.settings.product.label"
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_media"
+    },
+    {
+      "type": "select",
+      "id": "crop",
+      "label": "t:common.settings.crop.label",
+      "options": [
+        {
+          "value": "",
+          "label": "t:common.options.no_crop.label"
+        },
+        {
+          "value": "aspect-w-4 aspect-h-3",
+          "label": "t:common.options.landscape.label"
+        },
+        {
+          "value": "aspect-w-1 aspect-h-1",
+          "label": "t:common.options.square.label"
+        },
+        {
+          "value": "aspect-w-3 aspect-h-4",
+          "label": "t:common.options.portrait.label"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "t:sections.featured_product.settings.image_shape.label",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:common.options.default.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_ellipse",
+          "label": "t:common.options.ellipse.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_pill",
+          "label": "t:common.options.pill.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_archway",
+          "label": "t:common.options.archway.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "diamond",
+          "label": "t:common.options.diamond.label",
+          "group": "Basic"
+        },
+        {
+          "value": "triangle_1",
+          "label": "t:common.options.triangle_1.label",
+          "group": "Basic"
+        },
+        {
+          "value": "triangle_2",
+          "label": "t:common.options.triangle_2.label",
+          "group": "Basic"
+        },
+        {
+          "value": "pentagon",
+          "label": "t:common.options.pentagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "hexagon",
+          "label": "t:common.options.hexagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "heptagon",
+          "label": "t:common.options.heptagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "octagon",
+          "label": "t:common.options.octagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_pentagon",
+          "label": "t:common.options.rounded_pentagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_hexagon",
+          "label": "t:common.options.rounded_hexagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_heptagon",
+          "label": "t:common.options.rounded_heptagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_octagon",
+          "label": "t:common.options.rounded_octagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "star_1",
+          "label": "t:common.options.star_1.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_2",
+          "label": "t:common.options.star_2.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_3",
+          "label": "t:common.options.star_3.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_4",
+          "label": "t:common.options.star_4.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_1",
+          "label": "t:common.options.scalloped_circle_1.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_2",
+          "label": "t:common.options.scalloped_circle_2.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_3",
+          "label": "t:common.options.scalloped_circle_3.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_4",
+          "label": "t:common.options.scalloped_circle_4.label",
+          "group": "Circular"
+        },
+        {
+          "value": "parallelogram",
+          "label": "t:common.options.parallelogram.label",
+          "group": "Square"
+        },
+        {
+          "value": "scalloped_square",
+          "label": "t:common.options.scalloped.label",
+          "group": "Square"
+        },
+        {
+          "value": "leaf",
+          "label": "t:common.options.leaf.label",
+          "group": "Square"
+        },
+        {
+          "value": "clipped_square",
+          "label": "t:common.options.clipped.label",
+          "group": "Square"
+        },
+        {
+          "value": "convex_square",
+          "label": "t:common.options.convex.label",
+          "group": "Square"
+        },
+        {
+          "value": "twisted_square",
+          "label": "t:common.options.twisted.label",
+          "group": "Square"
+        },
+        {
+          "value": "trapeze",
+          "label": "t:common.options.trapeze.label",
+          "group": "Square"
+        },
+        {
+          "value": "blob",
+          "label": "t:common.options.blob.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "zig_zag",
+          "label": "t:common.options.zig_zag.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "zig_zag_tear",
+          "label": "t:common.options.zig_zag_tear.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "wave_tear",
+          "label": "t:common.options.wave_tear.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "flower",
+          "label": "t:common.options.flower.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "concave",
+          "label": "t:common.options.concave.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "cross",
+          "label": "t:common.options.cross.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "quatrefoil",
+          "label": "t:common.options.quatrefoil.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "wind",
+          "label": "t:common.options.wind.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "heart",
+          "label": "t:common.options.heart.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "mirrored_pyramids",
+          "label": "t:common.options.mirrored_pyramids.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "plus",
+          "label": "t:common.options.plus.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "double_pill",
+          "label": "t:common.options.double_pill.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "triple_pill",
+          "label": "t:common.options.triple_pill.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "crown",
+          "label": "t:common.options.crown.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "abstract_star",
+          "label": "t:common.options.abstract_star.label",
+          "group": "Miscellaneous"
+        }
+      ],
+      "info": "t:sections.featured_product.settings.image_shape.info"
+    },
+    {
+      "type": "radio",
+      "id": "media_mobile_width",
+      "label": "t:common.settings.media_mobile_width.label",
+      "default": "w-full",
+      "options": [
+        {
+          "value": "w-full",
+          "label": "t:common.options.full_width.label"
+        },
+        {
+          "value": "w-4/5",
+          "label": "t:common.options.four_fifths.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "desktop_media_width",
+      "label": "t:common.settings.desktop_media_width.label",
+      "options": [
+        {
+          "value": "lg:col-span-6_lg:col-span-6",
+          "label": "t:common.options.one_half.label"
+        },
+        {
+          "value": "lg:col-span-7_lg:col-span-5",
+          "label": "t:common.options.three_fifths.label"
+        },
+        {
+          "value": "lg:col-span-8_lg:col-span-4",
+          "label": "t:common.options.two_thirds.label"
+        }
+      ],
+      "default": "lg:col-span-6_lg:col-span-6"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_video_looping",
+      "label": "t:common.settings.enable_video_looping.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_thumbnails"
+    },
+    {
+      "type": "radio",
+      "id": "thumbnails_position",
+      "label": "t:common.settings.thumbnails_position.label",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:common.options.left_of_featured_image.label"
+        },
+        {
+          "value": "under",
+          "label": "t:common.options.underneath_featured_image.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "thumbnail_crop",
+      "label": "t:common.settings.thumbnail_crop.label",
+      "options": [
+        {
+          "value": "",
+          "label": "t:common.options.no_crop.label"
+        },
+        {
+          "value": "aspect-w-4 aspect-h-3",
+          "label": "t:common.options.landscape.label"
+        },
+        {
+          "value": "aspect-w-1 aspect-h-1",
+          "label": "t:common.options.square.label"
+        },
+        {
+          "value": "aspect-w-3 aspect-h-4",
+          "label": "t:common.options.portrait.label"
+        }
+      ],
+      "default": "aspect-w-1 aspect-h-1"
+    },
+    {
+      "type": "select",
+      "id": "thumbnail_shape",
+      "label": "t:common.settings.thumbnail_shape.label",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:common.options.default.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_ellipse",
+          "label": "t:common.options.ellipse.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_pill",
+          "label": "t:common.options.pill.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_archway",
+          "label": "t:common.options.archway.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "diamond",
+          "label": "t:common.options.diamond.label",
+          "group": "Basic"
+        },
+        {
+          "value": "triangle_1",
+          "label": "t:common.options.triangle_1.label",
+          "group": "Basic"
+        },
+        {
+          "value": "triangle_2",
+          "label": "t:common.options.triangle_2.label",
+          "group": "Basic"
+        },
+        {
+          "value": "pentagon",
+          "label": "t:common.options.pentagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "hexagon",
+          "label": "t:common.options.hexagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "heptagon",
+          "label": "t:common.options.heptagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "octagon",
+          "label": "t:common.options.octagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_pentagon",
+          "label": "t:common.options.rounded_pentagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_hexagon",
+          "label": "t:common.options.rounded_hexagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_heptagon",
+          "label": "t:common.options.rounded_heptagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_octagon",
+          "label": "t:common.options.rounded_octagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "star_1",
+          "label": "t:common.options.star_1.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_2",
+          "label": "t:common.options.star_2.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_3",
+          "label": "t:common.options.star_3.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_4",
+          "label": "t:common.options.star_4.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_1",
+          "label": "t:common.options.scalloped_circle_1.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_2",
+          "label": "t:common.options.scalloped_circle_2.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_3",
+          "label": "t:common.options.scalloped_circle_3.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_4",
+          "label": "t:common.options.scalloped_circle_4.label",
+          "group": "Circular"
+        },
+        {
+          "value": "parallelogram",
+          "label": "t:common.options.parallelogram.label",
+          "group": "Square"
+        },
+        {
+          "value": "scalloped_square",
+          "label": "t:common.options.scalloped.label",
+          "group": "Square"
+        },
+        {
+          "value": "leaf",
+          "label": "t:common.options.leaf.label",
+          "group": "Square"
+        },
+        {
+          "value": "clipped_square",
+          "label": "t:common.options.clipped.label",
+          "group": "Square"
+        },
+        {
+          "value": "convex_square",
+          "label": "t:common.options.convex.label",
+          "group": "Square"
+        },
+        {
+          "value": "twisted_square",
+          "label": "t:common.options.twisted.label",
+          "group": "Square"
+        },
+        {
+          "value": "trapeze",
+          "label": "t:common.options.trapeze.label",
+          "group": "Square"
+        },
+        {
+          "value": "blob",
+          "label": "t:common.options.blob.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "zig_zag",
+          "label": "t:common.options.zig_zag.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "zig_zag_tear",
+          "label": "t:common.options.zig_zag_tear.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "wave_tear",
+          "label": "t:common.options.wave_tear.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "flower",
+          "label": "t:common.options.flower.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "concave",
+          "label": "t:common.options.concave.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "cross",
+          "label": "t:common.options.cross.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "quatrefoil",
+          "label": "t:common.options.quatrefoil.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "wind",
+          "label": "t:common.options.wind.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "heart",
+          "label": "t:common.options.heart.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "mirrored_pyramids",
+          "label": "t:common.options.mirrored_pyramids.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "plus",
+          "label": "t:common.options.plus.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "double_pill",
+          "label": "t:common.options.double_pill.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "triple_pill",
+          "label": "t:common.options.triple_pill.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "crown",
+          "label": "t:common.options.crown.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "abstract_star",
+          "label": "t:common.options.abstract_star.label",
+          "group": "Miscellaneous"
+        }
+      ],
+      "info": "t:common.settings.thumbnail_shape.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_media_shadow",
+      "label": "t:common.settings.hide_media_shadow.label"
+    },
+    {
+      "type": "radio",
+      "id": "thumbnail_size",
+      "label": "t:common.settings.thumbnail_size.label",
+      "default": "standard",
+      "options": [
+        {
+          "value": "standard",
+          "label": "t:common.options.standard.label"
+        },
+        {
+          "value": "large",
+          "label": "t:common.options.large.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_thumbnails_on_mobile",
+      "label": "t:common.settings.show_thumbnails_on_mobile.label",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:common.settings.color_scheme.label",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:common.options.primary.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:common.options.secondary.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:common.options.tertiary.label"
+        },
+        {
+          "value": "quaternary",
+          "label": "t:common.options.quaternary.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_background",
+      "label": "t:common.settings.use_gradient_background.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "title",
+      "name": "t:common.blocks.title.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "radio",
+          "id": "text_align",
+          "label": "t:common.settings.text_align.label",
+          "default": "text-left",
+          "options": [
+            {
+              "value": "text-left",
+              "label": "t:common.options.left.label"
+            },
+            {
+              "value": "text-center",
+              "label": "t:common.options.center.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "t:common.blocks.price.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_on_sale_sticker",
+          "label": "t:common.blocks.price.settings.show_on_sale_sticker.label"
+        },
+        {
+          "type": "radio",
+          "id": "text_align",
+          "label": "t:common.settings.text_align.label",
+          "default": "text-left",
+          "options": [
+            {
+              "value": "text-left",
+              "label": "t:common.options.left.label"
+            },
+            {
+              "value": "text-center",
+              "label": "t:common.options.center.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "quantity_selector",
+      "name": "t:common.blocks.quantity_selector.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_label",
+          "label": "t:common.blocks.quantity_selector.settings.show_label.label",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "t:common.blocks.variant_picker.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "radio",
+          "id": "option_style",
+          "label": "t:common.blocks.variant_picker.settings.option_style.label",
+          "options": [
+            {
+              "value": "drop_down",
+              "label": "t:common.blocks.variant_picker.settings.option_style.options.drop_down.label"
+            },
+            {
+              "value": "buttons",
+              "label": "t:common.blocks.variant_picker.settings.option_style.options.button.label"
+            }
+          ],
+          "default": "drop_down"
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_option_labels",
+          "label": "t:common.blocks.variant_picker.settings.hide_option_labels.label",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "t:common.blocks.variant_picker.settings.header_color_swatches"
+        },
+        {
+          "type": "paragraph",
+          "content": "t:common.blocks.variant_picker.settings.paragraph_learn_how_to"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_color_swatches",
+          "label": "t:common.blocks.variant_picker.settings.enable_color_swatches.label"
+        }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "t:common.blocks.buy_buttons.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_price",
+          "label": "t:common.blocks.buy_buttons.settings.show_price.label",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_payment_button",
+          "label": "t:common.blocks.buy_buttons.settings.enable_payment_button.label",
+          "info": "t:common.blocks.buy_buttons.settings.enable_payment_button.info",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "t:common.blocks.buy_buttons.settings.header_pickup_availability"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_pickup_availability",
+          "label": "t:common.blocks.buy_buttons.settings.show_pickup_availability.label",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Gift card recipient"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_gift_card_recipient",
+          "default": false,
+          "label": "t:common.blocks.buy_buttons.settings.show_gift_card_recipient.label",
+          "info": "t:common.blocks.buy_buttons.settings.show_gift_card_recipient.info"
+        }
+      ]
+    },
+    {
+      "type": "vendor",
+      "name": "t:common.blocks.vendor.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "radio",
+          "id": "text_align",
+          "label": "t:common.settings.text_align.label",
+          "default": "text-left",
+          "options": [
+            {
+              "value": "text-left",
+              "label": "t:common.options.left.label"
+            },
+            {
+              "value": "text-center",
+              "label": "t:common.options.center.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "star_rating",
+      "name": "t:common.blocks.star_rating.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "select",
+          "id": "type",
+          "label": "t:common.blocks.star_rating.settings.type.label",
+          "default": "native",
+          "options": [
+            {
+              "value": "native",
+              "label": "t:common.blocks.star_rating.settings.type.options.theme.label"
+            },
+            {
+              "value": "spr",
+              "label": "t:common.blocks.star_rating.settings.type.options.shopify_product_reviews.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "t:common.blocks.description.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "checkbox",
+          "id": "truncate_description",
+          "label": "t:common.blocks.description.settings.truncate_description.label",
+          "default": false
+        },
+        {
+          "type": "radio",
+          "id": "text_align",
+          "label": "t:common.settings.text_align.label",
+          "default": "text-left",
+          "options": [
+            {
+              "value": "text-left",
+              "label": "t:common.options.left.label"
+            },
+            {
+              "value": "text-center",
+              "label": "t:common.options.center.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:common.blocks.text.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "default": "Text block",
+          "label": "t:common.blocks.text.settings.text.label"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:common.settings.icon.label",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:common.options.none.label"
+            },
+            {
+              "value": "box",
+              "label": "t:common.options.box.label"
+            },
+            {
+              "value": "chat-bubble",
+              "label": "t:common.options.chat_bubble.label"
+            },
+            {
+              "value": "check-mark",
+              "label": "t:common.options.check_mark.label"
+            },
+            {
+              "value": "coat-hanger",
+              "label": "t:common.options.coat_hanger.label"
+            },
+            {
+              "value": "dryer",
+              "label": "t:common.options.dryer.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label"
+            },
+            {
+              "value": "globe",
+              "label": "t:common.options.globe.label"
+            },
+            {
+              "value": "heart",
+              "label": "t:common.options.heart.label"
+            },
+            {
+              "value": "iron",
+              "label": "t:common.options.iron.label"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label"
+            },
+            {
+              "value": "leather",
+              "label": "t:common.options.leather.label"
+            },
+            {
+              "value": "like",
+              "label": "t:common.options.like.label"
+            },
+            {
+              "value": "lock",
+              "label": "t:common.options.lock.label"
+            },
+            {
+              "value": "map-pin",
+              "label": "t:common.options.map_pin.label"
+            },
+            {
+              "value": "pants",
+              "label": "t:common.options.pants.label"
+            },
+            {
+              "value": "person",
+              "label": "t:common.options.person.label"
+            },
+            {
+              "value": "plane",
+              "label": "t:common.options.plane.label"
+            },
+            {
+              "value": "price-tag",
+              "label": "t:common.options.price_tag.label"
+            },
+            {
+              "value": "question-mark",
+              "label": "t:common.options.question_mark.label"
+            },
+            {
+              "value": "recycle",
+              "label": "t:common.options.recycle.label"
+            },
+            {
+              "value": "return",
+              "label": "t:common.options.return.label"
+            },
+            {
+              "value": "ruler",
+              "label": "t:common.options.ruler.label"
+            },
+            {
+              "value": "shirt",
+              "label": "t:common.options.shirt.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:common.options.shoe.label"
+            },
+            {
+              "value": "star",
+              "label": "t:common.options.star.label"
+            },
+            {
+              "value": "truck",
+              "label": "t:common.options.truck.label"
+            },
+            {
+              "value": "washing",
+              "label": "t:common.options.washing.label"
+            },
+            {
+              "value": "gluten_free",
+              "label": "t:common.options.gluten_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "soy_free",
+              "label": "t:common.options.soy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "sugar_free",
+              "label": "t:common.options.sugar_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "nut_free",
+              "label": "t:common.options.nut_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "corn_free",
+              "label": "t:common.options.corn_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "dairy_free",
+              "label": "t:common.options.dairy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_additives",
+              "label": "t:common.options.no_additives.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_artificial_colors",
+              "label": "t:common.options.no_artificial_colors.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "non_gmo",
+              "label": "t:common.options.non_gmo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "vegan",
+              "label": "t:common.options.vegan.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "halal",
+              "label": "t:common.options.halal.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "organic",
+              "label": "t:common.options.organic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "kosher",
+              "label": "t:common.options.kosher.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "keto",
+              "label": "t:common.options.keto.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paleo",
+              "label": "t:common.options.paleo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "cruelty_free",
+              "label": "t:common.options.cruelty_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paraben_free",
+              "label": "t:common.options.paraben_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "alcohol_free",
+              "label": "t:common.options.alcohol_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "palm_oil_free",
+              "label": "t:common.options.palm_oil_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "anti_bacterial",
+              "label": "t:common.options.anti_bacterial.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "probiotic",
+              "label": "t:common.options.probiotic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "antioxidants",
+              "label": "t:common.options.antioxidants.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_salt",
+              "label": "t:common.options.low_salt.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_carb",
+              "label": "t:common.options.low_carb.label",
+              "group": "Food and health"
+            }
+          ],
+          "default": "none"
+        }
+      ]
+    },
+    {
+      "type": "icon_row",
+      "name": "t:common.blocks.icon_row.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "header",
+          "content": "t:common.blocks.icon_row.settings.header_item_1"
+        },
+        {
+          "type": "select",
+          "id": "icon_1",
+          "label": "t:common.blocks.icon_row.settings.icon_1.label",
+          "options": [
+            {
+              "value": "box",
+              "label": "t:common.options.box.label"
+            },
+            {
+              "value": "chat-bubble",
+              "label": "t:common.options.chat_bubble.label"
+            },
+            {
+              "value": "check-mark",
+              "label": "t:common.options.check_mark.label"
+            },
+            {
+              "value": "coat-hanger",
+              "label": "t:common.options.coat_hanger.label"
+            },
+            {
+              "value": "dryer",
+              "label": "t:common.options.dryer.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label"
+            },
+            {
+              "value": "globe",
+              "label": "t:common.options.globe.label"
+            },
+            {
+              "value": "heart",
+              "label": "t:common.options.heart.label"
+            },
+            {
+              "value": "iron",
+              "label": "t:common.options.iron.label"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label"
+            },
+            {
+              "value": "leather",
+              "label": "t:common.options.leather.label"
+            },
+            {
+              "value": "like",
+              "label": "t:common.options.like.label"
+            },
+            {
+              "value": "lock",
+              "label": "t:common.options.lock.label"
+            },
+            {
+              "value": "map-pin",
+              "label": "t:common.options.map_pin.label"
+            },
+            {
+              "value": "pants",
+              "label": "t:common.options.pants.label"
+            },
+            {
+              "value": "person",
+              "label": "t:common.options.person.label"
+            },
+            {
+              "value": "plane",
+              "label": "t:common.options.plane.label"
+            },
+            {
+              "value": "price-tag",
+              "label": "t:common.options.price_tag.label"
+            },
+            {
+              "value": "question-mark",
+              "label": "t:common.options.question_mark.label"
+            },
+            {
+              "value": "recycle",
+              "label": "t:common.options.recycle.label"
+            },
+            {
+              "value": "return",
+              "label": "t:common.options.return.label"
+            },
+            {
+              "value": "ruler",
+              "label": "t:common.options.ruler.label"
+            },
+            {
+              "value": "shirt",
+              "label": "t:common.options.shirt.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:common.options.shoe.label"
+            },
+            {
+              "value": "star",
+              "label": "t:common.options.star.label"
+            },
+            {
+              "value": "truck",
+              "label": "t:common.options.truck.label"
+            },
+            {
+              "value": "washing",
+              "label": "t:common.options.washing.label"
+            },
+            {
+              "value": "gluten_free",
+              "label": "t:common.options.gluten_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "soy_free",
+              "label": "t:common.options.soy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "sugar_free",
+              "label": "t:common.options.sugar_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "nut_free",
+              "label": "t:common.options.nut_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "corn_free",
+              "label": "t:common.options.corn_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "dairy_free",
+              "label": "t:common.options.dairy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_additives",
+              "label": "t:common.options.no_additives.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_artificial_colors",
+              "label": "t:common.options.no_artificial_colors.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "non_gmo",
+              "label": "t:common.options.non_gmo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "vegan",
+              "label": "t:common.options.vegan.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "halal",
+              "label": "t:common.options.halal.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "organic",
+              "label": "t:common.options.organic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "kosher",
+              "label": "t:common.options.kosher.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "keto",
+              "label": "t:common.options.keto.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paleo",
+              "label": "t:common.options.paleo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "cruelty_free",
+              "label": "t:common.options.cruelty_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paraben_free",
+              "label": "t:common.options.paraben_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "alcohol_free",
+              "label": "t:common.options.alcohol_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "palm_oil_free",
+              "label": "t:common.options.palm_oil_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "anti_bacterial",
+              "label": "t:common.options.anti_bacterial.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "probiotic",
+              "label": "t:common.options.probiotic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "antioxidants",
+              "label": "t:common.options.antioxidants.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_salt",
+              "label": "t:common.options.low_salt.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_carb",
+              "label": "t:common.options.low_carb.label",
+              "group": "Food and health"
+            }
+          ],
+          "default": "globe"
+        },
+        {
+          "type": "text",
+          "id": "text_1",
+          "label": "t:common.blocks.icon_row.settings.text_1.label",
+          "default": "Row item"
+        },
+        {
+          "type": "header",
+          "content": "t:common.blocks.icon_row.settings.header_item_2"
+        },
+        {
+          "type": "select",
+          "id": "icon_2",
+          "label": "t:common.blocks.icon_row.settings.icon_2.label",
+          "options": [
+            {
+              "value": "box",
+              "label": "t:common.options.box.label"
+            },
+            {
+              "value": "chat-bubble",
+              "label": "t:common.options.chat_bubble.label"
+            },
+            {
+              "value": "check-mark",
+              "label": "t:common.options.check_mark.label"
+            },
+            {
+              "value": "coat-hanger",
+              "label": "t:common.options.coat_hanger.label"
+            },
+            {
+              "value": "dryer",
+              "label": "t:common.options.dryer.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label"
+            },
+            {
+              "value": "globe",
+              "label": "t:common.options.globe.label"
+            },
+            {
+              "value": "heart",
+              "label": "t:common.options.heart.label"
+            },
+            {
+              "value": "iron",
+              "label": "t:common.options.iron.label"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label"
+            },
+            {
+              "value": "leather",
+              "label": "t:common.options.leather.label"
+            },
+            {
+              "value": "like",
+              "label": "t:common.options.like.label"
+            },
+            {
+              "value": "lock",
+              "label": "t:common.options.lock.label"
+            },
+            {
+              "value": "map-pin",
+              "label": "t:common.options.map_pin.label"
+            },
+            {
+              "value": "pants",
+              "label": "t:common.options.pants.label"
+            },
+            {
+              "value": "person",
+              "label": "t:common.options.person.label"
+            },
+            {
+              "value": "plane",
+              "label": "t:common.options.plane.label"
+            },
+            {
+              "value": "price-tag",
+              "label": "t:common.options.price_tag.label"
+            },
+            {
+              "value": "question-mark",
+              "label": "t:common.options.question_mark.label"
+            },
+            {
+              "value": "recycle",
+              "label": "t:common.options.recycle.label"
+            },
+            {
+              "value": "return",
+              "label": "t:common.options.return.label"
+            },
+            {
+              "value": "ruler",
+              "label": "t:common.options.ruler.label"
+            },
+            {
+              "value": "shirt",
+              "label": "t:common.options.shirt.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:common.options.shoe.label"
+            },
+            {
+              "value": "star",
+              "label": "t:common.options.star.label"
+            },
+            {
+              "value": "truck",
+              "label": "t:common.options.truck.label"
+            },
+            {
+              "value": "washing",
+              "label": "t:common.options.washing.label"
+            },
+            {
+              "value": "gluten_free",
+              "label": "t:common.options.gluten_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "soy_free",
+              "label": "t:common.options.soy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "sugar_free",
+              "label": "t:common.options.sugar_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "nut_free",
+              "label": "t:common.options.nut_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "corn_free",
+              "label": "t:common.options.corn_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "dairy_free",
+              "label": "t:common.options.dairy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_additives",
+              "label": "t:common.options.no_additives.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_artificial_colors",
+              "label": "t:common.options.no_artificial_colors.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "non_gmo",
+              "label": "t:common.options.non_gmo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "vegan",
+              "label": "t:common.options.vegan.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "halal",
+              "label": "t:common.options.halal.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "organic",
+              "label": "t:common.options.organic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "kosher",
+              "label": "t:common.options.kosher.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "keto",
+              "label": "t:common.options.keto.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paleo",
+              "label": "t:common.options.paleo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "cruelty_free",
+              "label": "t:common.options.cruelty_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paraben_free",
+              "label": "t:common.options.paraben_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "alcohol_free",
+              "label": "t:common.options.alcohol_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "palm_oil_free",
+              "label": "t:common.options.palm_oil_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "anti_bacterial",
+              "label": "t:common.options.anti_bacterial.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "probiotic",
+              "label": "t:common.options.probiotic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "antioxidants",
+              "label": "t:common.options.antioxidants.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_salt",
+              "label": "t:common.options.low_salt.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_carb",
+              "label": "t:common.options.low_carb.label",
+              "group": "Food and health"
+            }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "text_2",
+          "label": "t:common.blocks.icon_row.settings.text_2.label",
+          "default": "Row item"
+        },
+        {
+          "type": "header",
+          "content": "t:common.blocks.icon_row.settings.header_item_3"
+        },
+        {
+          "type": "select",
+          "id": "icon_3",
+          "label": "t:common.blocks.icon_row.settings.icon_3.label",
+          "options": [
+            {
+              "value": "box",
+              "label": "t:common.options.box.label"
+            },
+            {
+              "value": "chat-bubble",
+              "label": "t:common.options.chat_bubble.label"
+            },
+            {
+              "value": "check-mark",
+              "label": "t:common.options.check_mark.label"
+            },
+            {
+              "value": "coat-hanger",
+              "label": "t:common.options.coat_hanger.label"
+            },
+            {
+              "value": "dryer",
+              "label": "t:common.options.dryer.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label"
+            },
+            {
+              "value": "globe",
+              "label": "t:common.options.globe.label"
+            },
+            {
+              "value": "heart",
+              "label": "t:common.options.heart.label"
+            },
+            {
+              "value": "iron",
+              "label": "t:common.options.iron.label"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label"
+            },
+            {
+              "value": "leather",
+              "label": "t:common.options.leather.label"
+            },
+            {
+              "value": "like",
+              "label": "t:common.options.like.label"
+            },
+            {
+              "value": "lock",
+              "label": "t:common.options.lock.label"
+            },
+            {
+              "value": "map-pin",
+              "label": "t:common.options.map_pin.label"
+            },
+            {
+              "value": "pants",
+              "label": "t:common.options.pants.label"
+            },
+            {
+              "value": "person",
+              "label": "t:common.options.person.label"
+            },
+            {
+              "value": "plane",
+              "label": "t:common.options.plane.label"
+            },
+            {
+              "value": "price-tag",
+              "label": "t:common.options.price_tag.label"
+            },
+            {
+              "value": "question-mark",
+              "label": "t:common.options.question_mark.label"
+            },
+            {
+              "value": "recycle",
+              "label": "t:common.options.recycle.label"
+            },
+            {
+              "value": "return",
+              "label": "t:common.options.return.label"
+            },
+            {
+              "value": "ruler",
+              "label": "t:common.options.ruler.label"
+            },
+            {
+              "value": "shirt",
+              "label": "t:common.options.shirt.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:common.options.shoe.label"
+            },
+            {
+              "value": "star",
+              "label": "t:common.options.star.label"
+            },
+            {
+              "value": "truck",
+              "label": "t:common.options.truck.label"
+            },
+            {
+              "value": "washing",
+              "label": "t:common.options.washing.label"
+            },
+            {
+              "value": "gluten_free",
+              "label": "t:common.options.gluten_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "soy_free",
+              "label": "t:common.options.soy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "sugar_free",
+              "label": "t:common.options.sugar_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "nut_free",
+              "label": "t:common.options.nut_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "corn_free",
+              "label": "t:common.options.corn_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "dairy_free",
+              "label": "t:common.options.dairy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_additives",
+              "label": "t:common.options.no_additives.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_artificial_colors",
+              "label": "t:common.options.no_artificial_colors.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "non_gmo",
+              "label": "t:common.options.non_gmo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "vegan",
+              "label": "t:common.options.vegan.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "halal",
+              "label": "t:common.options.halal.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "organic",
+              "label": "t:common.options.organic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "kosher",
+              "label": "t:common.options.kosher.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "keto",
+              "label": "t:common.options.keto.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paleo",
+              "label": "t:common.options.paleo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "cruelty_free",
+              "label": "t:common.options.cruelty_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paraben_free",
+              "label": "t:common.options.paraben_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "alcohol_free",
+              "label": "t:common.options.alcohol_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "palm_oil_free",
+              "label": "t:common.options.palm_oil_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "anti_bacterial",
+              "label": "t:common.options.anti_bacterial.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "probiotic",
+              "label": "t:common.options.probiotic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "antioxidants",
+              "label": "t:common.options.antioxidants.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_salt",
+              "label": "t:common.options.low_salt.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_carb",
+              "label": "t:common.options.low_carb.label",
+              "group": "Food and health"
+            }
+          ],
+          "default": "washing"
+        },
+        {
+          "type": "text",
+          "id": "text_3",
+          "label": "t:common.blocks.icon_row.settings.text_3.label",
+          "default": "Row item"
+        },
+        {
+          "type": "header",
+          "content": "t:common.blocks.icon_row.settings.header_item_4"
+        },
+        {
+          "type": "select",
+          "id": "icon_4",
+          "label": "t:common.blocks.icon_row.settings.icon_4.label",
+          "options": [
+            {
+              "value": "box",
+              "label": "t:common.options.box.label"
+            },
+            {
+              "value": "chat-bubble",
+              "label": "t:common.options.chat_bubble.label"
+            },
+            {
+              "value": "check-mark",
+              "label": "t:common.options.check_mark.label"
+            },
+            {
+              "value": "coat-hanger",
+              "label": "t:common.options.coat_hanger.label"
+            },
+            {
+              "value": "dryer",
+              "label": "t:common.options.dryer.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label"
+            },
+            {
+              "value": "globe",
+              "label": "t:common.options.globe.label"
+            },
+            {
+              "value": "heart",
+              "label": "t:common.options.heart.label"
+            },
+            {
+              "value": "iron",
+              "label": "t:common.options.iron.label"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label"
+            },
+            {
+              "value": "leather",
+              "label": "t:common.options.leather.label"
+            },
+            {
+              "value": "like",
+              "label": "t:common.options.like.label"
+            },
+            {
+              "value": "lock",
+              "label": "t:common.options.lock.label"
+            },
+            {
+              "value": "map-pin",
+              "label": "t:common.options.map_pin.label"
+            },
+            {
+              "value": "pants",
+              "label": "t:common.options.pants.label"
+            },
+            {
+              "value": "person",
+              "label": "t:common.options.person.label"
+            },
+            {
+              "value": "plane",
+              "label": "t:common.options.plane.label"
+            },
+            {
+              "value": "price-tag",
+              "label": "t:common.options.price_tag.label"
+            },
+            {
+              "value": "question-mark",
+              "label": "t:common.options.question_mark.label"
+            },
+            {
+              "value": "recycle",
+              "label": "t:common.options.recycle.label"
+            },
+            {
+              "value": "return",
+              "label": "t:common.options.return.label"
+            },
+            {
+              "value": "ruler",
+              "label": "t:common.options.ruler.label"
+            },
+            {
+              "value": "shirt",
+              "label": "t:common.options.shirt.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:common.options.shoe.label"
+            },
+            {
+              "value": "star",
+              "label": "t:common.options.star.label"
+            },
+            {
+              "value": "truck",
+              "label": "t:common.options.truck.label"
+            },
+            {
+              "value": "washing",
+              "label": "t:common.options.washing.label"
+            },
+            {
+              "value": "gluten_free",
+              "label": "t:common.options.gluten_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "soy_free",
+              "label": "t:common.options.soy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "sugar_free",
+              "label": "t:common.options.sugar_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "nut_free",
+              "label": "t:common.options.nut_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "corn_free",
+              "label": "t:common.options.corn_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "dairy_free",
+              "label": "t:common.options.dairy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_additives",
+              "label": "t:common.options.no_additives.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_artificial_colors",
+              "label": "t:common.options.no_artificial_colors.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "non_gmo",
+              "label": "t:common.options.non_gmo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "vegan",
+              "label": "t:common.options.vegan.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "halal",
+              "label": "t:common.options.halal.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "organic",
+              "label": "t:common.options.organic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "kosher",
+              "label": "t:common.options.kosher.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "keto",
+              "label": "t:common.options.keto.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paleo",
+              "label": "t:common.options.paleo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "cruelty_free",
+              "label": "t:common.options.cruelty_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paraben_free",
+              "label": "t:common.options.paraben_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "alcohol_free",
+              "label": "t:common.options.alcohol_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "palm_oil_free",
+              "label": "t:common.options.palm_oil_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "anti_bacterial",
+              "label": "t:common.options.anti_bacterial.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "probiotic",
+              "label": "t:common.options.probiotic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "antioxidants",
+              "label": "t:common.options.antioxidants.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_salt",
+              "label": "t:common.options.low_salt.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_carb",
+              "label": "t:common.options.low_carb.label",
+              "group": "Food and health"
+            }
+          ],
+          "default": "heart"
+        },
+        {
+          "type": "text",
+          "id": "text_4",
+          "label": "t:common.blocks.icon_row.settings.text_4.label",
+          "default": "Row item"
+        },
+        {
+          "type": "header",
+          "content": "t:common.blocks.icon_row.settings.header_item_5"
+        },
+        {
+          "type": "select",
+          "id": "icon_5",
+          "label": "t:common.blocks.icon_row.settings.icon_5.label",
+          "options": [
+            {
+              "value": "box",
+              "label": "t:common.options.box.label"
+            },
+            {
+              "value": "chat-bubble",
+              "label": "t:common.options.chat_bubble.label"
+            },
+            {
+              "value": "check-mark",
+              "label": "t:common.options.check_mark.label"
+            },
+            {
+              "value": "coat-hanger",
+              "label": "t:common.options.coat_hanger.label"
+            },
+            {
+              "value": "dryer",
+              "label": "t:common.options.dryer.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label"
+            },
+            {
+              "value": "globe",
+              "label": "t:common.options.globe.label"
+            },
+            {
+              "value": "heart",
+              "label": "t:common.options.heart.label"
+            },
+            {
+              "value": "iron",
+              "label": "t:common.options.iron.label"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label"
+            },
+            {
+              "value": "leather",
+              "label": "t:common.options.leather.label"
+            },
+            {
+              "value": "like",
+              "label": "t:common.options.like.label"
+            },
+            {
+              "value": "lock",
+              "label": "t:common.options.lock.label"
+            },
+            {
+              "value": "map-pin",
+              "label": "t:common.options.map_pin.label"
+            },
+            {
+              "value": "pants",
+              "label": "t:common.options.pants.label"
+            },
+            {
+              "value": "person",
+              "label": "t:common.options.person.label"
+            },
+            {
+              "value": "plane",
+              "label": "t:common.options.plane.label"
+            },
+            {
+              "value": "price-tag",
+              "label": "t:common.options.price_tag.label"
+            },
+            {
+              "value": "question-mark",
+              "label": "t:common.options.question_mark.label"
+            },
+            {
+              "value": "recycle",
+              "label": "t:common.options.recycle.label"
+            },
+            {
+              "value": "return",
+              "label": "t:common.options.return.label"
+            },
+            {
+              "value": "ruler",
+              "label": "t:common.options.ruler.label"
+            },
+            {
+              "value": "shirt",
+              "label": "t:common.options.shirt.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:common.options.shoe.label"
+            },
+            {
+              "value": "star",
+              "label": "t:common.options.star.label"
+            },
+            {
+              "value": "truck",
+              "label": "t:common.options.truck.label"
+            },
+            {
+              "value": "washing",
+              "label": "t:common.options.washing.label"
+            },
+            {
+              "value": "gluten_free",
+              "label": "t:common.options.gluten_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "soy_free",
+              "label": "t:common.options.soy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "sugar_free",
+              "label": "t:common.options.sugar_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "nut_free",
+              "label": "t:common.options.nut_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "corn_free",
+              "label": "t:common.options.corn_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "dairy_free",
+              "label": "t:common.options.dairy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_additives",
+              "label": "t:common.options.no_additives.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_artificial_colors",
+              "label": "t:common.options.no_artificial_colors.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "non_gmo",
+              "label": "t:common.options.non_gmo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "vegan",
+              "label": "t:common.options.vegan.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "halal",
+              "label": "t:common.options.halal.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "organic",
+              "label": "t:common.options.organic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "kosher",
+              "label": "t:common.options.kosher.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "keto",
+              "label": "t:common.options.keto.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paleo",
+              "label": "t:common.options.paleo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "cruelty_free",
+              "label": "t:common.options.cruelty_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paraben_free",
+              "label": "t:common.options.paraben_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "alcohol_free",
+              "label": "t:common.options.alcohol_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "palm_oil_free",
+              "label": "t:common.options.palm_oil_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "anti_bacterial",
+              "label": "t:common.options.anti_bacterial.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "probiotic",
+              "label": "t:common.options.probiotic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "antioxidants",
+              "label": "t:common.options.antioxidants.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_salt",
+              "label": "t:common.options.low_salt.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_carb",
+              "label": "t:common.options.low_carb.label",
+              "group": "Food and health"
+            }
+          ],
+          "default": "ruler"
+        },
+        {
+          "type": "text",
+          "id": "text_5",
+          "label": "t:common.blocks.icon_row.settings.text_5.label",
+          "default": "Row item"
+        }
+      ]
+    },
+    {
+      "type": "popup",
+      "name": "t:common.blocks.popup.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:common.blocks.popup.settings.icon.label",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:common.options.none.label"
+            },
+            {
+              "value": "box",
+              "label": "t:common.options.box.label"
+            },
+            {
+              "value": "chat-bubble",
+              "label": "t:common.options.chat_bubble.label"
+            },
+            {
+              "value": "check-mark",
+              "label": "t:common.options.check_mark.label"
+            },
+            {
+              "value": "coat-hanger",
+              "label": "t:common.options.coat_hanger.label"
+            },
+            {
+              "value": "dryer",
+              "label": "t:common.options.dryer.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label"
+            },
+            {
+              "value": "globe",
+              "label": "t:common.options.globe.label"
+            },
+            {
+              "value": "heart",
+              "label": "t:common.options.heart.label"
+            },
+            {
+              "value": "iron",
+              "label": "t:common.options.iron.label"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label"
+            },
+            {
+              "value": "leather",
+              "label": "t:common.options.leather.label"
+            },
+            {
+              "value": "like",
+              "label": "t:common.options.like.label"
+            },
+            {
+              "value": "lock",
+              "label": "t:common.options.lock.label"
+            },
+            {
+              "value": "map-pin",
+              "label": "t:common.options.map_pin.label"
+            },
+            {
+              "value": "pants",
+              "label": "t:common.options.pants.label"
+            },
+            {
+              "value": "person",
+              "label": "t:common.options.person.label"
+            },
+            {
+              "value": "plane",
+              "label": "t:common.options.plane.label"
+            },
+            {
+              "value": "price-tag",
+              "label": "t:common.options.price_tag.label"
+            },
+            {
+              "value": "question-mark",
+              "label": "t:common.options.question_mark.label"
+            },
+            {
+              "value": "recycle",
+              "label": "t:common.options.recycle.label"
+            },
+            {
+              "value": "return",
+              "label": "t:common.options.return.label"
+            },
+            {
+              "value": "ruler",
+              "label": "t:common.options.ruler.label"
+            },
+            {
+              "value": "shirt",
+              "label": "t:common.options.shirt.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:common.options.shoe.label"
+            },
+            {
+              "value": "star",
+              "label": "t:common.options.star.label"
+            },
+            {
+              "value": "truck",
+              "label": "t:common.options.truck.label"
+            },
+            {
+              "value": "washing",
+              "label": "t:common.options.washing.label"
+            },
+            {
+              "value": "gluten_free",
+              "label": "t:common.options.gluten_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "soy_free",
+              "label": "t:common.options.soy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "sugar_free",
+              "label": "t:common.options.sugar_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "nut_free",
+              "label": "t:common.options.nut_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "corn_free",
+              "label": "t:common.options.corn_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "dairy_free",
+              "label": "t:common.options.dairy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_additives",
+              "label": "t:common.options.no_additives.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_artificial_colors",
+              "label": "t:common.options.no_artificial_colors.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "non_gmo",
+              "label": "t:common.options.non_gmo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "vegan",
+              "label": "t:common.options.vegan.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "halal",
+              "label": "t:common.options.halal.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "organic",
+              "label": "t:common.options.organic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "kosher",
+              "label": "t:common.options.kosher.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "keto",
+              "label": "t:common.options.keto.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paleo",
+              "label": "t:common.options.paleo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "cruelty_free",
+              "label": "t:common.options.cruelty_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paraben_free",
+              "label": "t:common.options.paraben_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "alcohol_free",
+              "label": "t:common.options.alcohol_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "palm_oil_free",
+              "label": "t:common.options.palm_oil_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "anti_bacterial",
+              "label": "t:common.options.anti_bacterial.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "probiotic",
+              "label": "t:common.options.probiotic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "antioxidants",
+              "label": "t:common.options.antioxidants.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_salt",
+              "label": "t:common.options.low_salt.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_carb",
+              "label": "t:common.options.low_carb.label",
+              "group": "Food and health"
+            }
+          ],
+          "default": "ruler"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "default": "Pop-up link text",
+          "label": "t:common.blocks.popup.settings.text.label"
+        },
+        {
+          "id": "page",
+          "type": "page",
+          "label": "t:common.blocks.popup.settings.page.label",
+          "info": "t:common.blocks.popup.settings.page.info"
+        }
+      ]
+    },
+    {
+      "type": "liquid",
+      "name": "t:common.blocks.liquid.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "liquid",
+          "id": "liquid",
+          "label": "t:common.blocks.liquid.settings.liquid.label"
+        }
+      ]
+    },
+    {
+      "type": "collapsible_tab",
+      "name": "t:common.blocks.collapsible_tab.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:common.settings.icon.label",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:common.options.none.label"
+            },
+            {
+              "value": "box",
+              "label": "t:common.options.box.label"
+            },
+            {
+              "value": "chat-bubble",
+              "label": "t:common.options.chat_bubble.label"
+            },
+            {
+              "value": "check-mark",
+              "label": "t:common.options.check_mark.label"
+            },
+            {
+              "value": "coat-hanger",
+              "label": "t:common.options.coat_hanger.label"
+            },
+            {
+              "value": "dryer",
+              "label": "t:common.options.dryer.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label"
+            },
+            {
+              "value": "globe",
+              "label": "t:common.options.globe.label"
+            },
+            {
+              "value": "heart",
+              "label": "t:common.options.heart.label"
+            },
+            {
+              "value": "iron",
+              "label": "t:common.options.iron.label"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label"
+            },
+            {
+              "value": "leather",
+              "label": "t:common.options.leather.label"
+            },
+            {
+              "value": "like",
+              "label": "t:common.options.like.label"
+            },
+            {
+              "value": "lock",
+              "label": "t:common.options.lock.label"
+            },
+            {
+              "value": "map-pin",
+              "label": "t:common.options.map_pin.label"
+            },
+            {
+              "value": "pants",
+              "label": "t:common.options.pants.label"
+            },
+            {
+              "value": "person",
+              "label": "t:common.options.person.label"
+            },
+            {
+              "value": "plane",
+              "label": "t:common.options.plane.label"
+            },
+            {
+              "value": "price-tag",
+              "label": "t:common.options.price_tag.label"
+            },
+            {
+              "value": "question-mark",
+              "label": "t:common.options.question_mark.label"
+            },
+            {
+              "value": "recycle",
+              "label": "t:common.options.recycle.label"
+            },
+            {
+              "value": "return",
+              "label": "t:common.options.return.label"
+            },
+            {
+              "value": "ruler",
+              "label": "t:common.options.ruler.label"
+            },
+            {
+              "value": "shirt",
+              "label": "t:common.options.shirt.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:common.options.shoe.label"
+            },
+            {
+              "value": "star",
+              "label": "t:common.options.star.label"
+            },
+            {
+              "value": "truck",
+              "label": "t:common.options.truck.label"
+            },
+            {
+              "value": "washing",
+              "label": "t:common.options.washing.label"
+            },
+            {
+              "value": "gluten_free",
+              "label": "t:common.options.gluten_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "soy_free",
+              "label": "t:common.options.soy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "sugar_free",
+              "label": "t:common.options.sugar_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "nut_free",
+              "label": "t:common.options.nut_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "corn_free",
+              "label": "t:common.options.corn_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "dairy_free",
+              "label": "t:common.options.dairy_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_additives",
+              "label": "t:common.options.no_additives.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "no_artificial_colors",
+              "label": "t:common.options.no_artificial_colors.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "non_gmo",
+              "label": "t:common.options.non_gmo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "vegan",
+              "label": "t:common.options.vegan.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "halal",
+              "label": "t:common.options.halal.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "organic",
+              "label": "t:common.options.organic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "kosher",
+              "label": "t:common.options.kosher.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "keto",
+              "label": "t:common.options.keto.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paleo",
+              "label": "t:common.options.paleo.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "cruelty_free",
+              "label": "t:common.options.cruelty_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "paraben_free",
+              "label": "t:common.options.paraben_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "alcohol_free",
+              "label": "t:common.options.alcohol_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "palm_oil_free",
+              "label": "t:common.options.palm_oil_free.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "anti_bacterial",
+              "label": "t:common.options.anti_bacterial.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "probiotic",
+              "label": "t:common.options.probiotic.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "antioxidants",
+              "label": "t:common.options.antioxidants.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_salt",
+              "label": "t:common.options.low_salt.label",
+              "group": "Food and health"
+            },
+            {
+              "value": "low_carb",
+              "label": "t:common.options.low_carb.label",
+              "group": "Food and health"
+            }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Collapsible tab",
+          "info": "t:common.blocks.collapsible_tab.settings.heading.info",
+          "label": "t:common.blocks.collapsible_tab.settings.heading.label"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:common.blocks.collapsible_tab.settings.content.label"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "t:common.blocks.collapsible_tab.settings.page.label"
+        }
+      ]
+    },
+    {
+      "type": "share_buttons",
+      "name": "t:common.blocks.share_buttons.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        }
+      ]
+    },
+    {
+      "type": "nutritional_information",
+      "name": "t:common.blocks.nutritional_information.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Nutritional information",
+          "label": "t:common.blocks.nutritional_information.settings.heading.label"
+        },
+        {
+          "type": "text",
+          "id": "right_label",
+          "default": "Per 100g",
+          "label": "t:common.blocks.nutritional_information.settings.right_label.label"
+        },
+        {
+          "type": "richtext",
+          "id": "information",
+          "label": "t:common.blocks.nutritional_information.settings.information.label",
+          "info": "t:common.blocks.nutritional_information.settings.information.info",
+          "default": "<p>Protein, 13g<br/>Total Carbohydrate, 36g<br/>- Dietary Fiber, 11g<br/>- Sugars, 6g<br/>Total Fat, 1g</p>"
+        }
+      ]
+    },
+    {
+      "type": "horizontal_bar_chart",
+      "name": "t:common.blocks.horizontal_bar_chart.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:common.blocks.horizontal_bar_chart.settings.label.label",
+          "default": "Label"
+        },
+        {
+          "type": "range",
+          "id": "value",
+          "min": 1,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.blocks.horizontal_bar_chart.settings.value.label",
+          "default": 50
+        },
+        {
+          "type": "text",
+          "id": "value_alt",
+          "label": "t:common.blocks.horizontal_bar_chart.settings.value_alt.label",
+          "info": "t:common.blocks.horizontal_bar_chart.settings.value_alt.info"
+        }
+      ]
+    },
+    {
+      "type": "comparative_scale",
+      "name": "t:common.blocks.comparative_scale.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "display_on_card",
+          "label": "t:common.settings.display_on_card.label",
+          "default": false,
+          "info": "t:common.settings.display_on_card.info"
+        },
+        {
+          "type": "text",
+          "id": "left_label",
+          "label": "t:common.blocks.comparative_scale.settings.left_label.label",
+          "default": "Label 1"
+        },
+        {
+          "type": "text",
+          "id": "right_label",
+          "label": "t:common.blocks.comparative_scale.settings.right_label.label",
+          "default": "Label 2"
+        },
+        {
+          "type": "range",
+          "id": "marker_position",
+          "min": 1,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.blocks.comparative_scale.settings.marker_position.label",
+          "default": 50
+        },
+        {
+          "type": "text",
+          "id": "marker_position_alt",
+          "label": "t:common.blocks.comparative_scale.settings.marker_position_alt.label",
+          "info": "t:common.blocks.comparative_scale.settings.marker_position_alt.info"
+        }
+      ]
+    },
+    {
+      "type": "complementary",
+      "name": "t:common.blocks.complementary_products.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:common.blocks.complementary_products.settings.paragraph_to_select_complementary"
+        },
+        {
+          "type": "text",
+          "id": "block_heading",
+          "default": "Pairs well with",
+          "label": "t:common.blocks.complementary_products.settings.block_heading.label"
+        },
+        {
+          "type": "range",
+          "id": "product_list_limit",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default": 10,
+          "label": "t:common.blocks.complementary_products.settings.product_list_limit.label"
+        }
+      ]
+    },
+    {
+      "type": "background_pattern",
+      "name": "t:common.blocks.background_pattern.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "type",
+          "label": "t:common.blocks.background_pattern.settings.type.label",
+          "options": [
+            {
+              "value": "diagonal_lines",
+              "label": "t:common.options.diagonal_lines.label",
+              "group": "Lines"
+            },
+            {
+              "value": "grid",
+              "label": "t:common.options.grid_lines.label",
+              "group": "Lines"
+            },
+            {
+              "value": "grid_with_diagonal_lines",
+              "label": "t:common.options.grid_with_diagonal_lines.label",
+              "group": "Lines"
+            },
+            {
+              "value": "crosshatch",
+              "label": "t:common.options.crosshatch.label",
+              "group": "Lines"
+            },
+            {
+              "value": "checkerboard",
+              "label": "t:common.options.checkerboard.label",
+              "group": "Lines"
+            },
+            {
+              "value": "zig_zag",
+              "label": "t:common.options.zig_zag.label",
+              "group": "Lines"
+            },
+            {
+              "value": "waves",
+              "label": "t:common.options.waves.label",
+              "group": "Lines"
+            },
+            {
+              "value": "half_square_triangle",
+              "label": "t:common.options.half-square_triangle.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "dots",
+              "label": "t:common.options.dots.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "triangle",
+              "label": "t:common.options.triangles.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "polka_dot",
+              "label": "t:common.options.polka_dot.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "polka_dot_triangles",
+              "label": "t:common.options.polka_dot_triangles.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "plus",
+              "label": "t:common.options.plus.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "cross",
+              "label": "t:common.options.cross.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "squares",
+              "label": "t:common.options.squares.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "diamonds",
+              "label": "t:common.options.diamonds.label",
+              "group": "Shapes"
+            },
+            {
+              "value": "vertical_stripes",
+              "label": "t:common.options.vertical_stripes.label",
+              "group": "Stripes"
+            },
+            {
+              "value": "horizontal_stripes",
+              "label": "t:common.blocks.background_pattern.settings.type.options.horizontal_stripes.label",
+              "group": "Stripes"
+            },
+            {
+              "value": "diagonal_stripes",
+              "label": "t:common.options.diagonal_stripes.label",
+              "group": "Stripes"
+            },
+            {
+              "value": "sprinkles",
+              "label": "t:common.blocks.background_pattern.settings.type.options.sprinkles.label",
+              "group": "Miscellaneous"
+            },
+            {
+              "value": "bubbles",
+              "label": "t:common.blocks.background_pattern.settings.type.options.bubbles.label",
+              "group": "Miscellaneous"
+            },
+            {
+              "value": "squiggle",
+              "label": "t:common.options.squiggle.label",
+              "group": "Miscellaneous"
+            },
+            {
+              "value": "windmill",
+              "label": "t:common.options.windmill.label",
+              "group": "Miscellaneous"
+            },
+            {
+              "value": "8bit",
+              "label": "t:common.options.8bit.label",
+              "group": "Miscellaneous"
+            },
+            {
+              "value": "origami",
+              "label": "t:common.options.origami.label",
+              "group": "Miscellaneous"
+            },
+            {
+              "value": "3d_cube",
+              "label": "t:common.blocks.background_pattern.settings.type.options.3d_cube.label",
+              "group": "Miscellaneous"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "color",
+          "label": "t:common.blocks.background_pattern.settings.color.label",
+          "default": "text",
+          "options": [
+            {
+              "value": "text",
+              "label": "t:common.options.text.label"
+            },
+            {
+              "value": "accent-1",
+              "label": "t:common.options.accent_1.label"
+            },
+            {
+              "value": "accent-2",
+              "label": "t:common.options.accent_2.label"
+            },
+            {
+              "value": "card",
+              "label": "t:common.options.card.label"
+            },
+            {
+              "value": "background",
+              "label": "t:common.options.background.label"
+            },
+            {
+              "value": "gradient",
+              "label": "t:common.options.gradient.label"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "size",
+          "min": 6,
+          "max": 600,
+          "unit": "px",
+          "label": "t:common.blocks.background_pattern.settings.size.label",
+          "step": 6,
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "opacity",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.settings.opacity.label",
+          "default": 100
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_animation"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_parallax",
+          "label": "t:common.blocks.background_pattern.settings.enable_parallax.label",
+          "default": false,
+          "info": "t:common.blocks.background_pattern.settings.enable_parallax.info"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "t:common.settings.parallax_speed.label",
+          "default": 3
+        }
+      ]
+    },
+    {
+      "type": "background_shape",
+      "name": "t:common.blocks.background_shape.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "shape",
+          "label": "t:common.blocks.background_shape.settings.shape.label",
+          "default": "square",
+          "options": [
+            {
+              "value": "square",
+              "label": "t:common.blocks.background_shape.settings.shape.options.square.label",
+              "group": "Basic"
+            },
+            {
+              "value": "circle",
+              "label": "t:common.blocks.background_shape.settings.shape.options.circle.label",
+              "group": "Basic"
+            },
+            {
+              "value": "oval",
+              "label": "t:common.blocks.background_shape.settings.shape.options.oval.label",
+              "group": "Basic"
+            },
+            {
+              "value": "triangle",
+              "label": "t:common.blocks.background_shape.settings.shape.options.triangle.label",
+              "group": "Basic"
+            },
+            {
+              "value": "parallelogram",
+              "label": "t:common.blocks.background_shape.settings.shape.options.parallelogram.label",
+              "group": "Basic"
+            },
+            {
+              "value": "pentagon",
+              "label": "t:common.options.pentagon.label",
+              "group": "Polygons"
+            },
+            {
+              "value": "hexagon",
+              "label": "t:common.options.hexagon.label",
+              "group": "Polygons"
+            },
+            {
+              "value": "heptagon",
+              "label": "t:common.options.heptagon.label",
+              "group": "Polygons"
+            },
+            {
+              "value": "octagon",
+              "label": "t:common.options.octagon.label",
+              "group": "Polygons"
+            },
+            {
+              "value": "star_1",
+              "label": "t:common.options.star_1.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_2",
+              "label": "t:common.options.star_2.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_3",
+              "label": "t:common.options.star_3.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_4",
+              "label": "t:common.options.star_4.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_1",
+              "label": "t:common.options.scalloped_circle_1.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_2",
+              "label": "t:common.options.scalloped_circle_2.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_3",
+              "label": "t:common.options.scalloped_circle_3.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_4",
+              "label": "t:common.options.scalloped_circle_4.label",
+              "group": "Circular"
+            },
+            {
+              "value": "blob",
+              "label": "t:common.options.blob.label",
+              "group": "Miscellaneous"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "blob_type",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "t:common.blocks.background_shape.settings.blob_type.label",
+          "default": 1,
+          "info": "t:common.blocks.background_shape.settings.blob_type.info"
+        },
+        {
+          "type": "range",
+          "id": "size",
+          "min": 25,
+          "max": 300,
+          "step": 5,
+          "label": "t:common.blocks.background_shape.settings.size.label",
+          "default": 100
+        },
+        {
+          "type": "range",
+          "id": "opacity",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.settings.opacity.label",
+          "default": 100
+        },
+        {
+          "type": "range",
+          "id": "blur",
+          "min": 0,
+          "max": 500,
+          "step": 5,
+          "unit": "px",
+          "label": "t:common.blocks.background_shape.settings.blur.label",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_position"
+        },
+        {
+          "type": "range",
+          "id": "horizontal_position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.blocks.background_shape.settings.horizontal_position.label",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "vertical_position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.blocks.background_shape.settings.vertical_position.label",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "rotate",
+          "min": -90,
+          "max": 90,
+          "step": 2,
+          "unit": "deg",
+          "label": "t:common.settings.rotate.label",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_animation"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_parallax",
+          "label": "t:common.blocks.background_shape.settings.enable_parallax.label",
+          "default": false,
+          "info": "t:common.blocks.background_shape.settings.enable_parallax.info"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "t:common.settings.parallax_speed.label",
+          "default": 3
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_color"
+        },
+        {
+          "type": "select",
+          "id": "color",
+          "label": "t:common.blocks.background_shape.settings.color.label",
+          "default": "accent-1",
+          "options": [
+            {
+              "value": "text",
+              "label": "t:common.options.text.label"
+            },
+            {
+              "value": "accent-1",
+              "label": "t:common.options.accent_1.label"
+            },
+            {
+              "value": "accent-2",
+              "label": "t:common.options.accent_2.label"
+            },
+            {
+              "value": "card",
+              "label": "t:common.options.card.label"
+            },
+            {
+              "value": "background",
+              "label": "t:common.options.background.label"
+            },
+            {
+              "value": "gradient",
+              "label": "t:common.options.gradient.label"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "color_scheme",
+          "label": "t:common.settings.color_scheme.label",
+          "default": "same_as_section",
+          "options": [
+            {
+              "value": "same_as_section",
+              "label": "t:common.options.same_as_section.label"
+            },
+            {
+              "value": "primary",
+              "label": "t:common.options.primary.label"
+            },
+            {
+              "value": "secondary",
+              "label": "t:common.options.secondary.label"
+            },
+            {
+              "value": "tertiary",
+              "label": "t:common.options.tertiary.label"
+            },
+            {
+              "value": "quaternary",
+              "label": "t:common.options.quaternary.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "t:common.blocks.sticker.name",
+      "type": "sticker",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:common.blocks.sticker.settings.text.label",
+          "default": "Sticker"
+        },
+        {
+          "type": "select",
+          "id": "shape",
+          "label": "t:common.blocks.sticker.settings.shape.label",
+          "options": [
+            {
+              "value": "fit_to_text",
+              "label": "t:common.blocks.sticker.settings.shape.options.fit_to_text.label"
+            },
+            {
+              "value": "circle",
+              "label": "t:common.options.circle.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_1",
+              "label": "t:common.options.star_1.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_2",
+              "label": "t:common.options.star_2.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_3",
+              "label": "t:common.options.star_3.label",
+              "group": "Circular"
+            },
+            {
+              "value": "star_4",
+              "label": "t:common.options.star_4.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_1",
+              "label": "t:common.options.scalloped_circle_1.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_2",
+              "label": "t:common.options.scalloped_circle_2.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_3",
+              "label": "t:common.options.scalloped_circle_3.label",
+              "group": "Circular"
+            },
+            {
+              "value": "scalloped_circle_4",
+              "label": "t:common.options.scalloped_circle_4.label",
+              "group": "Circular"
+            },
+            {
+              "value": "parallelogram",
+              "label": "t:common.options.parallelogram.label",
+              "group": "Square"
+            },
+            {
+              "value": "scalloped_square",
+              "label": "t:common.options.scalloped.label",
+              "group": "Square"
+            },
+            {
+              "value": "leaf",
+              "label": "t:common.options.leaf.label",
+              "group": "Square"
+            },
+            {
+              "value": "clipped_square",
+              "label": "t:common.options.clipped.label",
+              "group": "Square"
+            },
+            {
+              "value": "convex_square",
+              "label": "t:common.options.convex.label",
+              "group": "Square"
+            },
+            {
+              "value": "twisted_square",
+              "label": "t:common.options.twisted.label",
+              "group": "Square"
+            },
+            {
+              "value": "trapeze",
+              "label": "t:common.options.trapeze.label",
+              "group": "Square"
+            },
+            {
+              "value": "ellipse",
+              "label": "t:common.options.ellipse.label",
+              "group": "Wide"
+            },
+            {
+              "value": "diamond_wide",
+              "label": "t:common.options.diamond.label",
+              "group": "Wide"
+            },
+            {
+              "value": "rounded_diamond_wide",
+              "label": "t:common.options.rounded_diamond.label",
+              "group": "Wide"
+            },
+            {
+              "value": "triangle_wide",
+              "label": "t:common.options.triangle.label",
+              "group": "Wide"
+            },
+            {
+              "value": "hexagon_wide",
+              "label": "t:common.options.hexagon.label",
+              "group": "Wide"
+            },
+            {
+              "value": "rounded_hexagon",
+              "label": "t:common.options.rounded_hexagon.label",
+              "group": "Wide"
+            },
+            {
+              "value": "uneven_star_wide",
+              "label": "t:common.options.uneven_star.label",
+              "group": "Wide"
+            },
+            {
+              "value": "star_wide",
+              "label": "t:common.options.star.label",
+              "group": "Wide"
+            },
+            {
+              "value": "semicircle",
+              "label": "t:common.options.semicircle.label",
+              "group": "Wide"
+            },
+            {
+              "value": "eye",
+              "label": "t:common.options.eye.label",
+              "group": "Wide"
+            },
+            {
+              "value": "parallelogram_wide",
+              "label": "t:common.options.parallelogram.label",
+              "group": "Wide"
+            },
+            {
+              "value": "ribbon",
+              "label": "t:common.options.ribbon.label",
+              "group": "Wide"
+            },
+            {
+              "value": "ticket_stub",
+              "label": "t:common.options.ticket_stub.label",
+              "group": "Wide"
+            },
+            {
+              "value": "wave_ribbon",
+              "label": "t:common.options.wave_ribbon.label",
+              "group": "Wide"
+            },
+            {
+              "value": "zig_zag_ribbon",
+              "label": "t:common.options.zig_zag_ribbon.label",
+              "group": "Wide"
+            }
+          ],
+          "default": "star_1"
+        },
+        {
+          "type": "range",
+          "id": "width",
+          "min": 100,
+          "max": 300,
+          "step": 10,
+          "unit": "px",
+          "label": "t:common.blocks.sticker.settings.width.label",
+          "default": 150
+        },
+        {
+          "type": "select",
+          "id": "sticker_font_size",
+          "label": "t:common.settings.sticker_font_size.label",
+          "options": [
+            {
+              "value": "1rem",
+              "label": "t:common.options.extra_small.label"
+            },
+            {
+              "value": "1.25rem",
+              "label": "t:common.options.small.label"
+            },
+            {
+              "value": "1.563rem",
+              "label": "t:common.options.medium.label"
+            },
+            {
+              "value": "1.953rem",
+              "label": "t:common.options.large.label"
+            },
+            {
+              "value": "2.441rem",
+              "label": "t:common.options.extra_large.label"
+            }
+          ],
+          "default": "1.563rem",
+          "info": "t:common.settings.sticker_font_size.info"
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_custom_image"
+        },
+        {
+          "type": "paragraph",
+          "content": "t:common.blocks.sticker.settings.paragraph_using_an_image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:common.settings.image.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "half_image_width_on_mobile",
+          "label": "t:common.blocks.sticker.settings.half_image_width_on_mobile.label",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_position"
+        },
+        {
+          "type": "range",
+          "id": "horizontal_position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.blocks.sticker.settings.horizontal_position.label",
+          "default": 80
+        },
+        {
+          "type": "range",
+          "id": "vertical_position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:common.blocks.sticker.settings.vertical_position.label",
+          "default": 80
+        },
+        {
+          "type": "range",
+          "id": "rotate",
+          "min": -90,
+          "max": 90,
+          "step": 2,
+          "unit": "deg",
+          "label": "t:common.settings.rotate.label",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_layout"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_sticker_on_mobile",
+          "label": "t:common.blocks.sticker.settings.show_sticker_on_mobile.label",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_sticker_on_desktop",
+          "label": "t:common.blocks.sticker.settings.show_sticker_on_desktop.label",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_animation"
+        },
+        {
+          "type": "select",
+          "id": "rotation_animation",
+          "label": "t:common.blocks.sticker.settings.rotation_animation.label",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:common.blocks.sticker.settings.rotation_animation.options.no_rotation.label"
+            },
+            {
+              "value": "constantly_rotate",
+              "label": "t:common.blocks.sticker.settings.rotation_animation.options.constantly_rotate.label"
+            },
+            {
+              "value": "rotate_when_scrolling",
+              "label": "t:common.blocks.sticker.settings.rotation_animation.options.rotate_only_when_page_is_scrolling.label"
+            }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_parallax",
+          "label": "t:common.blocks.sticker.settings.enable_parallax.label",
+          "default": false,
+          "info": "t:common.blocks.sticker.settings.enable_parallax.info"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "t:common.settings.parallax_speed.label",
+          "default": 3
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_color"
+        },
+        {
+          "type": "select",
+          "id": "color",
+          "label": "t:common.settings.color.label",
+          "default": "bg-scheme-accent-1 text-scheme-accent-1-overlay",
+          "options": [
+            {
+              "value": "bg-scheme-text text-scheme-text-overlay",
+              "label": "t:common.options.text.label"
+            },
+            {
+              "value": "bg-scheme-accent-1 text-scheme-accent-1-overlay",
+              "label": "t:common.options.accent_1.label"
+            },
+            {
+              "value": "bg-scheme-accent-2 text-scheme-accent-2-overlay",
+              "label": "t:common.options.accent_2.label"
+            },
+            {
+              "value": "bg-scheme-card text-scheme-text",
+              "label": "t:common.options.card.label"
+            },
+            {
+              "value": "bg-scheme-background text-scheme-text",
+              "label": "t:common.options.background.label"
+            },
+            {
+              "value": "bg-scheme-gradient text-scheme-text",
+              "label": "t:common.options.gradient.label"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "color_scheme",
+          "label": "t:common.settings.color_scheme.label",
+          "default": "same_as_section",
+          "options": [
+            {
+              "value": "same_as_section",
+              "label": "t:common.options.same_as_section.label"
+            },
+            {
+              "value": "primary",
+              "label": "t:common.options.primary.label"
+            },
+            {
+              "value": "secondary",
+              "label": "t:common.options.secondary.label"
+            },
+            {
+              "value": "tertiary",
+              "label": "t:common.options.tertiary.label"
+            },
+            {
+              "value": "quaternary",
+              "label": "t:common.options.quaternary.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "t:common.blocks.shape_divider.name",
+      "type": "shape_divider",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "radio",
+          "label": "t:common.blocks.shape_divider.settings.target_section.label",
+          "id": "target_section",
+          "default": "above",
+          "options": [
+            {
+              "value": "above",
+              "label": "t:common.blocks.shape_divider.settings.target_section.options.section_above.label"
+            },
+            {
+              "value": "below",
+              "label": "t:common.blocks.shape_divider.settings.target_section.options.section_below.label"
+            }
+          ],
+          "info": "t:common.blocks.shape_divider.settings.target_section.info"
+        },
+        {
+          "type": "select",
+          "label": "t:common.blocks.shape_divider.settings.target_section_color_scheme.label",
+          "id": "target_section_color_scheme",
+          "default": "secondary",
+          "options": [
+            {
+              "value": "primary",
+              "label": "t:common.options.primary.label"
+            },
+            {
+              "value": "secondary",
+              "label": "t:common.options.secondary.label"
+            },
+            {
+              "value": "tertiary",
+              "label": "t:common.options.tertiary.label"
+            },
+            {
+              "value": "quaternary",
+              "label": "t:common.options.quaternary.label"
+            }
+          ],
+          "info": "t:common.blocks.shape_divider.settings.target_section_color_scheme.info"
+        },
+        {
+          "type": "select",
+          "label": "t:common.blocks.shape_divider.settings.style.label",
+          "id": "style",
+          "default": "large-waves_1200x84",
+          "options": [
+            {
+              "value": "large-waves_1200x84",
+              "label": "t:common.blocks.shape_divider.settings.style.options.large_waves.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "medium-waves_1200x43",
+              "label": "t:common.blocks.shape_divider.settings.style.options.medium_waves.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "small-waves_1200x20",
+              "label": "t:common.blocks.shape_divider.settings.style.options.small_waves.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "large-zig-zag_1200x65",
+              "label": "t:common.blocks.shape_divider.settings.style.options.large_zig_zag.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "medium-zig-zag_1200x37",
+              "label": "t:common.blocks.shape_divider.settings.style.options.medium_zig_zag.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "small-zig-zag_1200x21",
+              "label": "t:common.blocks.shape_divider.settings.style.options.small_zig_zag.label",
+              "group": "Symmetrical"
+            },
+            {
+              "value": "waves-1-asymmetrical_1440x261",
+              "label": "t:common.blocks.shape_divider.settings.style.options.waves_1.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "waves-2-asymmetrical_1440x330",
+              "label": "t:common.blocks.shape_divider.settings.style.options.waves_2.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "tilt-1-asymmetrical_1440x101",
+              "label": "t:common.blocks.shape_divider.settings.style.options.tilt_1.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "tilt-2-asymmetrical_1440x293",
+              "label": "t:common.blocks.shape_divider.settings.style.options.tilt_2.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "mountains-1-asymmetrical_1440x293",
+              "label": "t:common.blocks.shape_divider.settings.style.options.mountains_1.label",
+              "group": "Asymmetrical"
+            },
+            {
+              "value": "mountains-2-asymmetrical_1440x325",
+              "label": "t:common.blocks.shape_divider.settings.style.options.mountains_2.label",
+              "group": "Asymmetrical"
+            }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "flip_horizontal",
+          "label": "t:common.blocks.shape_divider.settings.flip_horizontal.label"
+        },
+        {
+          "type": "header",
+          "content": "t:common.settings.header_animation"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_animation",
+          "label": "t:common.blocks.shape_divider.settings.enable_animation.label",
+          "info": "t:common.blocks.shape_divider.settings.enable_animation.info"
+        },
+        {
+          "type": "radio",
+          "id": "animation_direction",
+          "label": "t:common.blocks.shape_divider.settings.animation_direction.label",
+          "options": [
+            {
+              "value": "",
+              "label": "t:common.options.right_to_left.label"
+            },
+            {
+              "value": "reverse",
+              "label": "t:common.options.left_to_right.label"
+            }
+          ],
+          "default": ""
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured_product.name",
+      "blocks": [
+        {
+          "type": "title"
+        },
+        {
+          "type": "price"
+        },
+        {
+          "type": "variant_picker"
+        },
+        {
+          "type": "buy_buttons"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer",
+      "aside"
+    ]
+  }
+}
+{% endschema %}
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org/",
+  "@type": "Product",
+  "name": "{{ product.title | escape }}",
+  "url": "{{ shop.url }}{{ product.url }}",
+  {% if product.featured_image %}
+    {% assign image_size = product.featured_image.width | append: 'x' %}
+    "image": [
+      "https:{{ product.featured_image.src | image_url: image_size }}"
+    ],
+  {% endif %}
+  "description": "{{ product.description | strip_html | escape }}",
+  {% if current_variant.sku != blank %}
+    "sku": "{{ current_variant.sku }}",
+  {% endif %}
+  "brand": {
+    "@type": "Thing",
+    "name": "{{ product.vendor | escape }}"
+  },
+  {% if product.variants %}
+    "offers": [
+      {% for variant in product.variants %}
+        {
+          "@type" : "Offer",
+          "availability" : "http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+          "price" : "{{ variant.price | divided_by: 100.00 }}",
+          "priceCurrency" : "{{ shop.currency }}",
+          "url" : "{{ shop.url }}{{ variant.url }}",
+          "itemOffered" :
+          {
+              "@type" : "Product",
+              {% if variant.image %}
+                {% assign variant_image_size = variant.image.width | append: 'x' %}
+                "image": "http:{{ variant.image.src | image_url: variant_image_size }}",
+              {% endif %}
+              {% if variant.title != blank %}
+                "name" : "{{ variant.title | escape }}",
+              {% endif %}
+              {% if variant.sku != blank %}
+                "sku": "{{ variant.sku }}",
+              {% endif %}
+              {% if variant.weight != blank %}
+                "weight": {
+                  "@type": "QuantitativeValue",
+                  {% if variant.weight_unit != blank %}
+                    "unitCode": "{{ variant.weight_unit }}",
+                  {% endif %}
+                  "value": "{{ variant.weight | weight_with_unit: variant.weight_unit }}"
+                },
+              {% endif %}
+              "url": "{{ shop.url }}{{ variant.url }}"
+          }
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
+  {% endif %}
+}
+</script>

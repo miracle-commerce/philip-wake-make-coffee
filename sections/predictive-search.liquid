@@ -1,0 +1,237 @@
+{% comment %}theme-check-disable MissingTemplate{% endcomment %}
+{%- if predictive_search.performed -%}
+  {%- liquid
+    assign crop = settings.predictive_search_crop
+    assign columns = false
+    assign results = false
+
+    if predictive_search.resources.products.size > 0
+      assign results = true
+    endif
+
+    if predictive_search.resources.collections.size > 0 or predictive_search.resources.articles.size > 0 or predictive_search.resources.pages.size > 0
+      assign results = true
+      assign columns = true
+    endif
+
+    assign uppercase = settings.header_uppercase
+    assign base_font_class = settings.header_font
+
+    if uppercase
+      assign base_font_class = base_font_class | append: ' uppercase'
+    endif
+  -%}
+
+  {%- style -%}
+    .query-suggestion mark {
+      background-color: rgb(var(--color-scheme-accent));
+    }
+  {%- endstyle -%}
+
+  <div id="predictive-search-results" class="pb-safe-bottom">
+    <template x-if="loading">
+      <div class="absolute top-0 left-0 right-0 bottom-0 flex items-start justify-center">
+        <div class="w-6 h-6 pt-12 pb-12">
+          <div class="loading"></div>
+        </div>
+      </div>
+    </template>
+
+    <div
+      :class="{'opacity-100': !loading, 'opacity-0': loading }"
+      class="mt-5 transition-opacity  grid gap-5 lg:gap-10 lg:grid-cols-12"
+    >
+      {%- if predictive_search.resources.queries.size > 0 -%}
+        <div class="col-span-full">
+          <h2 id="predictive-search-suggestions" class="{{ base_font_class }}">
+            {{ 'general.search.suggestions' | t }}
+          </h2>
+          <ul class="mt-5">
+            {%- for query in predictive_search.resources.queries -%}
+              <li
+                id="predictive-search-option-query-{{ forloop.index }}"
+                class="predictive-search__option"
+                role="option"
+                aria-selected="false"
+              >
+                <a href="{{ query.url }}" class="" tabindex="-1">
+                  <div class="">
+                    <p class="query-suggestion" aria-label="{{ query.text }}">
+                      {{ query.styled_text }}
+                    </p>
+                  </div>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- if predictive_search.resources.products.size > 0 -%}
+        <div class="{% if columns %}lg:col-span-9{% else %}lg:col-span-full{% endif %}">
+          {%- if columns -%}
+            <h2 id="predictive-search-products" class="{{ base_font_class }}">
+              {{ 'general.search.products' | t }}
+            </h2>
+          {%- endif -%}
+          <ul
+            id="predictive-search-results-list"
+            class="mt-5 grid grid-cols-3 gap-5 lg:grid-cols-5"
+            role="listbox"
+            aria-labelledby="predictive-search-products"
+          >
+            {%- for product in predictive_search.resources.products -%}
+              <li
+                id="predictive-search-option-{{ forloop.index }}"
+                class="predictive-search__option"
+                role="option"
+                aria-selected="false"
+              >
+                {% render 'showcase-tile' with object: product, crop: crop %}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- if columns -%}
+        <div class="lg:col-span-3">
+          <div class="-mt-5">
+            {%- if predictive_search.resources.collections.size > 0 -%}
+              <h2 class="{{ base_font_class }} mt-5">
+                {{ 'general.search.collections' | t }}
+              </h2>
+              <ul
+                id="predictive-search-results-collections-list"
+                class="mt-5 grid grid-cols-2 gap-5"
+                role="listbox"
+              >
+                {%- for collection in predictive_search.resources.collections -%}
+                  {%- assign image = collection.image
+                    | default: collection.products.first.featured_image
+                  -%}
+                  <li
+                    id="predictive-search-option-collection-{{ forloop.index }}"
+                    class="predictive-search__option"
+                    role="option"
+                    aria-selected="false"
+                  >
+                    <a href="{{ collection.url }}">
+                      {%- if image != blank -%}
+                        <div class="{% unless crop == '' or crop == blank %}object-wrapper {{ crop }}{% endunless %}">
+                          {{
+                            image
+                            | image_url: width: 700
+                            | image_tag: class: 'media-style'
+                          }}
+                        </div>
+                      {%- endif -%}
+                      <div class="mt-2 text-center">
+                        <h3 class="text-sm">
+                          <p class="product-grid-title">
+                            {{ collection.title }}
+                          </p>
+                        </h3>
+                      </div>
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+            {%- if predictive_search.resources.articles.size > 0 -%}
+              <h2 class="{{ base_font_class }}  mt-5">
+                {{ 'general.search.articles' | t }}
+              </h2>
+              <ul
+                id="predictive-search-results-articles-list"
+                class="mt-5 grid gap-5 lg:gap-10"
+                role="listbox"
+              >
+                {%- for article in predictive_search.resources.articles -%}
+                  <li
+                    id="predictive-search-option-articles-{{ forloop.index }}"
+                    class="predictive-search__option py-2"
+                    role="option"
+                    aria-selected="false"
+                  >
+                    <a href="{{ article.url }}">
+                      <div class="mt-2 {%- if article.image != blank -%}text-center{%- else -%}text-left{% endif %}">
+                        <h3 class="text-base">
+                          <p class="product-grid-title">{{ article.title }}</p>
+                        </h3>
+                      </div>
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+            {%- if predictive_search.resources.pages.size > 0 -%}
+              <h2 class="{{ base_font_class }}  mt-5">
+                {{ 'general.search.pages' | t }}
+              </h2>
+              <ul
+                id="predictive-search-results-pages-list"
+                class="mt-5 grid gap-5 lg:gap-10"
+                role="listbox"
+              >
+                {%- for page in predictive_search.resources.pages -%}
+                  <li
+                    id="predictive-search-option-pages-{{ forloop.index }}"
+                    class="predictive-search__option py-2"
+                    role="option"
+                    aria-selected="false"
+                  >
+                    <a href="{{ page.url }}">
+                      <div class="mt-2 text-left">
+                        <h3 class="text-base">
+                          <p class="product-grid-title">{{ page.title }}</p>
+                        </h3>
+                      </div>
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if results -%}
+    <div
+      :class="{ 'opacity-0 pointer-events-none' : loading }"
+      class="predictive-search__option text-center mt-5 relative z-10"
+      id="predictive-search-option-search-keywords"
+      role="option"
+    >
+      <button class="push-btn inline-flex justify-between items-center">
+        {% comment %}<span class="btn-text">{{ 'general.search.search_for' | t: terms: predictive_search.terms }}</span>{% endcomment %}
+        <span class="push-btn-surface">
+          {{- 'general.search.view_all' | t -}}
+        </span>
+      </button>
+    </div>
+  {%- else -%}
+    <div class="text-center">
+      <p>
+        {{ 'general.search.no_results' | t: terms: predictive_search.terms }}
+      </p>
+    </div>
+  {%- endif -%}
+
+  <span class="hidden" id="predictive-search-count">
+    {%- if search.results_count == 0 -%}
+      {{- 'general.search.no_results' | t: terms: predictive_search.terms -}}
+    {%- else -%}
+      {{-
+        'general.search.results_with_count'
+        | t:
+          terms: predictive_search.terms,
+          count: predictive_search.resources.products.size
+      -}}
+    {%- endif -%}
+  </span>
+{%- endif -%}
+
+{% comment %}theme-check-enable MissingTemplate{% endcomment %}

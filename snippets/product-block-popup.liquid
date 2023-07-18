@@ -1,0 +1,40 @@
+
+<div class="{{ block_base_classes }}" x-data='ThemeComponent_PopUp({{ block.id | json }})' x-init="mounted()" data-color-scheme="{{ section_color | default: 'primary' }}">
+  <div class="js-enabled" {{ block.shopify_attributes }}>
+    <button
+      @click="openButton"
+      x-ref="trigger"
+      aria-haspopup="dialog"
+      class="transition-transform ease-in-out duration-200 hover:-translate-y-1 cursor-pointer font-body {% if block.settings.icon != 'none' %}inline-flex justify-start items-center{% endif %}">
+      {% if block.settings.icon != 'none' %}<span class="inline-block w-5 h-5 mr-2">{% render 'theme-icon', icon: block.settings.icon %}</span>{% endif %}
+      <span class="text-sm border-b-input border-scheme-text  text-scheme-text py-0.5">{{ block.settings.text }}</span>
+    </button>
+  </div>
+  <noscript>
+    <a href="{{ block.settings.page.url }}" class="{% if block.settings.icon != 'none' %}inline-flex justify-start items-center{% endif %}">
+      {% if block.settings.icon != 'none' %}<span class="inline-block w-5 h-5 mr-2">{% render 'theme-icon', icon: block.settings.icon %}</span>{% endif %}
+      <span class="{% if settings.links_show_underline %}border-b-text-width {{ border_class }}{% endif %} py-1 ">{{ block.settings.text }}</span>
+    </a>
+  </noscript>
+  <template x-teleport="body">
+    <div x-data x-show="$store['ThemePopUp_{{ block.id }}'].open" data-color-scheme="{{ section.settings.color_scheme | default: 'primary' }}">
+      <div  x-ref="modal" id="ThemePopUp_{{ block.id }}" class="product-popup-modal fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center p-4 lg:p-24 z-product-modal" x-cloak>
+        <div class="p-4 lg:p-8  border-section border-border bg-scheme-background text-scheme-text w-full max-w-2xl relative max-h-full overflow-auto z-10 "
+            role="dialog" aria-label="{{ block.settings.link_label }}" aria-modal="true" tabindex="-1">
+          <button id="ThemePopUp_{{ block.id }}_CloseBtn" x-ref="close" @click="$store['ThemePopUp_{{ block.id }}'].open = false" type="button"  class="block p-1 w-8 ml-auto absolute top-2 right-2" autofocus>
+            <span class="visually-hidden">{{ 'general.accessibility.close_modal' | t }}</span>
+            <span class="inline-block w-6 h-6">{% render 'icon-close' %}</span>
+          </button>
+          <div class="product-popup-modal__content-info">
+            <h2 class="font-heading text-2xl">{{ block.settings.page.title }}</h2>
+            <div class="rte mt-8">{{ block.settings.page.content }}</div>
+          </div>
+        </div>
+        <div @click="$store['ThemePopUp_{{ block.id }}'].open = false" role="button" class="absolute top-0 right-0 bottom-0 left-0 z-0 w-full h-full bg-scheme-text/75"></div>
+      </div>
+    </div>
+  </template>
+</div>
+{% unless request.design_mode %}
+  <script src="{{ 'modules-popup.bundle.min.js' | asset_url }}" type="module"></script>
+{% endunless %}

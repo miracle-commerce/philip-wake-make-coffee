@@ -1,0 +1,229 @@
+<template data-should-teleport="#left-drawer-slot">
+  <div
+    :data-modal-label="$store.modals.leftDrawer.contents === 'filters' ? '{{ 'facets.filters.title_tags' | t }}' : false"
+    x-show="$store.modals.leftDrawer.contents === 'filters'"
+    class="sidebar-filters px-section "
+  >
+    {%- liquid
+      assign sort_by = results.sort_by | default: results.default_sort_by
+      assign total_active_values = 0
+      for filter in results.filters
+        assign total_active_values = total_active_values | plus: filter.active_values.size
+        if filter.type == 'price_range'
+          if filter.max_value.value or filter.min_value.value
+            assign total_active_values = total_active_values | plus: 1
+          endif
+        endif
+      endfor
+      if results.url
+        assign results_url = results.url
+      else
+        assign terms = results.terms | escape
+        assign results_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+      endif
+    -%}
+      <div class="relative flex items-center justify-between pt-5 pb-2.5 w-full border-b-input border-scheme-text">
+        <h1 class="font-heading  heading-standard heading-style full_shadow" class="" tabindex="-1">
+          {{ 'facets.filters.title_tags' | t }}
+        </h1>
+        <button @click.prevent="$store.modals.close('filters')" class="block top-0">
+          <span class="sr-only">{{ 'general.accessibility.close_modal' | t }}</span>
+          <span class="inline-block w-5 h-5">{% render 'icon-close' %}</span>
+        </button>
+      </div>
+    {% if linklist != blank %}
+      <aside>
+        <nav>
+          <ul class="mt-5 mb-5">
+            {% for link in linklist.links %}
+              <li class="mb-2.5">
+                <a class="pb-1" href="{{ link.url }}">
+                  {{- link.title -}}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      </aside>
+    {% endif %}
+    <form class="flex-auto flex flex-col" id="Facet-Filters-Form" @submit.prevent="filterFormSubmit">
+      {%- if results.terms -%}
+        <input type="hidden" name="q" value="{{ results.terms | escape }}">
+        <input name="options[prefix]" type="hidden" value="last">
+      {%- endif -%}
+      <div class="py-5 flex-auto overflow-y-auto px-5 -mx-5">
+        {%- for filter in results.filters -%}
+          {%- liquid
+            if enable_color_swatch_filters
+              assign is_color = false
+              assign swatch_trigger = 'products.product.color_swatch_trigger' | t | downcase
+              assign filter_downcase = filter.label | downcase
+              if filter_downcase contains swatch_trigger
+                assign is_color = true
+              elsif swatch_trigger == 'color' and filter_downcase contains 'colour'
+                assign is_color = true
+              endif
+            endif
+
+            if expand_filters
+              assign expanded = 'true'
+            elsif filter.active_values.size > 0
+              assign expanded = 'true'
+            elsif filter.type == 'price_range'
+              if filter.min_value.value or filter.max_value.value
+                assign expanded = 'true'
+              endif
+            else
+              assign expanded = 'false'
+            endif
+          -%}
+          <div
+            class="mb-4"
+            x-data="{ expanded: {{ expanded }} }"
+          >
+            <button type="button"
+                class="w-full flex items-center py-2 font-main text-left text-base"
+                :aria-expanded="expanded"
+                @click="expanded = ! expanded"
+                aria-controls="accordion{{ forloop.index0 }}">
+              {{ filter.label }}
+              {% if filter.active_values.size > 0 %}<span class="ml-1"> ({{ filter.active_values.size }})</span>{% endif %}
+              <span class="inline-block w-4 align-middle svg-scale ml-auto transform origin-center rotate transition" :class="{'rotate-180': expanded }">{% render 'icon-chevron-down' %}</span>
+            </button>
+            <div id="accordion{{ forloop.index0 }}" x-show="expanded" x-collapse>
+              <div class="">
+                {%- case filter.type -%}
+                  {%- when 'list', 'boolean' -%}
+                    {% if is_color %}
+                      <div class="grid grid-cols-5 gap-1 -ml-0.5 mt-2,5">
+                        {%- for filter_value in filter.values -%}
+                          {% liquid
+                            assign color_image = filter_value.value | handle | append: '.' | append: 'png' | file_img_url: '120x' | prepend: 'https:'
+                            assign color_swatch_fallback = filter_value.value | split: ' ' | last | handle
+                          %}
+                          <div class="inline-block relative variant-input">
+                            <input type="checkbox"
+                              class="color-swatch cursor-pointer absolute top-0 left-0 w-full h-full opacity-0"
+                              name="{{ filter_value.param_name }}"
+                              value="{{ filter_value.value }}"
+                              id="Filter-{{ filter.label }}-{{ forloop.index0 }}-mobile"
+                              {% if filter_value.active -%}checked{%- endif %}
+                              {% if filter_value.count == 0 and filter_value.active == false -%}disabled{%- endif %}
+                            >
+                            <label for="Filter-{{ filter.label }}-{{ forloop.index0 }}-mobile" class="relative block p-0.5 min-w-4 cursor-pointer {% if capitalize_filters %}capitalize{% endif %} flex items-center {% if filter_value.count == 0 and filter_value.active == false -%}line-through{%- else -%}hover:text-{{ section_color }}-accent{%- endif %}" {% if filter_value.count == 0 and filter_value.active == false -%}disabled{% endif %}>
+                              {%- if filter_value.count == 0 and filter_value.active == false -%}
+                                <span class="absolute top-0 left-0 bottom-0 z-10 h-0.5 w-full bg-{{ section_color }}-text transform top-1/2 -translate-y-1/2 -rotate-45"></span>
+                              {%- endif -%}
+                              <span class="block w-full border-scheme-text border-input">
+                                <div
+                                  class="w-full bg-cover"
+                                  style="
+                                    padding-top: 100%;
+                                    background-image: url({{ color_image }});
+                                    background-color: {{ color_swatch_fallback }};">
+                                </div>
+                              </span>
+                              <span class="sr-only">{{ filter_value.label }}</span>
+                            </label>
+                          </div>
+                        {%- endfor -%}
+                      </div>
+                    {% else %}
+                      <ul class="mt-2.5">
+                        {%- for filter_value in filter.values -%}
+                          <li class="custom-checkbox flex justify-start items-center mb-2">
+                            <input type="checkbox"
+                              class="sr-only absolute"
+                              name="{{ filter_value.param_name }}"
+                              value="{{ filter_value.value }}"
+                              id="Filter-{{ filter.label }}-{{ forloop.index0 }}-mobile"
+                              {% if filter_value.active -%}checked{%- endif %}
+                              {% if filter_value.count == 0 and filter_value.active == false -%}disabled{%- endif %}
+                            >
+                            <label for="Filter-{{ filter.label }}-{{ forloop.index0 }}-mobile" class="cursor-pointer {% if settings.links_uppercase %}uppercase{% elsif capitalize_filters %}capitalize{% endif %} flex items-center {% if filter_value.count == 0 and filter_value.active == false -%}text-{{ section_color }}-meta line-through{%- else -%}hover:text-{{ section_color }}-accent{%- endif %}" {% if filter_value.count == 0 and filter_value.active == false -%}disabled{% endif %}>
+                              <span class="custom-checkbox__input"></span>
+                              {{ filter_value.label }}
+                              {% if show_filter_count %}
+                                <span class="inline-block ml-1">({{ filter_value.count }})</span>
+                              {% endif %}
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {% endif %}
+                  {%- when 'price_range' -%}
+                    {% liquid
+                      assign currencies_using_comma_decimals = 'ANG,ARS,BRL,BYN,BYR,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VES,VND' | split: ','
+                      assign uses_comma_decimals = false
+                      if currencies_using_comma_decimals contains cart.currency.iso_code
+                        assign uses_comma_decimals = true
+                      endif
+                    %}
+                    <div class="mt-2.5 flex items-center justify-start max-w-[20rem]">
+                      <div class="filter-group-display__price-range-from flex items-center justify-center grow">
+                        <span class="pr-1">{{ cart.currency.symbol }}</span>
+                        <div class="relative w-full">
+                          <input name="{{ filter.min_value.param_name }}"
+                            class="w-full input placeholder:text-scheme-text"
+                            id="Filter-{{ filter.label | escape }}-GTE-mobile"
+                            {% if filter.min_value.value %}
+                              {% if uses_comma_decimals %}
+                                value="{{ filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                              {% else %}
+                                value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                              {% endif %}
+                            {% endif %}
+                            type="number"
+                            placeholder="{{ 'facets.filters.from' | t }}"
+                            min="0"
+                            max="{{ filter.range_max | divided_by: 100 | ceil }}"
+                          >
+                            <label class="sr-only field__label" for="Filter-{{ filter.label | escape }}-GTE-mobile">{{ 'facets.filters.from' | t }}</label>
+                        </div>
+                      </div>
+                      <div class="px-2">&ndash;</div>
+                      <div class="filter-group-display__price-range-to  flex items-center justify-center grow">
+                        <span class="pr-1">{{ cart.currency.symbol }}</span>
+                        <div class="relative w-full">
+                          <input name="{{ filter.max_value.param_name }}"
+                            class="w-full input placeholder:text-scheme-text"
+                            id="Filter-{{ filter.label | escape }}-LTE-mobile"
+                            {%- if filter.max_value.value -%}
+                              {%- if uses_comma_decimals -%}
+                                value="{{ filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                              {%- else -%}
+                                value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                              {% endif %}
+                            {%- endif -%}
+                            type="number"
+                            placeholder="{{ 'facets.filters.to' | t }}"
+                            min="0"
+                            max="{{ filter.range_max | divided_by: 100 | ceil }}"
+                          >
+                          <label class="sr-only field__label" for="Filter-{{ filter.label | escape }}-LTE-mobile">{{ 'facets.filters.to' | t }}</label>
+                        </div>
+                      </div>
+                    </div>
+                {%- endcase -%}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+      <div class="my-5 {% if total_active_values > 0 %}grid grid-cols-2 gap-5{% endif %}">
+        <button class="push-btn w-full z-0" type="submit" @click.prevent="filterFormSubmit($event, 'filters')">
+          <span class="push-btn-surface w-full">
+            {{ 'facets.filters.apply' | t }}
+          </span>
+        </button>
+        {% if total_active_values > 0 %}
+          <a class="inline-block push-btn z-0 w-full" href="{{ results_url }}" @click.prevent="clearAllFilters(event)">
+            <span class="push-btn-surface w-full">
+              {{ 'facets.filters.clear' | t }}
+            </span>
+          </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</template>

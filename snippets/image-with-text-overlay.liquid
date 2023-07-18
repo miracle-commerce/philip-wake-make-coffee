@@ -1,0 +1,119 @@
+{% liquid
+  assign image_class = 'w-full'
+
+  if style == 'inset'
+    assign image_class = image_class | append: ' media-style'
+  endif
+
+  if heading_size == 'heading-feature'
+    assign content_max_width = 'max-w-xl'
+  else
+    assign content_max_width = 'max-w-lg'
+  endif
+
+  if display_content_below_image_on_mobile
+    assign content_class = 'lg:grid lg:absolute lg:inset-0 lg:w-full lg:h-full'
+    assign content_inset_class = 'max-w-site lg:py-5 lg:px-section mx-auto'
+    assign card_container_class = 'lg:card-container'
+    assign card_content_class = 'lg:card py-5 lg:py-10 lg:px-section'
+    assign card_border_class = 'lg:card-border'
+  else
+    assign content_class = 'grid absolute inset-0 w-full h-full'
+    assign content_inset_class = 'max-w-site py-5 px-section mx-auto'
+    assign card_container_class = 'card-container'
+    assign card_content_class = 'card py-5 py-10 px-section'
+    assign card_border_class = 'card-border'
+  endif
+%}
+
+<div class="relative z-10 lg:bg-transparent h-full">
+  {%- if cta_url != blank and cta_text == blank -%}
+    <a href="{{ cta_url }}" class="absolute inset-0 z-20"></a>
+  {%- endif -%}
+
+  <div class="{% if crop contains 'slideshow' %}lg:h-full{% endif %} {% if style == 'inset' %}max-w-site px-5 lg:px-10 py-5 mx-auto{% endif %}">
+    <div class="{{ crop }}{% if style == 'inset' %} media-style-container{% endif %}">
+      {% if image != blank %}
+        {% capture image_tag_output %}{{
+          image
+          | image_url: width: 2000
+          | image_tag: sizes: '100vw', class: image_class, loading: 'lazy'
+        }}{% endcapture %}
+        {%- if image_mobile != blank -%}
+          <div class="hidden lg:block">{{ image_tag_output }}</div>
+        {%- else -%}
+          {{ image_tag_output }}
+        {%- endif -%}
+        {%- if image_mobile != blank -%}
+          <div class="lg:hidden">
+            {{
+              image_mobile
+              | image_url: width: 1200
+              | image_tag: sizes: '100vw', class: image_class, loading: 'lazy'
+            }}
+          </div>
+        {%- endif -%}
+      {% else %}
+        <div class="w-full {% unless slideshow_height == 'natural' %}absolute inset-0{% endunless %}">
+          {{
+            'lifestyle-1'
+            | placeholder_svg_tag: 'block text-scheme-placeholder-foreground fill-current bg-neutral-100'
+          }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <div
+    class="px-section py-section-vertical-spacing {{ content_class }} z-10  text-scheme-text {{ place_content }} {{ text_align }} {% if style == 'inset' %}max-w-site mx-auto{% endif %}"
+  >
+    {%- capture content %}
+    {% if title != blank %}
+      <h2 class="font-heading  {{ heading_size }} heading-style {{ settings.heading_drop_shadow_style }}">
+        {{ title | escape }}
+      </h2>
+    {% endif %}
+    {% if richtext != blank %}
+      <div class="rte text-theme-basic mt-5">
+        {{ richtext }}
+      </div>
+    {% endif %}
+
+    {% if cta_url != blank and cta_text != blank %}
+      <div class="relative z-10 mt-5">
+        <a class="inline-block push-btn" href="{{ cta_url }}">
+          <span class="push-btn-surface">{{ cta_text }}</span>
+        </a>
+      </div>
+    {% endif %}
+  {%- endcapture -%}
+
+    <div class="{% if style == 'inset' %}{{ content_inset_class }}{% endif %}">
+      {%- unless text_overlay_color != 'same_as_section'
+        and display_content_below_image_on_mobile == false
+      -%}
+        <div class="{% unless text_overlay_color == 'same_as_section' %}lg:hidden{% endunless %} {% if display_on_card == true %}{{ card_container_class }}{% endif %} {{ content_max_width }}">
+          <div class="break-words {% if display_on_card == true %}{{ card_content_class }}{% endif %} ">
+            {{ content }}
+          </div>
+          {% if display_on_card and settings.card_show_border_on_shadow -%}
+            <div class="{{ card_border_class }}"></div>
+          {%- endif %}
+        </div>
+      {%- endunless -%}
+
+      {% unless text_overlay_color == 'same_as_section' %}
+        <div
+          class="{% unless text_overlay_color != 'same_as_section' and display_content_below_image_on_mobile == false %}hidden lg:block{% endunless %} {% if display_on_card == true %}{{ card_container_class }} {% endif %}  {{ content_max_width }} text-scheme-text"
+          data-color-scheme="{{ text_overlay_color }}"
+        >
+          <div class="break-words {% if display_on_card == true %}{{ card_content_class }}{% endif %}">
+            {{ content }}
+          </div>
+          {% if display_on_card and settings.card_show_border_on_shadow -%}
+            <div class="{{ card_border_class }}"></div>
+          {%- endif %}
+        </div>
+      {% endunless %}
+    </div>
+  </div>
+</div>

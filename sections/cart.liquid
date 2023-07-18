@@ -1,0 +1,61 @@
+
+<section class="text-scheme-text bg-scheme-background relative overflow-hidden {% if section.settings.use_gradient_background %}bg-scheme-gradient{% endif %} overflow-hidden" data-color-scheme="{{ section.settings.color_scheme | default: 'primary' }}" >
+  <div class="section-content py-section-vertical-spacing px-section max-w-5xl mx-auto">
+    <div class="{% if section.settings.display_on_card %}text-scheme-text card-container{% endif %}">
+      <div class="{% if section.settings.display_on_card %}card p-5 lg:p-10{% endif %}">
+        <h1 class="text-center font-heading  heading-feature heading-style {{ settings.heading_drop_shadow_style }}">{{ 'cart.general.title' | t }}</h1>
+        <div class="mt-5 lg:mt-10">
+          {% render 'cart-items' %}
+          {% render 'cart-footer' %}
+        </div>
+      </div>
+      {% if section.settings.display_on_card and settings.card_show_border_on_shadow %}<div class="card-border"></div>{% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.cart.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "display_on_card",
+      "label": "t:common.settings.display_on_card.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:common.settings.color_scheme.label",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:common.options.primary.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:common.options.secondary.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:common.options.tertiary.label"
+        },
+        {
+          "value": "quaternary",
+          "label": "t:common.options.quaternary.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_background",
+      "label": "t:common.settings.use_gradient_background.label"
+    }
+  ]
+}
+{% endschema %}

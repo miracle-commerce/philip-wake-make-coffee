@@ -1,0 +1,48 @@
+<template data-should-teleport="#right-drawer-slot">
+  <div
+    :data-modal-label="$store.modals.rightDrawer.contents === 'sort' ? '{{ 'facets.sorting.title' | t }}' : false"
+    x-show="$store.modals.rightDrawer.contents === 'sort'"
+    class="sidebar-filters  px-section"
+  >
+    <div class="flex-auto flex flex-col">
+      <div class="">
+        <div class="relative flex items-center justify-between pt-5 pb-2.5">
+          <h1 class="font-heading  heading-standard heading-style full_shadow"  class="" tabindex="-1">
+            {{ 'facets.sorting.title' | t }}
+          </h1>
+          <button @click.prevent="$store.modals.close('sort')" class="block top-0">
+            <span class="sr-only">{{ 'general.accessibility.close_modal' | t }}</span>
+            <span class="inline-block w-5 h-5">{% render 'icon-close' %}</span>
+          </button>
+        </div>
+        <div class="flex-auto flex flex-col overflow-hidden border-t-input border-scheme-text pt-5">
+          {%- for option in results.sort_options -%}
+            <div class="custom-radio flex justify-start mb-2">
+              <input type="radio"
+                class="sr-only absolute"
+                name="sort_by"
+                form="Facet-Filters-Form"
+                value="{{ option.value | escape }}"
+                {% if option.value == sort_by %}checked{% endif %}
+                id="Sort-{{ forloop.index0 }}"
+              >
+              <label for="Sort-{{ forloop.index0 }}" class="cursor-pointer  flex items-center">
+                <span class="custom-radio__input"></span>
+                <span>
+                  <span class="mr-1">{{ option.name | escape }}</span>
+                </span>
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="my-5">
+        <button class="push-btn w-full z-0" form="Facet-Filters-Form" type="submit" @click.prevent="filterFormSubmit($event, 'sort')">
+          <span class="push-btn-surface w-full">
+            {{ 'facets.filters.apply' | t }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>

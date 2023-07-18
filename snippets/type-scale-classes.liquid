@@ -1,0 +1,13 @@
+{%- liquid
+  comment
+  Mobile classes:
+  text-xs text-sm text-base text-lg text-xl text-2xl text-3xl text-4xl text-5xl text-6xl text-7xl text-8xl text-9xl text-10xl
+  Desktop classes:
+  lg:text-xs lg:text-sm lg:text-base lg:text-lg lg:text-xl lg:text-2xl lg:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-8xl lg:text-9xl lg:text-10xl
+  endcomment
+  assign mobile_type_scale_classes = 'text-xs,text-sm,text-base,text-lg,text-xl,text-2xl,text-3xl,text-4xl,text-5xl,text-6xl,text-7xl,text-8xl,text-9xl,text-10xl' | split: ','
+  assign desktop_type_scale_classes = 'lg:text-xs,lg:text-sm,lg:text-base,lg:text-lg,lg:text-xl,lg:text-2xl,lg:text-3xl,lg:text-4xl,lg:text-5xl,lg:text-6xl,lg:text-7xl,lg:text-8xl,lg:text-9xl,lg:text-10xl' | split: ','
+  assign text_scale_mobile = mobile_text_scale | plus: 2
+  assign text_scale_desktop = desktop_text_scale | plus: 2
+  echo mobile_type_scale_classes[text_scale_mobile] | append: ' ' | append: desktop_type_scale_classes[text_scale_desktop]
+-%}

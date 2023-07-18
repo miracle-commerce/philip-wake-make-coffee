@@ -1,0 +1,5 @@
+{%- liquid
+  assign type_scale_variables = '--font-size-xs,--font-size-sm,--font-size-base,--font-size-lg,--font-size-xl,--font-size-2xl,--font-size-3xl,--font-size-4xl,--font-size-5xl,--font-size-6xl,--font-size-7xl,--font-size-8xl,--font-size-9xl' | split: ','
+  assign index = scale | plus: 2
+  echo type_scale_variables[index]
+-%}

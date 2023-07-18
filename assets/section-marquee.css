@@ -1,0 +1,36 @@
+@media (prefers-reduced-motion: reduce) {
+  .marquee-container {
+    padding-left: 0;
+    text-align: center;
+    white-space: normal;
+    display: block;
+  }
+  .marquee span {
+    display: none;
+  }
+  .marquee span:first-child {
+    display: inline;
+  }
+}
+
+.marquee-container {
+  visibility: visible;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+  }
+}
+
+@keyframes shift {
+  to {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+}

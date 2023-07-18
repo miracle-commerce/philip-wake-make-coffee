@@ -1,0 +1,44 @@
+{%- if collection.image != blank and show_collection_image -%}
+  {%- liquid
+    if collection_image_style == 'inset'
+      assign image_class = 'media-style'
+    endif
+  -%}
+  <div class="{% if collection_image_style == 'inset' %}pt-half-section-vertical-spacing max-w-site px-section mx-auto w-full{% endif %}">
+    <div class="{% unless crop == '' or crop == blank or crop == 'natural' %}object-wrapper {{ crop }}{% endunless %} {% if collection_image_style == 'inset' %}media-style-container{% endif %}">
+      {{ collection.image | image_url: width: 2000 | image_tag: sizes: '100vw', class: image_class, loading: 'lazy' }}
+    </div>
+  </div>
+{%- endif -%}
+<div class="section-content relative z-10 px-section max-w-site mx-auto py-section-vertical-spacing">
+  <div class="{% if display_on_card %}card-container mx-auto{% endif %}">
+    <div class="{% if display_on_card %}card p-5 lg:p-10{% endif %}">
+      {%- if title != '' and show_collection_title -%}
+      <h1 class="text-center font-heading  heading-feature heading-style {{ settings.heading_drop_shadow_style }}">{{ collection.title }}</h1>
+      {%- endif -%}
+      {%- if collection.description != blank and show_collection_description -%}
+        <div class="{% unless hide_title %}mt-5{% endunless %} rte text-rte max-w-xl mx-auto text-center">
+          {{ collection.description }}
+        </div>
+      {%- endif -%}
+      {%- if linklist != blank -%}
+        <div class="relative mt-5 py-2">
+          <nav role="navigation">
+            <ul class="flex flex-wrap justify-center">
+              {%- for link in linklists[linklist].links -%}
+              <li class="inline-block px-1.5 mt-2.5">
+                {%- if link.active -%}
+                <a class="btn text-sm lg:text-base after:hidden bg-scheme-text text-scheme-text-overlay" href="{{ link.url }}" aria-current="page">{{ link.title }}</a>
+                {%- else -%}
+                <a class="btn text-sm lg:text-base after:hidden bg-scheme-secondary-background text-scheme-text shadow-secondary" href="{{ link.url }}">{{ link.title }}</a>
+                {%- endif -%}
+              </li>
+              {%- endfor -%}
+            </ul>
+          </nav>
+        </div>
+      {%- endif -%}
+    </div>
+    {% if display_on_card and settings.card_show_border_on_shadow %}<div class="card-border"></div>{% endif %}
+  </div>
+</div>

@@ -1,0 +1,38 @@
+
+<div class="{{ block_base_classes }}" {{ block.shopify_attributes }}>
+  {%- liquid
+    if block.settings.information contains "metafield-multi_line_text_field"
+      assign nutritional_information = block.settings.information | split: '<span class="metafield-multi_line_text_field">' | last | split: "</span>" | first | strip_newlines | split: '<br />'
+    else
+      if block.settings.information contains "<br/>"
+        assign nutritional_information = block.settings.information | split: '<p>' | last | split: "</p>" | first | strip_newlines | strip | split: '<br/>'
+      else
+        assign nutritional_information =  block.settings.information | remove_first: "<p>" | replace: '</p>', '' | strip_newlines | strip | split: '<p>'
+      endif
+    endif
+  -%}
+
+  <ul class="text-xs">
+    <li>
+      <div class="font-heading py-1 flex items-center justify-between">
+        <span>{{ block.settings.heading }}</span>
+        <span>{{ block.settings.right_label }}</span>
+      </div>
+    </li>
+    {% for row in nutritional_information %}
+      {%- liquid
+        assign items = row | split: ','
+        assign label = items[0] | strip
+        assign value = items[1] | strip
+        assign first_character = label | slice: 0
+      -%}
+      <li {% if first_character == '-' %}class="pl-5"{% endif %}>
+        <div class="border-t-1 border-scheme-text py-1.5 flex items-center justify-between">
+          <span>{{ label | replace: '-', '' | strip }}</span>
+          <span>{{ value | strip }}</span>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+  
+</div>

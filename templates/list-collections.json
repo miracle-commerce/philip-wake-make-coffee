@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-list-collections",
+      "settings": {
+      }
+    },
+    "collage": {
+      "type": "main-list-collections-collage",
+      "disabled": true,
+      "settings": {
+      }
+    }
+  },
+  "order": [
+    "main",
+    "collage"
+  ]
+}

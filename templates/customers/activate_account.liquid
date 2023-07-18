@@ -1,0 +1,44 @@
+
+
+<div class="section-content py-section-vertical-spacing px-section" data-color-scheme="primary">
+  <div class="max-w-md mx-auto card-container">
+    <div class="card p-5 lg:p-10 text-left mx-auto relative z-shape-divider">
+      <h1 class="font-heading heading-standard mb-2.5">{{ 'customer.activate_account.title' | t }}</h1>
+      <p>{{ 'customer.activate_account.subtext' | t }}</p>
+
+      {% form 'activate_customer_password' %}
+        {% if form.errors %}
+          <div class="mt-4 text-primary-accent-1" tabindex="-1" data-login-error>{{ form.errors | default_errors }}</div>
+        {% endif %}
+
+          <label class="mt-5 mb-1 block font-secondary text-sm" for="CustomerPassword">
+            {{ 'customer.activate_account.password' | t }}
+          </label>
+          <input type="password"
+            name="customer[password]"
+            id="CustomerPassword"
+            class="w-full">
+
+          <label class="mt-5 mb-1 block font-secondary text-sm" for="CustomerPasswordConfirmation">
+            {{ 'customer.activate_account.password_confirm' | t }}
+          </label>
+          <input type="password"
+            name="customer[password_confirmation]"
+            id="CustomerPasswordConfirmation"
+            class="w-full">
+
+        <div class="mt-5">
+          <button type="submit" class="push-btn w-full theme-button">
+            <span class="push-btn-surface w-full">{{ 'customer.activate_account.submit' | t }}</span>
+          </button>
+        </div>
+        <div class="mt-5 text-center">
+          <button type="submit" class="push-btn w-fulll push-btn--background  theme-button" name="decline">
+            <span class="push-btn-surface w-full">{{ 'customer.activate_account.cancel' | t }}</span>
+          </button>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+  <div class="card-border"></div>
+</div>

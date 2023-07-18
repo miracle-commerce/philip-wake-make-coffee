@@ -1,0 +1,115 @@
+{%- liquid
+  assign container_id = 'FeatureMedia-' | append: section.id
+  unless loading == 'eager'
+    assign loading = 'lazy'
+    assign preload = false
+  else
+    assign preload = true
+  endunless
+-%}
+<div class="{% if settings.media_shadow_direction contains 'left' %}pt-media-shadow{% else %}pb-media-shadow{% endif %}"
+    {% if scroll_to == true %}
+      @media-visible.camel="!isUsingSlideshowToDisplayMedia && scrollToTopOf($el)"
+    {% endif %}
+    data-product-single-media-wrapper="{{ media.id }}">
+
+    {% case media.media_type %}
+      {% when 'video' or 'external_video' %}
+        <div class="media-style-container">
+          <div
+            x-data='
+              ThemeModule_Video(
+                "{{ section.id }}-{{ media.id }}",
+                {{ media.media_type | json }},
+                {{ media.host | json }},
+                {{ section.settings.autoplay_videos_on_desktop | json }}
+              )'
+            class="relative w-full media-style overflow-hidden"
+            style="padding-top: {{ 100.00 | divided_by: media.aspect_ratio }}%;"
+          >
+            <template x-if="enabled">
+              <div
+                class="transition-opacity duration-500"
+                :class="{ 'opacity-0': !shown, 'pointer-events-none': !shown }"
+              >
+                {% liquid
+                  assign video_object_class = 'video absolute inset-0 w-full h-full scale-[1.01]'
+                %}
+                {% case media.media_type %}
+                  {% when 'video' %}
+                    {{ media | video_tag: class: video_object_class , image_size: '2000x', controls: true, autoplay: true, loop: section.settings.enable_video_looping }}
+                  {% when 'external_video' %}
+                    {% liquid
+                      assign video_object_class = video_object_class | append: ' js-' | append: media.host
+                      assign id = section.id | append: '-' | append: media.id
+                    %}
+                    {% case media.host %}
+                      {% when 'youtube' %}
+                        {{ media | external_video_url: enablejsapi: 1, autoplay: true, loop: section.settings.enable_video_looping, playlist: media.external_id | external_video_tag: class: video_object_class, loading: "lazy", id: id }}
+                      {% when 'vimeo' %}
+                        {{ media | external_video_url: autoplay: true, loop: section.settings.enable_video_looping | external_video_tag: class: video_object_class, id: id, loading: "lazy" }}
+                    {% endcase %}
+                {% endcase %}
+              </div>
+            </template>
+            <div
+              class="cursor-pointer group transition-opacity duration-300"
+              :class="{ 'opacity-0' : shown, 'pointer-events-none': shown }"
+              @click="enableVideo()"
+            >
+              <div class="absolute inset-0 w-full h-full">
+                {{ media | image_url: width: 2000 | image_tag: sizes: sizes, preload: preload, class: 'absolute inset-0 w-full h-full' }}
+              </div>
+              <div class="absolute inset-0 w-full h-full transition-opacity duration-500 opacity-0 group-hover:opacity-30">
+                <div class="bg-scheme-background w-full h-full"></div>
+              </div>
+              <button class="absolute inset-0 w-full h-full grid place-content-center">
+                <span class="sr-only">{{ 'general.video.play' | t }}</span>
+                <div class="relative z-10">
+                  <div class="push-btn">
+                    <span class="push-btn-surface align-bottom p-2">
+                      <span class="inline-block p-2.5">
+                        <span class="inline-block w-10 h-10">
+                          {% render 'icon-play' %}
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+          {% unless request.design_mode %}
+            <script src="{{ 'modules-video.bundle.min.js' | asset_url }}" type="module"></script>
+          {% endunless %}
+        </div>
+      {% when 'model' %}
+        <div class="media-style-container">
+          <div
+            x-data="ThemeModule_Model"
+            class="relative w-full media-style"
+            style="padding-top: 100%;"
+          >
+            {{ media | model_viewer_tag: image_size: '1000x', reveal: 'interaction', toggleable: true, data-model-id: media.id, class: 'absolute inset-0 w-full h-full', background-color: 'white' }}
+          </div>
+          
+          {% unless request.design_mode %}
+            <script src="{{ 'product-model.js' | asset_url }}" type="module"></script>
+          {% endunless %}
+          <link id="ModelViewerStyle" rel="stylesheet" href="https://cdn.shopify.com/shopifycloud/model-viewer-ui/assets/v1.0/model-viewer-ui.css" media="print" onload="this.media='all'">
+          {{ 'shopify-model-viewer-ui.css' | asset_url | stylesheet_tag }}          
+        </div>
+      {% else %}
+          {%- render 'media-image',
+            media: media,
+            shape_id: shape_id,
+            shape: image_shape,
+            crop: crop,
+            container_id: container_id,
+            index: index,
+            sizes: sizes,
+            is_card: false
+        -%}
+    {% endcase %}
+ 
+</div>

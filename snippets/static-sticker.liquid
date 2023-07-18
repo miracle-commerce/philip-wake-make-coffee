@@ -1,0 +1,41 @@
+<div class="sticker-{{ id }} z-20 origin-top-left pointer-events-none absolute">
+  {%- if shape == 'fit_to_text' -%}
+  <div class="sticker-default {{ color }} whitespace-nowrap">
+    {{ text }}
+  </div>
+  {%- else -%}
+  <div class="sticker-container relative rotate-anim">
+    <svg class="sticker-svg relative max-w-none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <foreignObject clip-path="url(#clip-{{ static_id }})" width="100%" height="100%">
+        <div class="sticker-foreignObject-{{ id }} aspect-w-1 aspect-h-1 p-4 break-words sticker-text top-0 left-0 right-0 bottom-0 w-full h-full flex items-center justify-center text-center leading-none {{ color }}">
+          {{ text }}
+        </div>
+      </foreignObject>
+      <use style="fill: none;" href="#outline-{{ static_id }}" />
+    </svg>
+    {%- if settings.sticker_drop_shadow_size > 0 -%}
+    <svg class="sticker-svg sticker-drop-shadow relative max-w-none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <use class="sticker-drop-shadow-path"  href="#outline-{{ static_id }}" />
+    </svg>
+    {%- endif -%}
+  </div>
+  {%- endif -%}
+</div>
+{{ 'block-sticker.css' | asset_url | stylesheet_tag }}
+<style>
+  .sticker-{{ id }} {
+    top: {{ vertical_position }}%;
+    left: {{ horizontal_position }}%;
+    transform: rotate({{ rotate }}deg) translate(-50%, -50%);
+  }
+
+  .sticker-{{ id }} img,
+  .sticker-{{ id }} svg {
+    width: {{ width }}px;
+  }
+
+  .sticker-foreignObject-{{ id }},
+  .sticker-{{ id }} .sticker-default  {
+    font-size: {{ font_size }};
+  }
+</style>

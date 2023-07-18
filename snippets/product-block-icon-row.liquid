@@ -1,0 +1,25 @@
+<div
+  class="{{ block_base_classes }} {{ color_class }}"
+  {{ block.shopify_attributes }}
+>
+  <ul class="feature-icon-list pb-2 flex gap-4">
+    {%- for i in (1..5) -%}
+      {%- capture icon %}icon_{{ i }}{%- endcapture -%}
+      {%- capture text %}text_{{ i }}{%- endcapture -%}
+      {%- liquid
+        assign icon = block.settings[icon]
+        assign text = block.settings[text]
+      -%}
+      {%- if text != '' -%}
+        <li class="text-center">
+          <span class="inline-block mb-2 w-8 h-8">
+            {% render 'theme-icon',
+              icon: icon,
+            %}
+          </span>
+          <span class="block text-sm">{{- text | escape | strip -}}</span>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+</div>

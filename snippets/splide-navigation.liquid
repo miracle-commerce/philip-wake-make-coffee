@@ -1,0 +1,32 @@
+<div class="controls relative z-10 ml-auto {% if settings.button_shadow_direction contains 'top' %}pt-button-shadow{% else %}pb-button-shadow{% endif %}">
+  <div class="flex gap-2">
+    <button class="splide__arrow splide__arrow--prev push-btn">
+      <span class="sr-only">{{ 'sections.slideshow.previous_slide' | t }}</span>
+      <span class="push-btn-surface align-bottom p-2">
+        <span class="block w-5 h-5">{% render 'icon-previous' %}</span>
+      </span>
+    </button>
+    {%- if autoplay -%}
+    <button class="splide__toggle push-btn"
+      type="button"
+      aria-label="{{ 'sections.slideshow.pause_slideshow' | t }}"
+      data-play="{{ 'sections.slideshow.rotate_slideshow' | t }}"
+      data-pause="{{ 'sections.slideshow.pause_slideshow' | t }}">
+      <span class="push-btn-surface align-bottom p-2">
+        <span class="splide__toggle__pause">
+          <span class=" block w-5 h-5">{% render 'icon-pause' %}</span>
+        </span>
+        <span class="splide__toggle__play">
+          <span class="block w-5 h-5">{% render 'icon-play' %}</span>
+        </span>
+      </span>
+    </button>
+    {%- endif -%}
+    <button class="splide__arrow splide__arrow--next push-btn">
+      <span class="sr-only">{{ 'sections.slideshow.next_slide' | t }}</span>
+      <span class="push-btn-surface align-bottom p-2">
+        <span class="block w-5 h-5">{% render 'icon-next' %}</span>
+      </span>
+    </button>
+  </div>
+</div>

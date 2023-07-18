@@ -1,0 +1,80 @@
+<script>
+  const calculateHeaderHeights = () => {
+    const headerGroupHeights = [];
+
+    document
+      .querySelectorAll(
+        '.shopify-section-group-header-group:not(.has-no-height)'
+      )
+      .forEach((headerGroupSectionEl) => {
+        headerGroupHeights.push(
+          headerGroupSectionEl.getBoundingClientRect().height
+        );
+      });
+
+    document.documentElement.style.setProperty(
+      '--header-group-height',
+      `${headerGroupHeights.reduce((subtotal, a) => subtotal + a, 0)}px`
+    );
+  };
+
+  calculateHeaderHeights();
+
+  const debouncedCalculateHeaderHeights = debounce(calculateHeaderHeights, 300);
+
+  window.addEventListener('resize', debouncedCalculateHeaderHeights);
+</script>
+{% if request.design_mode %}
+  <script>
+    document.body.addEventListener('shopify:section:select', (e) => {
+      if (!e.target.matches('.shopify-section-group-header-group')) return;
+
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    document.body.addEventListener('shopify:section:load', (e) => {
+      if (!e.target.matches('.shopify-section-group-header-group')) return;
+
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    document.body.addEventListener('shopify:section:unload', (e) => {
+      if (!e.target.matches('.shopify-section-group-header-group')) return;
+
+      window.dispatchEvent(new Event('resize'));
+    });
+  </script>
+{% endif %}
+<style>
+  #MainContent
+    > .shopify-section.banner-section:first-child
+    .banner-section-content--pt.pt-screen-height {
+    padding-top: calc(100vh - var(--header-group-height));
+  }
+
+  #MainContent
+    > .shopify-section.banner-section:first-child
+    .banner-section-content--h.h-screen {
+    height: calc(100vh - var(--header-group-height));
+  }
+
+  @media (min-width: 990px) {
+    #MainContent
+      > .shopify-section.banner-section:first-child
+      .banner-section-content--h.lg\:h-screen {
+      height: calc(100vh - var(--header-group-height));
+    }
+
+    #MainContent
+      > .shopify-section.banner-section:first-child
+      .banner-section-content--h.lg\:h-auto {
+      height: auto;
+    }
+
+    #MainContent
+      > .shopify-section.banner-section:first-child
+      .banner-section-content--h.lg\:h-full {
+      height: 100%;
+    }
+  }
+</style>

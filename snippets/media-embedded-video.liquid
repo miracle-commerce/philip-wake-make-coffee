@@ -1,0 +1,127 @@
+{%- liquid
+  assign media_id = container_id | append: '-' | append: media.id
+  assign disable_media_style = disable_media_style | default: false
+  assign media_class = 'media-style '
+  assign foreign_object_class = 'foreign-object-img w-full h-full object-cover '
+
+  if settings.media_drop_shadow_size > 0
+    assign foreign_object_class = foreign_object_class | append: 'bg-scheme-card'
+    assign media_class = media_class | append: 'bg-scheme-card'
+  endif
+
+  if crop == '' or crop == blank or crop == 'natural'
+    assign crop = 'aspect-w-16 aspect-h-9'
+  endif
+
+  assign muted = muted
+
+  if autoplay
+    assign muted = true
+  endif
+
+  if media.type == 'youtube'
+    if autoplay
+      assign url_params = '&autoplay=1'
+    else
+      assign url_params = '&autoplay=0'
+    endif
+
+    if muted
+      assign url_params = url_params | append: '&mute=1'
+    else
+      assign url_params = url_params | append: '&mute=0'
+    endif
+
+    if loop
+      assign url_params = url_params | append: '&loop=1&playlist=' | append: media.id
+    else
+      assign url_params = url_params | append: '&loop=0'
+    endif
+
+    if controls
+      assign url_params = url_params | append: '&controls=1'
+    else
+      assign url_params = url_params | append: '&controls=0'
+    endif
+
+    if chromeless
+      assign url_params = url_params | append: '&modestbranding=1'
+    else
+      assign url_params = url_params | append: '&modestbranding=0'
+    endif
+
+    assign encoded_origin = request.origin | url_encode
+
+    assign url_params = url_params | append: '&origin=' | append: encoded_origin
+  elsif media.type == 'vimeo'
+    if autoplay
+      assign url_params = '?autoplay=true'
+    else
+      assign url_params = '?autoplay=false'
+    endif
+
+    if muted
+      assign url_params = url_params | append: '&muted=true'
+    else
+      assign url_params = url_params | append: '&muted=false'
+    endif
+
+    if loop
+      assign url_params = url_params | append: '&loop=true'
+    else
+      assign url_params = url_params | append: '&loop=false'
+    endif
+
+    if controls
+      assign url_params = url_params | append: '&controls=true'
+    else
+      assign url_params = url_params | append: '&controls=false'
+    endif
+
+    if chromeless
+      assign url_params = url_params | append: '&byline=false&title=false'
+    else
+      assign url_params = url_params | append: '&byline=true&title=true'
+    endif
+
+    assign url_params = url_params
+  endif
+-%}
+
+<div class="media-{{ media_id }} media-style-container  {% if settings.media_drop_shadow_size == 0 %}media-no-shadow{% endif %} {% if disable_media_style %}media-style-none{% endif %} {% if is_card %}media-style-is-card{% endif %} {{ shape | split: '_' | last }}">
+  <div class="{% unless crop == '' or crop == blank or crop == 'natural' %}object-wrapper {{ crop }} object-wrapper-{{ section.id }}{% endunless %} media-content">
+    {% if media %}
+      {% if media.type == 'youtube' %}
+        <iframe
+          src="https://www.youtube.com/embed/{{ media.id }}?enablejsapi=1{{ url_params }}&rel=0"
+          class="js-youtube absolute inset-0 w-full h-full bg-scheme-text {{ media_class }}"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+          title="{{ media.alt | escape }}"
+        ></iframe>
+      {% elsif media.type == 'vimeo' %}
+        <iframe
+          src="https://player.vimeo.com/video/{{ media.id }}{{ url_params }}"
+          class="js-vimeo absolute inset-0 w-full h-full bg-scheme-text {{ media_class }}"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+          title="{{ media.alt | escape }}"
+        ></iframe>
+      {% endif %}
+    {% endif %}
+  </div>
+  {%- if settings.media_drop_shadow_size > 0
+    and is_card == false
+    and settings.media_show_border_on_shadow
+    and disable_media_style == false
+  -%}
+    <div class="media-drop-shadow-border w-full h-full"></div>
+  {%- endif -%}
+</div>
+{%- unless rotate == 0 -%}
+  <style>
+    .media-{{ media_id }} {
+      transform: rotate({{ rotate }}deg);
+    }
+  </style>
+{%- endunless -%}

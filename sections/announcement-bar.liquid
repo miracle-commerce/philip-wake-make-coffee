@@ -1,0 +1,180 @@
+{%- liquid
+  assign text = section.settings.text
+  assign link = section.settings.link
+  assign show_announcement_bar = false
+
+  if section.settings.home_page_only == false or template.name == 'index'
+    assign show_announcement_bar = true
+  endif
+-%}
+
+{%- if show_announcement_bar -%}
+  <section class="relative bg-scheme-background text-scheme-text {% if link != blank %}hover:bg-scheme-accent hover:text-scheme-accent-overlay{% endif %} text-center min-h-12 border-b-section border-border {% if section.settings.use_gradient_background %}bg-scheme-gradient{% endif %}" data-color-scheme="{{ section.settings.color_scheme | default: 'primary' }}" id="AnnouncementBar">
+    {%- if section.settings.display == 'static' -%}
+      {%- if link != blank -%}
+        <a class="block text-sm text-current  py-1 lg:py-2 px-5 lg:px-0 w-full" href="{{ link }}">
+          {{ text | escape }}
+        </a>
+      {%- else -%}
+        <div class="text-sm text-current text-center py-1 lg:py-2" role="complementary">
+          <p class="px-5 lg:px-0">{{ text | escape }}</p>
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      {%- render 'text-marquee', section: section, class: 'py-1 lg:py-2' %}
+      {{ 'section-marquee.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "home_page_only",
+      "label": "t:common.settings.home_page_only.label",
+      "default": true
+    },
+    {
+      "type": "radio",
+      "id": "display",
+      "label": "t:sections.announcement_bar.settings.display.label",
+      "options": [
+        {
+          "value": "marquee",
+          "label": "t:sections.announcement_bar.settings.display.options.marquee.label"
+        },
+        {
+          "value": "static",
+          "label": "t:sections.announcement_bar.settings.display.options.static.label"
+        }
+      ],
+      "default": "marquee"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:sections.announcement_bar.settings.text.label",
+      "default": "Announce something here"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:common.settings.link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:common.settings.color_scheme.label",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:common.options.primary.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:common.options.secondary.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:common.options.tertiary.label"
+        },
+        {
+          "value": "quaternary",
+          "label": "t:common.options.quaternary.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_background",
+      "label": "t:common.settings.use_gradient_background.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.header_marquee"
+    },
+    {
+      "type": "checkbox",
+      "id": "repeat_text",
+      "default": true,
+      "label": "t:common.settings.repeat_text.label",
+      "info": "t:common.settings.repeat_text.info"
+    },
+    {
+      "type": "select",
+      "id": "shape_between_text",
+      "label": "t:common.settings.shape_between_text.label",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:common.options.none.label"
+        },
+        {
+          "value": "circle",
+          "label": "t:common.options.circle.label"
+        },
+        {
+          "value": "diamond",
+          "label": "t:common.options.diamond.label"
+        },
+        {
+          "value": "triangle",
+          "label": "t:common.options.triangle.label"
+        },
+        {
+          "value": "star",
+          "label": "t:common.options.star.label"
+        },
+        {
+          "value": "10_point_star",
+          "label": "t:common.options.10_point_star.label"
+        },
+        {
+          "value": "flower",
+          "label": "t:common.options.flower.label"
+        }
+      ],
+      "default": "10_point_star"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_shape_between_text",
+      "default": true,
+      "label": "t:common.settings.animate_shape_between_text.label"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 10,
+      "max": 400,
+      "step": 10,
+      "unit": "sec",
+      "label": "t:common.settings.speed.label",
+      "default": 120
+    },
+    {
+      "type": "radio",
+      "id": "direction",
+      "label": "t:common.settings.direction.label",
+      "options": [
+        {
+          "value": "",
+          "label": "t:common.options.right_to_left.label"
+        },
+        {
+          "value": "reverse",
+          "label": "t:common.options.left_to_right.label"
+        }
+      ],
+      "default": ""
+    }
+  ]
+}
+{% endschema %}

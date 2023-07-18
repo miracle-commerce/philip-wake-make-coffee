@@ -1,0 +1,42 @@
+.background-video__error {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  background: rgb(var(--color-scheme-background));
+  color: rgb(var(--color-scheme-error));
+  z-index: 1;
+}
+
+.background-video iframe {
+  position: absolute;
+  top: -100%;
+  left: auto;
+  width: 100%;
+  height: 300%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  transform: scale(1.0125);
+}
+
+.background-video.is-playing iframe {
+  opacity: 1;
+}
+
+.background-video iframe.background-video-iframe--tall {
+  --width: 300%;
+  --height: 120%;
+  top: calc((var(--height) - 100%) / -2);
+  left: calc(var(--width) / -3);
+  width: var(--width);
+  height: var(--height);
+  max-width: none;
+}

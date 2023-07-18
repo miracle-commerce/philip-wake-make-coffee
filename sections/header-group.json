@@ -1,0 +1,57 @@
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "disabled": true,
+      "settings": {
+        "home_page_only": true,
+        "display": "static",
+        "text": "Announce something here",
+        "link": "",
+        "color_scheme": "secondary",
+        "use_gradient_background": false,
+        "repeat_text": true,
+        "shape_between_text": "10_point_star",
+        "animate_shape_between_text": true,
+        "speed": 120,
+        "direction": ""
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo": "shopify:\/\/shop_images\/wmforshop3.png",
+        "logo_max_width": 40,
+        "main_linklist": "main-menu",
+        "show_all_navigation_links": false,
+        "showcase_second_level_links": false,
+        "showcase_first_level_collections": true,
+        "show_collection_images": false,
+        "crop": "",
+        "header_layout": "navigation_left_logo_center",
+        "header_show_search": true,
+        "sticky_header": false,
+        "show_icons": true,
+        "enable_overlay_on_homepage": false,
+        "enable_overlay_on_collection_pages": false,
+        "enable_overlay_on_product_pages": false,
+        "overlay_text_color": "white",
+        "transparent_when_overlaid_and_stuck": true,
+        "overlay_show_separator_border": false,
+        "overlay_first_section_padding_top_desktop": 3,
+        "overlay_first_section_padding_top_mobile": 3,
+        "color_scheme": "tertiary",
+        "use_gradient_background": false,
+        "dropdown_bg": "accent",
+        "sidebar_show_footer_menu": false,
+        "sidebar_show_social_icons": false
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
+}

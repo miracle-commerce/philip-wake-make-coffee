@@ -1,0 +1,40 @@
+{%- if block.settings.truncate_description and product.description.size > 100 -%}
+  <div
+    class="js-enabled {{ block_base_classes }}"
+    x-data="{ open: false }"
+    x-cloak
+    {{ block.shopify_attributes }}
+  >
+    <div
+      class="text-theme-basic"
+      x-show="!open"
+    >
+      {{ product.description | strip_newlines | strip_html | truncatewords: 25 | newline_to_br }}
+    </div>
+    <button
+      @click="open = !open"
+      x-show="!open"
+      :aria-expanded="open ? true : 'false'"
+      class="mt-4 mb-8 cursor-pointer font-secondary text-sm theme-link"
+    >
+      {{ 'products.product.read_more' | t }}
+    </button>
+    <div class="rte text-theme-basic {{ block.settings.text_align }}" x-show="open">
+      {{ product.description }}
+    </div>
+  </div>
+  <noscript>
+    <div class="rte my-8 text-theme-basic {{ block.settings.text_align }}">
+      {{ product.description }}
+    </div>
+  </noscript>
+{%- else -%}
+  <div
+    class="{{ block_base_classes }} w-full max-w-full"
+    {{ block.shopify_attributes }}
+  >
+    <div class="rte text-theme-basic {{ block.settings.text_align }}">
+      {{ product.description }}
+    </div>
+  </div>
+{%- endif -%}

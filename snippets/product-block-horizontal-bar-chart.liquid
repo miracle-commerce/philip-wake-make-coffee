@@ -1,0 +1,20 @@
+<div
+  class="{{ block_base_classes }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="flex items-center justify-start comparison-chart items-center">
+      <h4 class="w-1/5 shrink-0 text-sm">
+        {{ block.settings.label }}
+      </h4>
+      {%- liquid
+        assign value = block.settings.value
+        if block.settings.marker_position_alt != blank
+          assign value = block.settings.value_alt
+        endif 
+      -%}
+      <div class="relative flex-1" aria-label="{{ value }}%">
+        <div class="relative border-input border-scheme-text bg-scheme-accent-1 h-2 rounded-full" style="width: {{ value }}%">
+        </div>
+      </div>
+  </div>
+</div>

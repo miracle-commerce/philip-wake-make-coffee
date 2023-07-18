@@ -1,0 +1,243 @@
+{%- liquid
+  assign crop = crop | default: settings.product_tiles_aspect_ratio
+  assign shape = shape | default: settings.product_tile_media_shape
+  assign hover_image = blank
+  if settings.product_tiles_second_image_on_hover and  product.media.size > 1
+    assign hover_image = product.media[1]
+  endif
+  if enable_quick_buy
+    assign product_form_id = 'product-form-' | append: section.id | append: '-' | append: product.id
+    assign current_variant = product.selected_or_first_available_variant
+    assign featured_media = current_variant.featured_media | default: product.featured_media
+  endif
+  if use_variant
+    assign target = product.selected_or_first_available_variant
+  else
+    assign target = product
+  endif
+
+  assign compare_at_price = target.compare_at_price
+  assign price = target.price | default: 1999
+  if compare_at_price > price
+    assign on_sale = true
+  else
+    assign on_sale = false
+  endif
+  assign available = target.available | default: false
+  assign money_price = price | money
+  if settings.currency_code_enabled
+    assign money_price = price | money_with_currency
+  endif
+
+  if target == product and product.price_varies
+    assign money_price = money_price | append: '+'
+  endif
+
+  if odd_even == 'odd'
+    assign rotate = 5
+  else
+    assign rotate = -5
+  endif
+-%}
+{%- if product and product != empty -%}
+<div
+  class="product-tile relative {{ class }} {% if display_on_card %}text-scheme-text card-container{% endif %}" x-data="{ hover: false }"  @mouseleave="hover = false" @mouseover="hover = true" @focusin="hover = true" @focusout="hover = false"
+>
+  <div
+    {% if enable_quick_buy %}
+    x-data="
+    ThemeSection_ProductQuickBuy({
+      product: {{ product | json | escape }},
+      variant: {{ current_variant | json | escape }},
+      featuredMediaID: {{ featured_media.id | json }}
+    })"
+    {% endif %}
+    class="{% if display_on_card %}bg-scheme-card card {% if products_per_row_mobile == '2' %}p-2.5 lg:p-5{% else %}p-5{% endif %} h-full{% endif %}">
+    {%- if product.featured_media -%}
+      <div class="relative {% unless display_on_card %}{% if settings.media_shadow_direction contains 'top' %}pt-media-shadow{% else %}pb-media-shadow{% endif %}{% endunless %}">
+        {%- render 'product-tile-media-image',
+            media: product.featured_media,
+            shape_id: shape_id,
+            shape: shape,
+            is_card: display_on_card,
+            crop: crop,
+            hover_image: hover_image,
+            container_id: section.id,
+            quick_buy: enable_quick_buy,
+            product: product,
+            index: index
+        -%}
+      </div>
+    {%- endif -%}
+    <div class="product-tile mt-5 text-center break-words">
+      <a href="{{ product.url | within: collection }}" class="absolute top-0 left-0 w-full h-full z-10 block">
+        <span class="visually-hidden">{{ product.title }}</span>
+      </a>
+      <h3 class="font-body text-base">{{ product.title | escape }}</h3>
+      {%- if settings.product_tiles_show_vendor -%}
+        <p class="mt-1">{{ product.vendor }}</p>
+      {%- endif -%}
+
+      {%- if enable_quick_buy -%}
+      <span class="inline-block mt-1.5"
+        x-html="formatMoney(current_price)"
+        :class="
+          {
+            'invisible': !current_variant
+          }"
+        data-product-price
+      >
+        {{ current_variant.price | money }}
+      </span>
+      {% if product.compare_at_price_max > product.price %}
+        <span x-show="current_variant && product.compare_at_price_max && current_variant.compare_at_price > current_variant.price">
+          <span class="{{ price_text_size }}">
+            <span class="sr-only">{{ 'products.general.sale_price' | t }}</span>
+            <s data-compare-price
+              class="text-scheme-text"
+              x-html="formatMoney(current_variant.compare_at_price)">
+              {% if current_variant.compare_at_price > current_variant.price %}
+                {{ current_variant.compare_at_price | money }}
+              {% endif %}
+            </s>
+          </span>
+        </span>
+      {% endif %}
+      {%- else -%}
+      {%- render 'price',
+        product: product,
+        price_class: 'mt-1.5',
+        compare_at_price: compare_at_price,
+        price: price,
+        money_price: money_price,
+        on_sale: on_sale
+      -%}
+      {%- endif -%}
+
+    </div>
+    {%- if enable_quick_buy -%}
+      <div>
+      {%- render 'product-tile-quick-buy'
+        section: section,
+        product: product,
+        product_form_id: product_form_id,
+        current_variant: current_variant,
+        is_card: display_on_card
+      -%}
+      </div>
+    {%- endif -%}
+    {%- if settings.show_on_sale_and_sold_out_badges -%}
+      {%- if on_sale -%}
+        {%- liquid
+          assign text = 'products.product.on_sale' | t
+          assign id = 'on-sale-sticker-' | append: product.id
+          assign shape = settings.on_sale_badge_shape
+          assign vertical_position = 15
+          assign horizontal_position = 90
+          if rotate > 0
+            assign rotate = -5
+          else
+            assign rotate = 5
+          endif
+          if display_on_card
+            assign vertical_position = 5
+          endif
+        -%}
+        {%- render 'static-sticker',
+          static_id: 'on-sale',
+          shape: shape,
+          id: id,
+          text: text,
+          vertical_position: vertical_position,
+          horizontal_position: horizontal_position,
+          rotate: rotate,
+          width: 100,
+          font_size: '1.563rem',
+          color: 'bg-scheme-accent-1 text-scheme-accent-1-overlay'
+        %}
+      {%- endif -%}
+      {%- unless available -%}
+        {%- liquid
+          assign text = 'products.product.sold_out' | t
+          assign id = 'sold-out-sticker-' | append: product.id
+          assign vertical_position = 15
+          assign horizontal_position = 10
+          if rotate > 0
+            assign rotate = -5
+          else
+            assign rotate = 5
+          endif
+          if display_on_card
+            assign vertical_position = 5
+          endif
+        -%}
+        {%- render 'static-sticker',
+          static_id: 'sold-out',
+          id: id,
+          text: text,
+          vertical_position: vertical_position,
+          horizontal_position: horizontal_position,
+          rotate: rotate,
+          width: 100,
+          font_size: '1.563rem',
+          color: 'bg-scheme-text text-scheme-text-overlay'
+        %}
+      {%- endunless -%}
+    {%- endif -%}
+    {% assign metafield_badge = settings.product_tile_metafield_badge %}
+    {% if product.metafields.shapes_theme[metafield_badge] != blank %}
+      {%- liquid
+        assign text = product.metafields.shapes_theme[metafield_badge].value
+        assign id = 'metafield-sticker-' | append: product.id
+        assign shape = settings.metafield_badge_shape
+        assign vertical_position = 15
+        if display_on_card
+          assign vertical_position = 5
+        endif
+        if on_sale and available
+          assign horizontal_position = 10
+        else
+          assign horizontal_position = 90
+        endif
+        if on_sale and sold_out
+          if display_on_card
+            assign vertical_position = 30
+          else
+            assign vertical_position = 40
+          endif
+        endif
+        if rotate > 0
+          assign rotate = -5
+        else
+          assign rotate = 5
+        endif
+      -%}
+      {%- render 'static-sticker',
+        static_id: 'metafield-badge',
+        id: id,
+        text: text,
+        vertical_position: vertical_position,
+        horizontal_position: horizontal_position,
+        rotate: rotate,
+        width: 100,
+        font_size: '1.563rem',
+        color: 'bg-scheme-accent-1 text-scheme-accent-1-overlay'
+      %}
+    {% endif %}
+  </div>
+  {% if section.settings.display_on_card and settings.card_show_border_on_shadow %}<div class="card-border"></div>{% endif %}
+</div>
+{%- else -%}
+<div class="product-tile {{ class }} {% if display_on_card %}text-scheme-text card-container{% endif %}" x-data="{ hover: false }"  @mouseleave="hover = false" @mouseover="hover = true" @focusin="hover = true" @focusout="hover = false">
+  <div class="{% if display_on_card %}bg-scheme-card card p-5 h-full{% endif %}">
+    <div class="relative {% unless display_on_card %}{% if settings.media_shadow_direction contains 'top' %}pt-media-shadow{% else %}pb-media-shadow{% endif %}{% endunless %}">
+      {%- render 'media-image-placeholder', shape_id: shape_id, container_id: section.id, index: index, shape: shape, crop: crop, is_card: section.settings.display_on_card -%}
+    </div>
+    <div class="product-tile mt-5 text-center">
+      <h3 class="font-body text-base">{{ 'sections.onboarding.product_title' | t }}</h3>
+      {% render 'price', price_class: "mt-2" %}
+    </div>
+  </div>
+  {% if section.settings.display_on_card and settings.card_show_border_on_shadow %}<div class="card-border"></div>{% endif %}
+</div>
+{%- endif -%}

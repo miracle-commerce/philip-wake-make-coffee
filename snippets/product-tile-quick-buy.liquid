@@ -1,0 +1,170 @@
+
+<div
+  class="mt-2.5 relative z-20 {% unless section.settings.display_on_card %}max-w-xs mx-auto{% endunless %}">
+  {% form 'product',
+    product,
+    id: product_form_id,
+    data-product-form: '',
+    data-product-handle: product.handle,
+    data-enable-history-state: 'true',
+    data-product-form: '',
+    x-ref: 'productForm',
+    class: 'quick-buy-product-form'
+  %}
+
+  <div class="{% if product.has_only_default_variant or product.variants.size == 2 %}hidden{% else %}mb-2.5 text-center{% endif %}">
+    <label class="hidden {{ label_class }}" for="fallback-selector-{{ section.id }}">Variant</label>
+    <select @change="mainSelectorChange()" x-ref="singleVariantSelector" name="id" id="fallback-selector-{{ section.id }}" class="appearance-none p-2 font-secondary text-sm input text-scheme-text pr-10 mx-auto max-w-full {% if is_card %}w-full{% endif %}">
+      {% for variant in product.variants %}
+        <option
+          {% if variant == current_variant %}selected="selected"{% endif %}
+          {% unless variant.available %}disabled="disabled"{% endunless %}
+          x-bind:selected="currentVariantId === {{ variant.id }}"
+          value="{{ variant.id }}"
+        >
+          {{ variant.title }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  {% unless product.has_only_default_variant or product.variants.size != 2 %}
+    <div
+      class="relative z-10 {{ block_base_classes }}"
+      :class="{ 'invisible': !current_variant }"
+      {{ block.shopify_attributes }}
+    >
+      {% for option in product.options_with_values %}
+        {% assign option_array_index = forloop.index0 %}
+
+        <fieldset class="product-variant-picker-block {% if is_color %}-mx-color-fieldset-offset {% endif %} js-enabled">
+          <legend class="hidden {{ label_class }}">
+            {{ option.name }}{% if is_color %}: <span x-text="options[{{ forloop.index0 }}]"></span>{% endif %}
+          </legend>
+          <div class="-mx-1 flex flex-wrap justify-center">
+            {% for value in option.values %}
+              {%- liquid
+                assign variant_label_state = true
+                if product.options.size == 1
+                  unless product.variants[forloop.index0].available
+                    assign variant_label_state = false
+                  endunless
+                endif
+                assign color_image = value | handle | append: '.' | append: 'png' | file_img_url: '120x' | prepend: 'https:'
+                assign color_swatch_fallback = value | split: ' ' | last | handle
+              -%}
+              <div class="inline-block mx-1 mb-2.5 relative variant-input">
+                <input
+                  class="{% if is_color %}color-swatch{% endif %} cursor-pointer absolute top-0 left-0 w-full h-full opacity-0"
+                  @change="optionChange()"
+                  type="radio"
+                  id="Section-{{ section.id }}-Product-{{ product.id }}-Option{{ option.position }}-{{ value | escape }}" name="Section-{{ section.id }}-Product-{{ product.id }}-options[{{ option.name }}]"
+                  value="{{ value | escape }}"
+                  data-handle="{{ value | handleize }}"
+                  {% if option.selected_value == value %} checked{% endif %} data-single-option-selector
+                >
+                <label
+                  :class="
+                    {
+                      {% if is_color %}
+                        'border-opacity-10' : optionHandles[{{ option_array_index }}] !== '{{ value | handleize }}'
+                      {% else %}
+                        'bg-scheme-text text-scheme-text-overlay' : optionHandles[{{ option_array_index }}] === '{{ value | handleize }}',
+                        'bg-scheme-secondary-background text-scheme-text ' : optionHandles[{{ option_array_index }}] !== '{{ value | handleize }}'
+                      {% endif %}
+                    }
+                  "
+                  class="
+                    relative block text-center border-scheme-text rounded-button text-sm border-input
+                    {% unless is_color %}
+                      p-2 min-w-[2.5rem]
+                    {% else %}
+                      p-0.5
+                    {% endunless %}
+                    border-1 border cursor-pointer
+                    {% unless variant_label_state %}
+                      line-through
+                    {% endunless %}
+                    cursor-pointer"
+                  for="Section-{{ section.id }}-Product-{{ product.id }}-Option{{ option.position }}-{{ value | escape }}"
+                  title="{{ option.value }}"
+                  >
+                  {%- if is_color %}
+                    {%- unless variant_label_state -%}
+                      <span class="absolute left-0 bottom-0 z-10 h-0.5 w-full bg-scheme-text top-1/2 -translate-y-1/2 -rotate-45"></span>
+                    {%- endunless -%}
+                    <span class="block w-10 h-10 bg-cover" style="background-image: url({{ color_image }}); background-color: {{ color_swatch_fallback }};"></span>
+                  {%- endif -%}
+                  <span {% if is_color %}class="sr-only"{% endif %}>{{ value }}</span>
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </fieldset>
+      {% endfor %}
+    </div>
+  {% endunless %}
+
+  <span class="sr-only">{{ 'products.general.regular_price' | t }}</span>
+
+  <div class="relative z-10 text-center {% unless product.available %}cursor-not-allowed{% endunless %} {% if settings.button_shadow_direction contains 'top' %}pt-button-shadow{% else %}pb-button-shadow{% endif %}">
+    <button
+      class="{% if product.available %}push-btn theme-button{% else %}btn text-sm lg:text-base after:hidden bg-scheme-secondary-background text-scheme-text shadow-secondary{% endif %} {% if is_card %}w-full{% endif %}"
+      type="submit"
+      {% unless product.available %}disabled="disabled"{% endunless %}
+    >
+      <span class="{% if product.available %}push-btn-surface{% endif %} {% if is_card %}w-full{% endif %}">
+        {% if current_variant.available %} {{ 'products.product.add_to_cart' | t }}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}
+       </span>
+       <span class="visually-hidden">, {{ product.title }}</span>
+    </button>
+  </div>
+
+  {%- if settings.cart_type == 'page' or settings.open_modal_on_add_to_cart == false -%}
+    <div
+      class="mt-2.5 text-theme-basic text-center text-sm rte"
+      tabindex="-1"
+      x-ref="added"
+      x-show="addedToCart"
+      x-cloak
+      x-transition:enter="transition ease duration-300"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100"
+      x-transition:leave="transition ease duration-300"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+    >
+      <div class="text-sm">
+      {{ 'products.product.added_to_cart' | t }}!
+      {{ 'products.product.add_to_cart_confirm_html' | t: cart_url: routes.cart_url, link_url: routes.all_products_collection_url }}.
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div x-show="current_variant && current_variant.unit_price">
+    <div class="text-sm text-scheme-text text-center mt-2.5" data-unit-price-wrapper>
+      <span class="sr-only">
+        {{- 'products.product.unit_price_label' | t -}}
+      </span>
+      <span x-html="formatMoney(current_variant.unit_price)">
+        {{- current_variant.unit_price | money -}}
+      </span>
+      <span aria-hidden="true">
+        /
+      </span>
+      <span class="sr-only">
+        {{- 'general.accessibility.unit_price_separator' | t -}}
+      </span>
+      <span x-show="current_variant.unit_price_measurement && current_variant.unit_price_measurement.reference_value !== 1 ? current_variant.unit_price_measurement.reference_value : false">
+        {%- if current_variant.unit_price_measurement.reference_value != 1 -%}
+          {{- current_variant.unit_price_measurement.reference_value -}}
+        {%- endif -%}
+      </span>
+      <span x-html="current_variant.unit_price_measurement && current_variant.unit_price_measurement.reference_unit">
+        {{- current_variant.unit_price_measurement.reference_unit -}}
+      </span>
+    </div>
+  </div>
+
+  {% endform %}
+</div>

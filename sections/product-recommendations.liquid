@@ -1,0 +1,475 @@
+
+
+{%- if section.settings.show_product_recommendations -%}
+  {%- if recommendations.performed -%}
+    {% if recommendations.products_count > 0 %}
+    {%- liquid
+      case recommendations.products_count
+        when 2
+          assign grid_class = 'lg:grid-cols-2'
+        when 3
+          assign grid_class = 'lg:grid-cols-3'
+        when 4
+          assign grid_class = 'lg:grid-cols-4'
+        when 6
+          assign grid_class = 'lg:grid-cols-3'
+      endcase
+
+      assign shape_id = section.id
+      if section.settings.image_shape != ''
+        assign image_shape = section.settings.image_shape
+      else
+        assign image_shape = settings.product_tile_media_shape
+      endif
+    -%}
+
+
+
+    <div class="product-recommendations">
+      <section class="text-scheme-text bg-scheme-background relative overflow-hidden {% if section.settings.use_gradient_background %}bg-scheme-gradient{% endif %} " data-color-scheme="{{ section.settings.color_scheme | default: 'primary' }}">
+
+        {%- render 'collection-shape-defs',
+          shape: image_shape,
+          section_id: section.id,
+          item_count: recommendations.products_count
+        -%}
+
+        <div class="section-content py-section-vertical-spacing px-section">
+
+          <h2 class="text-center font-heading  heading-standard heading-style break-words {{ settings.heading_drop_shadow_style }}">{{ section.settings.product_recommendations_heading | escape }}</h2>
+
+          <div class="section-content-top-margin">
+            <ul class="grid {{ grid_class }} gap-theme" role="list">
+              {%- for product in recommendations.products -%}
+                {%- liquid
+                  if image_shape == 'blob'
+                    assign shape_id = section.id | append: '-' | append: forloop.index0
+                  endif
+                -%}
+                <li class="">
+                  {%- liquid
+                    if settings.product_tiles_scatter
+                      capture class
+                        case section.settings.products_per_row_mobile
+                          when '2'
+                          cycle 'max-lg:-translate-y-4 ', 'max-lg:translate-y-4 '
+                        endcase
+                        case section.settings.products_per_row_desktop
+                          when 3
+                            cycle 'lg:translate-y-4 ', 'lg:-translate-y-4 ', 'lg:translate-y-4 '
+                          when 2 or 4
+                            cycle 'lg:-translate-y-4 ', 'lg:translate-y-4 '
+                          when 5
+                            cycle 'lg:translate-y-4 ', 'lg:-translate-y-4 ', 'lg:translate-y-4 ', 'lg:-translate-y-4 ', 'lg:translate-y-4 '
+                        endcase
+                      endcapture
+                    endif
+                    capture odd_even
+                      cycle 'odd', 'even'
+                    endcapture
+                  -%}
+                  {%- render 'product-tile'
+                    product: product,
+                    crop: section.settings.product_tiles_aspect_ratio,
+                    shape_id: shape_id,
+                    shape: image_shape,
+                    display_on_card: section.settings.display_on_card,
+                    class: class,
+                    odd_even: odd_even,
+                    index: forloop.index0,
+                    enable_quick_buy: section.settings.enable_quick_buy
+                  -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  {%- else -%}
+    {%- capture section_url -%}{{ routes.product_recommendations_url }}?section_id={{ section.id }}&limit={{ section.settings.max_products }}&product_id={{ product.id }}{%- endcapture -%}
+    <div
+      class="product-recommendations"
+      x-data
+      x-html="$fetchedSection(
+        '{{ section_url }}',
+        '.product-recommendations'
+      )"
+    ></div>
+  {%- endif -%}
+{%- endif -%}
+
+{%- if section.settings.enable_quick_buy -%}
+{%- unless request.design_mode -%}
+<script src="{{ 'vendor-product.bundle.min.js' | asset_url }}" type="module"></script>
+<script src="{{ 'product-quick-buy.js' | asset_url }}" type="module"></script>
+{%- endunless -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.product_recommendations.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_product_recommendations",
+      "label": "t:sections.product_recommendations.settings.show_product_recommendations.label",
+      "info": "t:sections.product_recommendations.settings.show_product_recommendations.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "display_on_card",
+      "label": "t:common.settings.display_on_card.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_buy",
+      "label": "t:common.settings.enable_quick_buy.label",
+      "info": "t:common.settings.enable_quick_buy.info"
+    },
+    {
+      "type": "text",
+      "id": "product_recommendations_heading",
+      "label": "t:sections.product_recommendations.settings.product_recommendations_heading.label",
+      "default": "You may also like"
+    },
+    {
+      "type": "select",
+      "id": "max_products",
+      "default": "3",
+      "options": [
+        {
+          "value": "3",
+          "label": "t:sections.product_recommendations.settings.max_products.options.3_products.label"
+        },
+        {
+          "value": "4",
+          "label": "t:sections.product_recommendations.settings.max_products.options.4_products.label"
+        },
+        {
+          "value": "6",
+          "label": "t:sections.product_recommendations.settings.max_products.options.6_products.label"
+        }
+      ],
+      "label": "t:sections.product_recommendations.settings.max_products.label"
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_product_grid"
+    },
+    {
+      "type": "select",
+      "id": "product_tiles_aspect_ratio",
+      "label": "t:common.settings.product_tiles_aspect_ratio.label",
+      "options": [
+        {
+          "value": "",
+          "label": "t:common.options.same_as_theme_settings.label"
+        },
+        {
+          "value": "natural",
+          "label": "t:common.options.natural.label"
+        },
+        {
+          "value": "aspect-w-4 aspect-h-3",
+          "label": "t:common.options.landscape.label"
+        },
+        {
+          "value": "aspect-w-1 aspect-h-1",
+          "label": "t:common.options.square.label"
+        },
+        {
+          "value": "aspect-w-3 aspect-h-4",
+          "label": "t:common.options.portrait.label"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "t:common.settings.image_shape.label",
+      "options": [
+        {
+          "value": "",
+          "label": "t:common.options.same_as_theme_settings.label"
+        },
+        {
+          "value": "default",
+          "label": "t:common.options.default.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_ellipse",
+          "label": "t:common.options.ellipse.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_pill",
+          "label": "t:common.options.pill.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "default_archway",
+          "label": "t:common.options.archway.label",
+          "group": "Fit to image"
+        },
+        {
+          "value": "diamond",
+          "label": "t:common.options.diamond.label",
+          "group": "Basic"
+        },
+        {
+          "value": "triangle_1",
+          "label": "t:common.options.triangle_1.label",
+          "group": "Basic"
+        },
+        {
+          "value": "triangle_2",
+          "label": "t:common.options.triangle_2.label",
+          "group": "Basic"
+        },
+        {
+          "value": "pentagon",
+          "label": "t:common.options.pentagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "hexagon",
+          "label": "t:common.options.hexagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "heptagon",
+          "label": "t:common.options.heptagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "octagon",
+          "label": "t:common.options.octagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_pentagon",
+          "label": "t:common.options.rounded_pentagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_hexagon",
+          "label": "t:common.options.rounded_hexagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_heptagon",
+          "label": "t:common.options.rounded_heptagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "rounded_octagon",
+          "label": "t:common.options.rounded_octagon.label",
+          "group": "Polygons"
+        },
+        {
+          "value": "star_1",
+          "label": "t:common.options.star_1.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_2",
+          "label": "t:common.options.star_2.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_3",
+          "label": "t:common.options.star_3.label",
+          "group": "Circular"
+        },
+        {
+          "value": "star_4",
+          "label": "t:common.options.star_4.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_1",
+          "label": "t:common.options.scalloped_circle_1.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_2",
+          "label": "t:common.options.scalloped_circle_2.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_3",
+          "label": "t:common.options.scalloped_circle_3.label",
+          "group": "Circular"
+        },
+        {
+          "value": "scalloped_circle_4",
+          "label": "t:common.options.scalloped_circle_4.label",
+          "group": "Circular"
+        },
+        {
+          "value": "parallelogram",
+          "label": "t:common.options.parallelogram.label",
+          "group": "Square"
+        },
+        {
+          "value": "scalloped_square",
+          "label": "t:common.options.scalloped.label",
+          "group": "Square"
+        },
+        {
+          "value": "leaf",
+          "label": "t:common.options.leaf.label",
+          "group": "Square"
+        },
+        {
+          "value": "clipped_square",
+          "label": "t:common.options.clipped.label",
+          "group": "Square"
+        },
+        {
+          "value": "convex_square",
+          "label": "t:common.options.convex.label",
+          "group": "Square"
+        },
+        {
+          "value": "twisted_square",
+          "label": "t:common.options.twisted.label",
+          "group": "Square"
+        },
+        {
+          "value": "trapeze",
+          "label": "t:common.options.trapeze.label",
+          "group": "Square"
+        },
+        {
+          "value": "blob",
+          "label": "t:common.options.blob.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "zig_zag",
+          "label": "t:common.options.zig_zag.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "zig_zag_tear",
+          "label": "t:common.options.zig_zag_tear.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "wave_tear",
+          "label": "t:common.options.wave_tear.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "flower",
+          "label": "t:common.options.flower.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "concave",
+          "label": "t:common.options.concave.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "cross",
+          "label": "t:common.options.cross.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "quatrefoil",
+          "label": "t:common.options.quatrefoil.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "wind",
+          "label": "t:common.options.wind.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "heart",
+          "label": "t:common.options.heart.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "mirrored_pyramids",
+          "label": "t:common.options.mirrored_pyramids.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "plus",
+          "label": "t:common.options.plus.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "double_pill",
+          "label": "t:common.options.double_pill.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "triple_pill",
+          "label": "t:common.options.triple_pill.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "crown",
+          "label": "t:common.options.crown.label",
+          "group": "Miscellaneous"
+        },
+        {
+          "value": "abstract_star",
+          "label": "t:common.options.abstract_star.label",
+          "group": "Miscellaneous"
+        }
+      ],
+      "info": "t:common.settings.image_shape.info"
+    },
+    {
+      "type": "header",
+      "content": "t:common.settings.header_color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:common.settings.color_scheme.label",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:common.options.primary.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:common.options.secondary.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:common.options.tertiary.label"
+        },
+        {
+          "value": "quaternary",
+          "label": "t:common.options.quaternary.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_background",
+      "label": "t:common.settings.use_gradient_background.label"
+    }
+  ],
+  "templates": [
+    "product"
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product_recommendations.name"
+    }
+  ]
+}
+{% endschema %}

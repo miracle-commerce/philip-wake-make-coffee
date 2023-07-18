@@ -1,0 +1,12 @@
+.shape {
+  width: 100vw;
+  height: auto;
+  transform-origin: left top;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+}
+@media (min-width: 990px) {
+  .shape {
+    width: 50vw;
+  }
+}

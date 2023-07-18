@@ -1,0 +1,14 @@
+.spr-star-rating {
+  color: rgb(var(--star-rating-star-color));
+}
+
+.spr-star-rating .spr-badge.spr-badge {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.spr-star-rating .spr-badge-caption.spr-badge-caption {
+  margin-left: 0.25rem; /* ml-1; */
+  color: var(--star-rating-caption-color);
+}

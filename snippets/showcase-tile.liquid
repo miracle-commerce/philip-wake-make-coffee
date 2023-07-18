@@ -1,0 +1,12 @@
+<div>
+  <a href="{{ object.url }}">
+    {%- if object.featured_image != blank -%}
+      <div class="{% unless crop == '' or crop == blank %}object-wrapper {{ crop }}{% endunless %}">
+        {{ object.featured_image | image_url: width: 700 | image_tag: class: 'media-style' }}
+      </div>
+    {%- endif -%}
+    <div class="mt-2 text-center">
+      {{ object.title }}
+    </div>
+  </a>
+</div>

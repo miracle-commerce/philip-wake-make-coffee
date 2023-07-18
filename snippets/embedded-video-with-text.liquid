@@ -1,0 +1,142 @@
+{% comment %}theme-check-disable MissingTemplate{% endcomment %}
+{%- liquid
+  assign video_position = video_position
+
+  case video_size
+    when 'third'
+      assign text_width_desktop = 'lg:col-span-8'
+
+      if video_position == 'right'
+        assign video_width_desktop = 'lg:col-start-9 lg:col-end-13'
+      else
+        assign video_width_desktop = 'lg:col-span-4'
+      endif
+    when 'half'
+      assign text_width_desktop = 'lg:col-span-6'
+
+      if video_position == 'right'
+        assign video_width_desktop = 'lg:col-start-7 lg:col-end-13'
+      else
+        assign video_width_desktop = 'lg:col-span-6'
+      endif
+    when 'three_fifths'
+      assign text_width_desktop = 'lg:col-span-5'
+
+      if video_position == 'right'
+        assign video_width_desktop = 'lg:col-start-6 lg:col-end-13'
+      else
+        assign video_width_desktop = 'lg:col-span-7'
+      endif
+    when 'two_thirds'
+      assign text_width_desktop = 'lg:col-span-4'
+
+      if video_position == 'right'
+        assign video_width_desktop = 'lg:col-start-5 lg:col-end-13'
+      else
+        assign video_width_desktop = 'lg:col-span-8'
+      endif
+  endcase
+
+  if poster_image == blank and autoplay == false
+    assign autoplay_parameter = false
+  else
+    assign autoplay_parameter = true
+  endif
+-%}
+
+{%- render 'shape-defs',
+  shape: video_shape,
+  shape_id: section_id,
+  index: index,
+  blob_type: blob_type
+-%}
+
+<div class="px-section relative z-10 max-w-site mx-auto">
+  <div class="{% if display_on_card %}card-container{% endif %}">
+    <div class="{% if display_on_card %}card p-5 lg:p-10{% endif %} section-content mx-auto relative z-10 text_alignment">
+      <div class="grid grid-cols-1 lg:grid-cols-12 grid-flow-row-dense gap-10">
+        <div
+          class="{{ video_width_desktop }}"
+          x-data="{ enabled: {% if autoplay %}true{% else %}false{% endif %} }"
+        >
+          {%- if video_url != blank -%}
+            {% capture video_embed %}{%- render 'media-embedded-video', media: video_url, autoplay: autoplay_parameter, muted: muted, loop: loop, controls: controls, chromeless: chromeless, shape_id: section_id, shape: video_shape, crop: crop, rotate: rotate_video, is_card: display_on_card, container_id: container_id, disable_media_style: disable_media_style
+              -%}{% endcapture %}
+            {% if poster_image != blank %}
+              <div class="relative" x-show="!enabled">
+                <div>
+                  {%- render 'media-image',
+                    media: poster_image,
+                    shape_id: section_id,
+                    shape: video_shape,
+                    crop: crop,
+                    rotate: rotate_video,
+                    is_card: display_on_card,
+                    container_id: container_id,
+                    disable_media_style: disable_media_style
+                  -%}
+                </div>
+                <button
+                  class="absolute inset-0 w-full h-full grid place-content-center z-10"
+                  @click="enabled = true"
+                  style="transform: rotate({{ rotate_video }}deg);"
+                >
+                  <span class="sr-only">{{ 'general.video.play' | t }}</span>
+                  <div class="push-btn">
+                    <span class="push-btn-surface align-bottom p-2">
+                      <span class="inline-block p-2.5">
+                        <span class="inline-block w-10 h-10">
+                          {% render 'icon-play' %}
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                </button>
+              </div>
+              <template x-if="enabled">
+                {{ video_embed }}
+              </template>
+            {% else %}
+              {{ video_embed }}
+            {% endif %}
+          {%- else -%}
+            {%- render 'media-image-placeholder',
+              shape_id: section_id,
+              container_id: section_id,
+              shape: video_shape,
+              crop: scrop,
+              is_card: display_on_card,
+              blob_type: blob_type
+            -%}
+          {%- endif -%}
+        </div>
+        <div class="flex items-center {{ text_width_desktop }}">
+          <div class="{{ text_alignment }}">
+            {% if title != '' %}
+              <h2 class="font-heading  {{ heading_size }} heading-style {{ settings.heading_drop_shadow_style }}">
+                {{ title }}
+              </h2>
+            {% endif %}
+
+            <div class="rte mt-5 max-w-2xl {% if text_alignment contains 'center' %}mx-auto{% elsif text_alignment contains 'right' %}ml-auto{% endif %}">
+              {{ richtext }}
+            </div>
+
+            {%- if button_link != blank and button_label != '' -%}
+              <div class="mt-5">
+                <a href="{{ button_link }}" class="inline-block push-btn">
+                  <span class="push-btn-surface">{{ button_label }}</span>
+                </a>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if section.settings.display_on_card
+      and settings.card_show_border_on_shadow
+    -%}
+      <div class="card-border"></div>
+    {%- endif %}
+  </div>
+</div>

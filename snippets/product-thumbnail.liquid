@@ -1,0 +1,49 @@
+{%- liquid
+  assign shape_id = thumbnails_id
+  if section.settings.thumbnail_shape == 'blob'
+    assign shape_id = thumbnails_id | append: '-' | append: index
+  endif
+-%}
+<li class="product-thumbnail-list-item {% if media.id == featured_media.id %}product-thumbnail-list-item--active{% endif %} relative {% if section.settings.thumbnails_position == 'left' %}splide__slide{% endif %} {% if settings.media_shadow_direction contains 'left' %} pt-media-shadow-half{% else %}pb-media-shadow-half{% endif %} {% if settings.media_shadow_direction contains 'left' %}lg:pl-media-shadow-half{% else %}pr-media-shadow-half{% endif %}"
+  data-media-id="{{ media.id }}"
+  :class="{ 'product-thumbnail-list-item--active' : {{ media.id }} === current_media_id }"
+  {% if index == 0 %}
+    x-ref="firstThumbnail"
+    data-first-thumbnail
+  {% endif %}
+  {% if forloop.last %}
+    x-ref="lastThumbnail"
+    data-last-thumbnail
+  {% endif %}>
+  <a
+    role="button"
+    class="block media-thumbnail"
+    href="{{ media | image_url }}"
+    @click.prevent="current_media_id = {{ media.id }}"
+    @keydown.space="current_media_id = {{ media.id }}"
+    @keydown.enter="current_media_id = {{ media.id }}"
+  >
+    <div class="media--small relative">
+      {% if media.media_type != 'image' %}
+        <div class="z-20 absolute top-1 right-1 w-6 h-6 bg-scheme-card border border-scheme-text border-opacity-5 grid place-content-center">
+          <div class="opacity-70">
+            {% if media.media_type == 'model' %}
+              {% render 'icon-model' %}
+            {% elsif media.media_type contains 'video' %}
+              {% render 'icon-video' %}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+      {%- render 'media-image',
+        media: media,
+        shape_id: shape_id,
+        shape: section.settings.thumbnail_shape,
+        crop: section.settings.thumbnail_crop,
+        is_card: section.settings.hide_media_shadow,
+        container_id: section.id,
+        index: index
+      -%}
+    </div>
+  </a>
+</li>

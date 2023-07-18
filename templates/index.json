@@ -1,0 +1,714 @@
+{
+  "sections": {
+    "165089147572b58f85": {
+      "type": "image-with-text-overlay",
+      "blocks": {
+        "e407a37c-5b97-486d-99d1-d1ff54c6cb41": {
+          "type": "shape_divider",
+          "settings": {
+            "target_section": "above",
+            "target_section_color_scheme": "tertiary",
+            "style": "medium-waves_1200x43",
+            "flip_horizontal": false,
+            "enable_animation": false,
+            "animation_direction": ""
+          }
+        },
+        "d3fd69d6-0368-49b2-a1c4-1f8f4b2c46ba": {
+          "type": "shape_divider",
+          "settings": {
+            "target_section": "below",
+            "target_section_color_scheme": "quaternary",
+            "style": "tilt-1-asymmetrical_1440x101",
+            "flip_horizontal": false,
+            "enable_animation": false,
+            "animation_direction": ""
+          }
+        }
+      },
+      "block_order": [
+        "e407a37c-5b97-486d-99d1-d1ff54c6cb41",
+        "d3fd69d6-0368-49b2-a1c4-1f8f4b2c46ba"
+      ],
+      "settings": {
+        "image": "shopify:\/\/shop_images\/WM_SEAMLESS-19.jpg",
+        "display_on_card": true,
+        "display_content_below_image_on_mobile": true,
+        "style": "full",
+        "height": "pt-half-screen-height",
+        "place_content": "place-content-center-center",
+        "text_align": "text-center",
+        "title": "Welcome to the Secret Wake and Make Soft Launch...",
+        "heading_size": "heading-feature",
+        "richtext": "<p>50% OFF FIRST ORDER w\/ CODE \"VIP\"!<\/p>",
+        "cta_url": "",
+        "cta_text": "Shop Now",
+        "color_scheme": "primary",
+        "use_gradient_background": false,
+        "text_overlay_color": "same_as_section"
+      }
+    },
+    "1650891682f199a493": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "",
+        "subheading": "",
+        "collection": "frontpage",
+        "no_products": 4,
+        "show_view_all": false,
+        "enable_quick_buy": false,
+        "display_on_card": true,
+        "layout": "grid",
+        "products_per_row_mobile": "2",
+        "products_per_row_desktop": 4,
+        "slideshow_focus": "center",
+        "mobile_slide_width": "three_fifths",
+        "desktop_slide_width": 40,
+        "autoscroll_mode": "1",
+        "product_tiles_aspect_ratio": "",
+        "image_shape": "default_archway",
+        "color_scheme": "primary",
+        "use_gradient_background": false
+      }
+    },
+    "1650891033bae15b05": {
+      "type": "image-with-text",
+      "disabled": true,
+      "blocks": {
+        "fd63bf46-7b83-450b-9205-e98d3bb15657": {
+          "type": "background_shape",
+          "settings": {
+            "shape": "star_4",
+            "blob_type": 1,
+            "size": 170,
+            "opacity": 70,
+            "blur": 0,
+            "horizontal_position": 80,
+            "vertical_position": 58,
+            "rotate": -12,
+            "enable_parallax": true,
+            "parallax_speed": 3,
+            "color": "gradient",
+            "color_scheme": "same_as_section"
+          }
+        },
+        "7de8f682-42c1-4705-b9ea-207f66e0c04e": {
+          "type": "shape_divider",
+          "settings": {
+            "target_section": "below",
+            "target_section_color_scheme": "secondary",
+            "style": "waves-1-asymmetrical_1440x261",
+            "flip_horizontal": true,
+            "enable_animation": true,
+            "animation_direction": ""
+          }
+        },
+        "175e66d3-20ec-47c8-b628-6580300f4f5f": {
+          "type": "sticker",
+          "disabled": true,
+          "settings": {
+            "text": "Sticker",
+            "shape": "star_1",
+            "width": 200,
+            "sticker_font_size": "1.563rem",
+            "half_image_width_on_mobile": true,
+            "horizontal_position": 73,
+            "vertical_position": 77,
+            "rotate": 0,
+            "show_sticker_on_mobile": true,
+            "show_sticker_on_desktop": true,
+            "rotation_animation": "rotate_when_scrolling",
+            "enable_parallax": true,
+            "parallax_speed": 6,
+            "color": "bg-scheme-accent text-scheme-accent-overlay",
+            "color_scheme": "same_as_section"
+          }
+        },
+        "140e7989-8375-45bf-b75f-61897a50b73a": {
+          "type": "sticker",
+          "disabled": true,
+          "settings": {
+            "text": "Sticker",
+            "shape": "star_1",
+            "width": 120,
+            "sticker_font_size": "1.563rem",
+            "half_image_width_on_mobile": true,
+            "horizontal_position": 77,
+            "vertical_position": 38,
+            "rotate": 0,
+            "show_sticker_on_mobile": true,
+            "show_sticker_on_desktop": true,
+            "rotation_animation": "rotate_when_scrolling",
+            "enable_parallax": true,
+            "parallax_speed": 6,
+            "color": "bg-scheme-accent text-scheme-accent-overlay",
+            "color_scheme": "same_as_section"
+          }
+        }
+      },
+      "block_order": [
+        "fd63bf46-7b83-450b-9205-e98d3bb15657",
+        "7de8f682-42c1-4705-b9ea-207f66e0c04e",
+        "175e66d3-20ec-47c8-b628-6580300f4f5f",
+        "140e7989-8375-45bf-b75f-61897a50b73a"
+      ],
+      "settings": {
+        "display_on_card": false,
+        "image": "shopify:\/\/shop_images\/110723SHOOT_WM_SEAMLESS-19.jpg",
+        "crop": "",
+        "image_shape": "default",
+        "blob_type": 2,
+        "rotate_image": 12,
+        "image_position": "right",
+        "image_size": "half",
+        "disable_media_style": true,
+        "title": "GREAT COFFEE THAT DOES GOOD",
+        "heading_size": "heading-template",
+        "richtext": "",
+        "text_alignment": "text-left",
+        "button_link": "",
+        "button_label": "Shop Now",
+        "color_scheme": "primary",
+        "use_gradient_background": true
+      }
+    },
+    "16508912994a26e8bf": {
+      "type": "rich-text",
+      "disabled": true,
+      "blocks": {
+        "0a67b1dc-9897-4fc0-ab9e-cfd162628bae": {
+          "type": "sticker",
+          "settings": {
+            "text": "Sticker",
+            "shape": "star_1",
+            "width": 150,
+            "sticker_font_size": "1.563rem",
+            "half_image_width_on_mobile": true,
+            "horizontal_position": 8,
+            "vertical_position": 80,
+            "rotate": 0,
+            "show_sticker_on_mobile": true,
+            "show_sticker_on_desktop": true,
+            "rotation_animation": "rotate_when_scrolling",
+            "enable_parallax": true,
+            "parallax_speed": 3,
+            "color": "bg-scheme-accent text-scheme-accent-overlay",
+            "color_scheme": "same_as_section"
+          }
+        }
+      },
+      "block_order": [
+        "0a67b1dc-9897-4fc0-ab9e-cfd162628bae"
+      ],
+      "settings": {
+        "title": "Heading",
+        "heading_size": "heading-base",
+        "rich_text": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.<\/p>",
+        "display_on_card": false,
+        "content_width_desktop": "lg:w-2\/3",
+        "button_link": "",
+        "button_label": "Shop Now",
+        "color_scheme": "secondary",
+        "use_gradient_background": false
+      }
+    },
+    "1650891303c44cb2d2": {
+      "type": "icon-list",
+      "disabled": true,
+      "blocks": {
+        "16508913039d58ab55-0": {
+          "type": "icon",
+          "settings": {
+            "icon": "alcohol_free",
+            "text": ""
+          }
+        },
+        "16508913039d58ab55-1": {
+          "type": "icon",
+          "settings": {
+            "icon": "no_additives",
+            "text": ""
+          }
+        },
+        "16508913039d58ab55-2": {
+          "type": "icon",
+          "settings": {
+            "icon": "no_artificial_colors",
+            "text": ""
+          }
+        },
+        "2d49c667-6651-4aec-9f2e-b5b01b310ecd": {
+          "type": "icon",
+          "settings": {
+            "icon": "organic",
+            "text": ""
+          }
+        },
+        "2eb4a361-85df-445d-a708-84d7e4173322": {
+          "type": "icon",
+          "settings": {
+            "icon": "gluten_free",
+            "text": ""
+          }
+        },
+        "eb42bfa2-e2b9-4bfe-8b67-b4e7b94efbf6": {
+          "type": "icon",
+          "settings": {
+            "icon": "sugar_free",
+            "text": ""
+          }
+        },
+        "7f2265e7-4734-46f9-a3c4-cec407d5a2d3": {
+          "type": "icon",
+          "settings": {
+            "icon": "probiotic",
+            "text": ""
+          }
+        },
+        "f3086909-a9d2-48be-ab4f-01abd112ac9c": {
+          "type": "icon",
+          "settings": {
+            "icon": "low_carb",
+            "text": ""
+          }
+        }
+      },
+      "block_order": [
+        "16508913039d58ab55-0",
+        "16508913039d58ab55-1",
+        "16508913039d58ab55-2",
+        "2d49c667-6651-4aec-9f2e-b5b01b310ecd",
+        "2eb4a361-85df-445d-a708-84d7e4173322",
+        "eb42bfa2-e2b9-4bfe-8b67-b4e7b94efbf6",
+        "7f2265e7-4734-46f9-a3c4-cec407d5a2d3",
+        "f3086909-a9d2-48be-ab4f-01abd112ac9c"
+      ],
+      "settings": {
+        "title": "",
+        "max_width": 100,
+        "text_style": "body",
+        "color_scheme": "secondary",
+        "use_gradient_background": false
+      }
+    },
+    "1650891358fef95dd4": {
+      "type": "featured-collection",
+      "disabled": true,
+      "blocks": {
+        "7261f40b-41bf-4b48-8953-041e29fe35e4": {
+          "type": "shape_divider",
+          "settings": {
+            "target_section": "above",
+            "target_section_color_scheme": "secondary",
+            "style": "medium-waves_1200x43",
+            "flip_horizontal": false,
+            "enable_animation": false,
+            "animation_direction": ""
+          }
+        }
+      },
+      "block_order": [
+        "7261f40b-41bf-4b48-8953-041e29fe35e4"
+      ],
+      "settings": {
+        "title": "Featured collection",
+        "subheading": "Use this text to share information about your collection.",
+        "collection": "",
+        "no_products": 4,
+        "show_view_all": false,
+        "enable_quick_buy": false,
+        "display_on_card": false,
+        "layout": "carousel",
+        "products_per_row_mobile": "1",
+        "products_per_row_desktop": 4,
+        "slideshow_focus": "center",
+        "mobile_slide_width": "three_fifths",
+        "desktop_slide_width": 40,
+        "autoscroll_mode": "1",
+        "product_tiles_aspect_ratio": "",
+        "image_shape": "",
+        "color_scheme": "tertiary",
+        "use_gradient_background": false
+      }
+    },
+    "16508915343a7fad54": {
+      "type": "text-columns-with-images",
+      "disabled": true,
+      "blocks": {
+        "1650891534cc32a736-0": {
+          "type": "column",
+          "settings": {
+            "show_image": false,
+            "title": "",
+            "text": "<p>Share blog posts, products, or promotions with your customers. Use this text to describe products, share details on availability and style, or as a space to display recent reviews or FAQs.<\/p>",
+            "cta_link": "",
+            "cta_text": "",
+            "color_scheme": "same_as_section"
+          }
+        },
+        "1650891534cc32a736-1": {
+          "type": "column",
+          "settings": {
+            "show_image": false,
+            "title": "",
+            "text": "<p>Share blog posts, products, or promotions with your customers. Use this text to describe products, share details on availability and style, or as a space to display recent reviews or FAQs.<\/p>",
+            "cta_link": "",
+            "cta_text": "",
+            "color_scheme": "same_as_section"
+          }
+        },
+        "1650891534cc32a736-2": {
+          "type": "column",
+          "settings": {
+            "show_image": false,
+            "title": "",
+            "text": "<p>Share blog posts, products, or promotions with your customers. Use this text to describe products, share details on availability and style, or as a space to display recent reviews or FAQs.<\/p>",
+            "cta_link": "",
+            "cta_text": "",
+            "color_scheme": "same_as_section"
+          }
+        }
+      },
+      "block_order": [
+        "1650891534cc32a736-0",
+        "1650891534cc32a736-1",
+        "1650891534cc32a736-2"
+      ],
+      "settings": {
+        "display_on_card": false,
+        "slideshow_on_mobile": false,
+        "title": "",
+        "crop": "",
+        "image_shape": "default",
+        "show_index_on_blocks": false,
+        "index_shape": "star_1",
+        "color_scheme": "quaternary",
+        "use_gradient_background": false
+      }
+    },
+    "1650891590472e0352": {
+      "type": "comparison-table",
+      "disabled": true,
+      "blocks": {
+        "1650891590fbd399df-0": {
+          "type": "row",
+          "settings": {
+            "title": "Label",
+            "column_1_icon": "check-mark",
+            "column_1_text": "",
+            "column_2_icon": "check_close",
+            "column_2_text": "",
+            "column_3_icon": "check_close",
+            "column_3_text": "",
+            "column_4_icon": "check_close",
+            "column_4_text": ""
+          }
+        },
+        "1650891590fbd399df-1": {
+          "type": "row",
+          "settings": {
+            "title": "Label",
+            "column_1_icon": "check-mark",
+            "column_1_text": "",
+            "column_2_icon": "check_close",
+            "column_2_text": "",
+            "column_3_icon": "check_close",
+            "column_3_text": "",
+            "column_4_icon": "check_close",
+            "column_4_text": ""
+          }
+        },
+        "1650891590fbd399df-2": {
+          "type": "row",
+          "settings": {
+            "title": "Label",
+            "column_1_icon": "check-mark",
+            "column_1_text": "",
+            "column_2_icon": "check_close",
+            "column_2_text": "",
+            "column_3_icon": "check_close",
+            "column_3_text": "",
+            "column_4_icon": "check_close",
+            "column_4_text": ""
+          }
+        }
+      },
+      "block_order": [
+        "1650891590fbd399df-0",
+        "1650891590fbd399df-1",
+        "1650891590fbd399df-2"
+      ],
+      "settings": {
+        "display_on_card": true,
+        "title": "",
+        "highlighted_column": "1",
+        "column_1_title": "Column 1",
+        "column_2_title": "Column 2",
+        "enable_column_3": true,
+        "column_3_title": "Column 3",
+        "enable_column_4": true,
+        "column_4_title": "Column 4",
+        "color_scheme": "primary",
+        "use_gradient_background": false
+      }
+    },
+    "1650891615011511eb": {
+      "type": "text-marquee",
+      "disabled": true,
+      "settings": {
+        "text": "Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.",
+        "repeat_text": true,
+        "shape_between_text": "10_point_star",
+        "animate_shape_between_text": true,
+        "link": "",
+        "font": "font-heading heading-secondary",
+        "apply_effects": false,
+        "mobile_text_scale": 2,
+        "desktop_text_scale": 4,
+        "speed": 120,
+        "direction": "",
+        "color_scheme": "quaternary",
+        "use_gradient_background": false
+      }
+    },
+    "16508916022eba9802": {
+      "type": "video-with-text-overlay",
+      "disabled": true,
+      "settings": {
+        "video_url": "https:\/\/youtu.be\/hN9mgsNWZrU",
+        "crop": "cinematic",
+        "crop_desktop": "cinematic",
+        "display_on_card": false,
+        "style": "full",
+        "place_content": "place-content-center-center",
+        "text_align": "text-center",
+        "title": "",
+        "heading_size": "heading-base",
+        "richtext": "",
+        "cta_url": "",
+        "cta_text": "Shop Now",
+        "color_scheme": "primary",
+        "use_gradient_background": false,
+        "text_overlay_color": "same_as_section"
+      }
+    },
+    "16508916323f758a49": {
+      "type": "testimonials",
+      "blocks": {
+        "16508916326463ca2f-0": {
+          "type": "testimonial",
+          "settings": {
+            "rating": "5_stars",
+            "quote": "<p>Since I started sipping Dark Matter, I've seen the universe... or so I'd imagine, since no one's actually tried it yet! 5\/5 for sheer anticipation!<\/p>",
+            "source": "Guy Ijust Madeup"
+          }
+        },
+        "16508916326463ca2f-1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": "5_stars",
+            "quote": "<p>Guiding Light has made every sunrise more stunning... theoretically, of course, since we're still waiting for the first brew. But I bet it's 5\/5!<\/p>",
+            "source": "Philip's Estranged Mother"
+          }
+        },
+        "16508916326463ca2f-2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": "5_stars",
+            "quote": "<p>Got a secret preview of these roasts... in a dream, because the coffee isn't out yet. But I bet it's 5\/5!<\/p>",
+            "source": "Greg Real Persinson"
+          }
+        },
+        "c1bcb892-3560-419b-a730-55d6ce05674a": {
+          "type": "testimonial",
+          "settings": {
+            "rating": "5_stars",
+            "quote": "<p>Literally none of you have tasted it yet. Buy the coffee and I'll put your reviews here dummy &lt;3<\/p>",
+            "source": "Philip DeFranco"
+          }
+        },
+        "dfd30e50-9d39-4b74-b678-df6225f514aa": {
+          "type": "testimonial",
+          "settings": {
+            "rating": "5_stars",
+            "quote": "<p>Sipping Happy Medium is like finding the pot of gold at the end of the rainbow...at least, that's what I foresee. For now, a premonition 5\/5!<\/p>",
+            "source": "Coffee Clairvoyant"
+          }
+        },
+        "eebb3a63-a165-4a2b-be61-c3aa09e2d2d9": {
+          "type": "shape_divider",
+          "settings": {
+            "target_section": "below",
+            "target_section_color_scheme": "tertiary",
+            "style": "tilt-1-asymmetrical_1440x101",
+            "flip_horizontal": false,
+            "enable_animation": false,
+            "animation_direction": ""
+          }
+        }
+      },
+      "block_order": [
+        "16508916326463ca2f-0",
+        "16508916326463ca2f-1",
+        "16508916326463ca2f-2",
+        "c1bcb892-3560-419b-a730-55d6ce05674a",
+        "dfd30e50-9d39-4b74-b678-df6225f514aa",
+        "eebb3a63-a165-4a2b-be61-c3aa09e2d2d9"
+      ],
+      "settings": {
+        "display_on_card": true,
+        "title": "",
+        "max_width": 100,
+        "disable_media_style": false,
+        "crop": "",
+        "image_shape": "default",
+        "desktop_slide_width": 20,
+        "autoscroll_mode": "1",
+        "color_scheme": "primary",
+        "use_gradient_background": false
+      }
+    },
+    "1650891638851a4ea4": {
+      "type": "featured-product",
+      "disabled": true,
+      "blocks": {
+        "1650891638bb403865-0": {
+          "type": "title",
+          "settings": {
+            "display_on_card": false,
+            "text_align": "text-left"
+          }
+        },
+        "1650891638bb403865-1": {
+          "type": "price",
+          "settings": {
+            "display_on_card": false,
+            "show_on_sale_sticker": false,
+            "text_align": "text-left"
+          }
+        },
+        "1650891638bb403865-2": {
+          "type": "variant_picker",
+          "settings": {
+            "display_on_card": false,
+            "option_style": "drop_down",
+            "hide_option_labels": true,
+            "enable_color_swatches": false
+          }
+        },
+        "1650891638bb403865-3": {
+          "type": "buy_buttons",
+          "settings": {
+            "display_on_card": false,
+            "show_price": false,
+            "enable_payment_button": true,
+            "show_pickup_availability": true,
+            "show_gift_card_recipient": false
+          }
+        },
+        "860fa660-5733-403e-a417-b5be6f5cc786": {
+          "type": "shape_divider",
+          "settings": {
+            "target_section": "below",
+            "target_section_color_scheme": "primary",
+            "style": "tilt-1-asymmetrical_1440x101",
+            "flip_horizontal": true,
+            "enable_animation": false,
+            "animation_direction": ""
+          }
+        }
+      },
+      "block_order": [
+        "1650891638bb403865-0",
+        "1650891638bb403865-1",
+        "1650891638bb403865-2",
+        "1650891638bb403865-3",
+        "860fa660-5733-403e-a417-b5be6f5cc786"
+      ],
+      "settings": {
+        "title": "",
+        "product": "wake-and-make-club",
+        "crop": "",
+        "image_shape": "default",
+        "media_mobile_width": "w-full",
+        "desktop_media_width": "lg:col-span-6_lg:col-span-6",
+        "enable_video_looping": true,
+        "thumbnails_position": "left",
+        "thumbnail_crop": "aspect-w-1 aspect-h-1",
+        "thumbnail_shape": "default",
+        "hide_media_shadow": false,
+        "thumbnail_size": "standard",
+        "show_thumbnails_on_mobile": false,
+        "color_scheme": "tertiary",
+        "use_gradient_background": false
+      }
+    },
+    "16888371683b34a6b9": {
+      "type": "apps",
+      "settings": {
+      }
+    },
+    "165089168609b8f684": {
+      "type": "blog-posts",
+      "disabled": true,
+      "blocks": {
+        "821c67ed-463f-43b1-8388-52f9db81567a": {
+          "type": "shape_divider",
+          "settings": {
+            "target_section": "above",
+            "target_section_color_scheme": "primary",
+            "style": "large-waves_1200x84",
+            "flip_horizontal": false,
+            "enable_animation": false,
+            "animation_direction": ""
+          }
+        }
+      },
+      "block_order": [
+        "821c67ed-463f-43b1-8388-52f9db81567a"
+      ],
+      "settings": {
+        "display_on_card": false,
+        "title": "Blog posts",
+        "blog": "news",
+        "post_limit": 3,
+        "crop": "aspect-w-4 aspect-h-3",
+        "image_shape": "zig_zag_tear",
+        "blog_show_author": false,
+        "blog_show_date": true,
+        "show_post_excerpt": true,
+        "show_view_all": true,
+        "color_scheme": "quaternary",
+        "use_gradient_background": true
+      }
+    },
+    "1650891804363a2769": {
+      "type": "newsletter",
+      "disabled": true,
+      "settings": {
+        "title": "Sign up to our newsletter",
+        "richtext": "<p>Receive special offers and first look at new products.<\/p>",
+        "display_on_card": false,
+        "color_scheme": "secondary",
+        "use_gradient_background": false
+      }
+    }
+  },
+  "order": [
+    "165089147572b58f85",
+    "1650891682f199a493",
+    "1650891033bae15b05",
+    "16508912994a26e8bf",
+    "1650891303c44cb2d2",
+    "1650891358fef95dd4",
+    "16508915343a7fad54",
+    "1650891590472e0352",
+    "1650891615011511eb",
+    "16508916022eba9802",
+    "16508916323f758a49",
+    "1650891638851a4ea4",
+    "16888371683b34a6b9",
+    "165089168609b8f684",
+    "1650891804363a2769"
+  ]
+}

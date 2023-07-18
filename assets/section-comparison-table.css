@@ -1,0 +1,57 @@
+.comparison-table td,
+.comparison-table th {
+  width: 40vw;
+  border-width: 1px;
+  --tw-border-opacity: 1;
+  border-color: rgba(var(--color-scheme-text), var(--tw-border-opacity));
+  padding: 1.25rem;
+  text-align: center;
+  border-style: solid;
+}
+@media (min-width: 990px) {
+  .comparison-table td,
+  .comparison-table th {
+    width: auto;
+  }
+}
+
+.comparison-table .top-left-cell {
+  border-top: none;
+  border-left: none;
+}
+.comparison-table .table-row-heading {
+  text-align: left;
+  left: 0;
+}
+.comparison-table.highlight-column-1 td:nth-child(2), .comparison-table.highlight-column-1 th:nth-child(2), .comparison-table.highlight-column-2 td:nth-child(3), .comparison-table.highlight-column-2 th:nth-child(3), .comparison-table.highlight-column-3 td:nth-child(4), .comparison-table.highlight-column-3 th:nth-child(4), .comparison-table.highlight-column-4 td:nth-child(5), .comparison-table.highlight-column-4 th:nth-child(5) {
+  --tw-bg-opacity: 1;
+  background-color: rgba(var(--color-scheme-accent), var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: rgba(var(--color-scheme-accent-1-overlay), var(--tw-text-opacity));
+}
+
+.custom-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 20px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: rgb(var(--color-scheme-background));
+  height: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  border-right: 1.25rem solid transparent;
+  border-left: 1.25rem solid transparent;
+  background: rgb(var(--color-scheme-text));
+  background-clip: padding-box;
+  height: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scheme-text);
+}
+
+.card .custom-scroll::-webkit-scrollbar-track {
+  background: rgb(var(--color-scheme-card));
+}

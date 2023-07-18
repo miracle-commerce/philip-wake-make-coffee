@@ -1,0 +1,20 @@
+
+{%- if shape == 'blob' -%}
+  {%- assign total_items = item_count | minus: 1 %}
+  {%- for i in (0..total_items) %}
+    {%- liquid
+      assign shape_id = section_id | append: '-' | append: i
+      assign blob_type = i | modulo: 20 | plus: 1
+    -%}
+    {%- render 'shape-defs',
+      shape: shape,
+      shape_id: shape_id,
+      blob_type: blob_type
+    -%}
+  {%- endfor -%}
+{%- else %}
+  {%- render 'shape-defs',
+    shape: shape,
+    shape_id: section_id
+  -%}
+{%- endif %}

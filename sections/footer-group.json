@@ -1,0 +1,51 @@
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "76dca941-c71e-4e96-bb60-c77294111bd6": {
+          "type": "tagline_and_social_links",
+          "disabled": true,
+          "settings": {
+            "tagline": "<p>Thanks for being a part of our secret launch you beautiful bastard!<\/p>",
+            "show_social_icons": false
+          }
+        },
+        "77a0392b-e14e-47a3-9a64-a224447b9283": {
+          "type": "menus",
+          "disabled": true,
+          "settings": {
+            "show_menu_headings": false,
+            "linklist_1": "main-menu",
+            "linklist_2": "footer"
+          }
+        },
+        "543e9df3-eaaa-4aad-862d-fe41510aecad": {
+          "type": "newsletter",
+          "disabled": true,
+          "settings": {
+            "newsletter_heading": "Sign up to our newsletter"
+          }
+        }
+      },
+      "block_order": [
+        "76dca941-c71e-4e96-bb60-c77294111bd6",
+        "77a0392b-e14e-47a3-9a64-a224447b9283",
+        "543e9df3-eaaa-4aad-862d-fe41510aecad"
+      ],
+      "settings": {
+        "logo_max_width": 270,
+        "show_payment_icons": true,
+        "show_country_selector": true,
+        "show_locale_selector": true,
+        "color_scheme": "primary",
+        "use_gradient_background": true
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

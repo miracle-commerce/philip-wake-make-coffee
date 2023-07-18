@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "featured-image": {
+      "type": "main-article-featured-image",
+      "settings": {
+      }
+    },
+    "main": {
+      "type": "main-article",
+      "settings": {
+      }
+    }
+  },
+  "order": [
+    "featured-image",
+    "main"
+  ]
+}

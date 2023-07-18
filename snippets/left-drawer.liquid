@@ -1,0 +1,46 @@
+<aside x-data>
+  <template x-teleport="body">
+    <div
+      x-show="$store.modals.leftDrawer.open"
+      @keydown.escape.prevent.stop="$store.modals.close('leftDrawer')"
+      @click="$store.modals.close('leftDrawer')"
+      class="fixed inset-0 z-50"
+      data-color-scheme="{{ settings.drawer_color_scheme }}"
+      id="modals-leftDrawer"
+      @left-drawer-is-open.window="setTimeout(() => { $focus.first() }, 120)"
+    >
+      <div x-show="$store.modals.leftDrawer.open"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-scheme-text/75"
+       ><!-- Overlay --></div>
+      <div
+        x-show="$store.modals.leftDrawer.open"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="-translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="-translate-x-full"
+        class="h-full w-full drawer-transition-host"
+      >
+        <div
+          @click.stop
+          x-trap.noscroll.inert="$store.modals.leftDrawer.open"
+          class="relative w-11/12 md:w-7/12 lg:w-5/12 h-full bg-scheme-background text-scheme-text mr-auto overflow-y-auto border-r-section border-border"
+          id="left-drawer-slot"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="getModalLabel('leftDrawer', $el)"
+          tabindex="-1"
+        >
+          <!-- Modal content is teleported here -->
+        </div>
+      </div>
+    </div>
+  </template>
+</aside>

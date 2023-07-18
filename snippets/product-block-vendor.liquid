@@ -1,0 +1,26 @@
+{%- liquid
+  if settings.desktop_feature_heading_scale > 4
+    assign vendor_text_size = 'text-base lg:text-lg'
+  else
+    assign vendor_text_size = 'text-base'
+  endif
+-%}
+<div class="{{ block_base_classes }} text-sm  {{ block.settings.text_align }}" {{ block.shopify_attributes }}>
+  {%- liquid
+    assign use_collection_vendor_link = false
+    for collection in product.collections
+    if collection.title == product.vendor
+      assign use_collection_vendor_link = true
+      assign vendor_collection = collection
+      break
+    endif
+    endfor
+  -%}
+  {%- if use_collection_vendor_link -%}
+    <p {{ block.shopify_attributes }} class="m-0 {{ vendor_text_size }}">
+      <a class="" href="{{ vendor_collection.url }}">{{ vendor_collection.title }}</a>
+    </p>
+  {%- else -%}
+    <p {{ block.shopify_attributes }} class="m-0 {{ vendor_text_size }}">{{ product.vendor | link_to_vendor }}</p>
+  {%- endif -%}
+</div>

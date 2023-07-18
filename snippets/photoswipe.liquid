@@ -1,0 +1,23 @@
+{% assign image_media = product.media | where: 'media_type', 'image' %}
+<div x-ref="photoSwipeComponent">
+  <div x-data="ThemeComponent_Photoswipe()" x-init="mounted()">
+    <div id="PhotoSwipeContainer" data-color-scheme="{{ settings.drawer_color_scheme }}"></div>
+    <script type="application/json" data-photoswipe-images>
+    {
+      {% for media in image_media %}
+        "{{ media.id }}": {
+          "src": {{ media | image_url: width: 2000 | json }},
+          "width": {{ media.width | json }},
+          "height": {{ media.height | json }},
+          "aspectRatio": {{ media.aspect_ratio | json }},
+          "alt": {{ media.alt | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    }
+    </script>
+    {% unless request.design_mode %}
+    <script src="{{ 'modules-photoswipe.bundle.min.js' | asset_url }}" type="module"></script>
+    {% endunless %}
+    {{ 'modules-photoswipe.bundle.css' | asset_url | stylesheet_tag }}
+  </div>
+</div>
