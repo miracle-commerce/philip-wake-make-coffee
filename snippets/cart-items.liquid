@@ -27,7 +27,7 @@
 
             {%- capture quantity -%}
 
-            <div class="max-w-min">
+            <div class="max-w-min"blabla {{ item.discounts[0].title}}>
               <div class="ml-[0.1rem] {% if template == 'cart' %} lg:flex lg:justify-start lg:ml-0 {% else %}mt-2.5 lg:mt-5{% endif %}">
                 <label class="sr-only" for="updates_{{ item.key }}">{{ 'cart.label.quantity' | t }}:</label>
                 <div class="max-w-min flex flex-nowrap justify-center items-stretch input p-0 h-8 text-xs lg:text-base text-scheme-text">
