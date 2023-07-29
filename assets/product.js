@@ -5,6 +5,10 @@ window['ThemeSection_Product'] = ({
   template,
   thumbnailsPosition,
   showThumbnailsOnMobile,
+  currentSellingPlan, 
+  isSubscription,
+  currentRechargeQtyDiscount,
+  productFormId
 }) => {
   return {
     productRoot: null,
@@ -22,6 +26,10 @@ window['ThemeSection_Product'] = ({
     template: template,
     thumbnailsPosition: thumbnailsPosition,
     showThumbnailsOnMobile: showThumbnailsOnMobile,
+    currentSellingPlan: currentSellingPlan,
+    currentRechargeQtyDiscount: currentRechargeQtyDiscount,
+    isSubscription: isSubscription,
+    productFormId: productFormId,
     get addToCartText() {
       if (this.current_variant) {
         if (this.loading) {
@@ -41,6 +49,7 @@ window['ThemeSection_Product'] = ({
         return window.theme.strings.unavailable;
       }
     },
+
     get currentVariantId() {
       if (this.current_variant) {
         return this.current_variant.id;
@@ -48,6 +57,7 @@ window['ThemeSection_Product'] = ({
         return null;
       }
     },
+
     get currentVariantAvailabilityClosestLocation() {
       // this is on a lag to the actual current variant so that we can display an intermediary state while the fetch request is happening
       if (!Alpine.store('availability')) return null;
@@ -75,9 +85,27 @@ window['ThemeSection_Product'] = ({
       }
       return '';
     },
+
     get current_price() {
-      return this.current_variant.price;
+      if(this.isSubscription){
+        let current_price = this.current_variant.price;
+        let qtyDiscount = this.currentRechargeQtyDiscount;
+        if(this.currentSellingPlan.price_adjustments[0].value_type == 'percentage'){
+          current_price = this.current_variant.price - this.current_variant.price * this.currentSellingPlan.price_adjustments[0].value / 100;
+        } else {
+          current_price = this.current_variant.price - this.currentSellingPlan.price_adjustments[0].value;
+        }
+
+        if(qtyDiscount){
+          current_price = current_price - current_price * qtyDiscount.amount / 100;
+        }
+
+        return current_price;
+      } else{
+        return this.current_variant.price;
+      }
     },
+
     get isUsingSlideshowToDisplayMedia() {
       const splideEl = this.productRoot.querySelector('.splide--product');
 
@@ -95,6 +123,7 @@ window['ThemeSection_Product'] = ({
 
       return false;
     },
+
     formatMoney(price) {
       return formatMoney(price, theme.moneyFormat);
     },
@@ -102,7 +131,6 @@ window['ThemeSection_Product'] = ({
       // Set a product root for nested components
       // to use instead of $root (which refers to their root)
       this.productRoot = this.$root;
-
       if (this.$refs.productForm) {
         this.$refs.productForm.addEventListener(
           'submit',
@@ -136,6 +164,26 @@ window['ThemeSection_Product'] = ({
       });
 
       this.updateStoreAvailability(this.current_variant);
+
+      // Script for choosing purchase Option and selling plan
+      this.$refs.purchaseOptions.addEventListener('change', (e)=>{
+        this.changeSubscriptionState(e.target.value);
+        this.changeQtySelector(this.isSubscription);
+      });
+
+      this.$refs.mcSellingPlans.addEventListener('change', (e)=>{
+        this.changeSellingPlan(e.target.value);
+      });
+
+      this.$refs.mcRechargeQtySelector.addEventListener('change', (e)=>{
+        let newQuantity = parseInt(e.target.value);
+        this.quantity = e.target.value;
+        this.getMatchedRechargeQtyDiscount(newQuantity);
+        this.applyRechargeQtyDiscount(this.currentRechargeQtyDiscount);
+      });
+
+      this.changeQtySelector(this.isSubscription);
+
     },
     getAddToCartButtonHeight() {
       window.onload = function () {
@@ -317,7 +365,82 @@ window['ThemeSection_Product'] = ({
         })
       );
     },
-  };
+
+    changeSubscriptionState(purchaseOption){
+      if(purchaseOption == "one-time"){
+        this.isSubscription = false;
+        this.$refs.sellingPlanInput.value = '';
+      }else{
+        this.isSubscription = true;
+        this.$refs.sellingPlanInput.value = this.currentSellingPlanId;
+      }
+    },
+
+    changeQtySelector(isSubscription){
+      if(isSubscription){
+        this.$root.querySelector('.product-qty-old-selector').classList.add('hidden');
+        this.$root.querySelector('.product-qty-old-selector input[name="quantity"]').removeAttribute('form');
+        this.$root.querySelectorAll('.rechargeQty-input').forEach((rechargeQty)=>{
+          rechargeQty.setAttribute('form', productFormId);
+        })
+      }else{
+        this.$root.querySelector('.product-qty-old-selector').classList.remove('hidden');
+        this.$root.querySelector('.product-qty-old-selector input[name="quantity"]').setAttribute('form', this.productFormId);
+        this.$root.querySelectorAll('.rechargeQty-input').forEach((rechargeQty)=>{
+          rechargeQty.removeAttribute('form');
+        })
+      }
+    },
+
+    changeSellingPlan(selling_plan_id){
+      if(selling_plan_id){
+        this.currentSellingPlan = this.getMatchedSellingPlan(this.product, selling_plan_id);
+      }
+    },
+    
+    get currentSellingPlanId(){
+      return this.currentSellingPlan.id;
+    },
+
+    getMatchedRechargeQtyDiscount(qty){
+      if(this.$refs.rechargeQtyDiscounts){        
+        const rechargeQtyDiscounts = JSON.parse(this.$refs.rechargeQtyDiscounts.text);
+        rechargeQtyDiscounts.forEach((rechargeQtyDiscount =>{
+          if(rechargeQtyDiscount.quantity == qty){
+            this.currentRechargeQtyDiscount = rechargeQtyDiscount;
+          }
+        }))
+      } else{
+        this.currentRechargeQtyDiscount = null;
+      }
+    },
+
+    applyRechargeQtyDiscount(discount){
+      let newDiscountUrl = window.location.origin + '/discount/' + discount.title;
+      fetch(newDiscountUrl).then((response)=>{
+        console.log(response);
+      }); 
+    },
+
+    getMatchedSellingPlan(product, selling_plan_id){
+      if(product.selling_plan_groups){
+        let matched = false;
+        for( let i = 0; i < product.selling_plan_groups.length; i++){
+          let selling_plan_group = product.selling_plan_groups[i];
+          for(let j = 0; j < selling_plan_group.selling_plans.length; j++){
+            if(selling_plan_group.selling_plans[j].id == selling_plan_id){
+              matched = true;
+              return selling_plan_group.selling_plans[j];
+            }
+          }
+        }
+
+        if(matched == false){
+          return false; 
+        }
+      }
+    }
+  }
 };
 
 window['productThumbnails'] = () => {

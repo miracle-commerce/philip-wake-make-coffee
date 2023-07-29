@@ -24,6 +24,30 @@
   endif
 %}
 
+{% comment %} Get data for selling plan {% endcomment %}
+{% if product.metafields.custom.subscription_discounts.value %}
+  {% for subscription_discount in product.metafields.custom.subscription_discounts.value %}
+    {% if subscription_discount.default_value == true %}
+      {%- assign current_recharge_qty_discount = subscription_discount -%}
+      {%- assign current_recharge_qty_discount_qty = subscription_discount.quantity -%}
+      {%- assign current_recharge_qty_discount_amount = subscription_discounts.amount -%}
+      {%- assign current_recharge_qty_coupon = subscription_discount.title -%}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{%- if current_variant.selling_plan_allocation -%}
+  {%- assign current_selling_plan = current_variant.selling_plan_allocation.selling_plan -%}
+{%- else -%}
+  {% assign current_selling_plan = current_variant.selling_plan_allocations[0].selling_plan %}
+{%- endif -%}
+
+{%- if current_selling_plan -%}
+  {%- assign isSubscription = true -%}
+{%- else -%}
+  {%- assign isSubscription = false -%}
+{%- endif -%}
+
 {% unless request.design_mode %}
   <script src="{{ 'vendor-product.bundle.min.js' | asset_url }}" type="module"></script>
   <script src="{{ 'product.js' | asset_url }}" type="module"></script>
@@ -41,7 +65,6 @@
   }
 </style>
 
-
 <section
   class="text-scheme-text bg-scheme-background relative overflow-hidden {% if section.settings.use_gradient_background %}bg-scheme-gradient{% endif %}"
   data-color-scheme="{{ section_color }}"
@@ -52,11 +75,16 @@
       featuredMediaID: {{ featured_media.id | json }},
       template: {{ template | json | escape }},
       thumbnailsPosition: {{ section.settings.thumbnails_position | json | escape }},
-      showThumbnailsOnMobile: {{ section.settings.show_thumbnails_on_mobile | json }}
+      showThumbnailsOnMobile: {{ section.settings.show_thumbnails_on_mobile | json }},
+      currentSellingPlan: {{current_selling_plan | json | escape}},
+      isSubscription: {{ isSubscription | json | escape}},
+      currentRechargeQtyDiscount: {{current_recharge_qty_discount | json | escape}},
+      productFormId: '{{product_form_id}}'
     })"
-  data-product-section
   >
-
+    {% if product.metafields.custom.subscription_discounts.value %}
+      <script type="application/json" id="mc-recharge__qty-discount-data" x-ref="rechargeQtyDiscounts">{{product.metafields.custom.subscription_discounts.value | json}}</script>
+    {% endif %}
   <div class="section-content py-section-vertical-spacing lg:px-section max-w-site mx-auto relative z-10">
 
     {% if section.settings.title != '' %}
@@ -527,6 +555,63 @@
                   <div class="{{ block_base_classes }}" {{ block.shopify_attributes }}>
                     {{ block.settings.liquid }}
                   </div>
+                {%- when 'subscription' -%}
+                  {% if product.selling_plan_groups.size > 0  %}
+                    <div class="mc-recharge-widget">
+                      <fieldset class="mc-selling-plan-fieldset">
+                        <legend hidden>Purchase options</legend>
+                        <div class="mc-purchase-option__group" x-ref="purchaseOptions">
+                          {% unless product.requires_selling_plan %}
+                            <div class="mc-purchase-option-single">
+                              <input type="radio" name="purchase_option" id="mc-purchase-option__one-time" value="one-time" hidden class="mc-purchase-option-selector"> 
+                              <label for="mc-purchase-option__one-time" class="mc-recharge__input-label--radio purchase-option">One-time purchase</label>
+                            </div>
+                          {% endunless %}
+                          <div class="mc-purchase-option-single">
+                            <input type="radio" name="purchase_option"  id="mc-purchase-option__subscribe" class="mc-purchase-option-selector" value="subscribe" hidden checked> 
+                            <label for="mc-purchase-option__subscribe" class="mc-recharge__input-label--radio purchase-option">
+                              Subscribe&Save: <span class="mc-recharge__main-price" x-html="formatMoney(current_price)">{{current_variant.price | money}}</span>
+                            </label>
+                          </div>
+                        </div>
+                    
+                        {% for group in product.selling_plan_groups %}
+                          <div class="mc-recharge__group" data-group-id="{{group.id}}" x-show="isSubscription">
+                            <h4 class="mc-recharge__heading">Frequency:</h4>
+                            <div class="mc-recharge__options" x-ref="mcSellingPlans">
+                              {% for selling_plan in group.selling_plans %}
+                                <div class="mc-recharge_fields--radio">
+                                  <input type="radio" name="mc_selling_plan" value="{{selling_plan.id}}" id="mc-selling-plan-{{selling_plan.id}}" class="mc-recharge__selling-plan-selector" hidden form="{{ product_form_id }}" {% if current_selling_plan.id == selling_plan.id %}
+                                  checked{% endif %}>
+                                  <label for="mc-selling-plan-{{selling_plan.id}}">{{selling_plan.options[0].value}}</label>                             
+                                </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </fieldset>
+                      {% if product.metafields.custom.subscription_discounts.value %}
+                        
+                        <div class="mc-recharge__qty-discounts" x-show="isSubscription">
+                          <h4 class="mc-recharge__heading">Quantity:</h4>
+                          <div class="mc-recharge__qty-selector-group" data-selling-plan="subscription" x-ref="mcRechargeQtySelector">
+                            {% for qty_discount in product.metafields.custom.subscription_discounts.value %}
+                              <a href="javascript:void(0)" class="mc-recharge__qty-discount">
+                                <input type="radio" name="quantity" form="{{ product_form_id }}" value="{{qty_discount.quantity}}" id="mc-recharge-qty-{{forloop.index}}" {% if qty_discount.default_value %}checked{% endif %} hidden class="rechargeQty-input">
+                                <label for="mc-recharge-qty-{{forloop.index}}">{{qty_discount.quantity}} {% if qty_discount.quantity > 1 %}bags{% else %}bag{% endif %}
+                                  {% if qty_discount.amount > 0 %}
+                                    <span class="mc-recharge__qty-discount-amount">Save 
+                                      {{qty_discount.amount | round  | append: '%'}}
+                                    </span>
+                                  {% endif %}
+                                </label>
+                              </a>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
               {% endcase %}
               {%- liquid
                 if block.settings.display_on_card

@@ -18,7 +18,7 @@
     <div class="mb-2.5">
       {{ form | payment_terms }}
     </div>
-
+    <input type="hidden" name="selling_plan" :value="currentSellingPlanId" x-ref="sellingPlanInput">
     <div class="{% if product.has_only_default_variant %}hidden{% else %}no-js{% endif %}">
       <label class="{{ label_class }}" for="fallback-selector-{{ section.id }}"
         >Variant</label

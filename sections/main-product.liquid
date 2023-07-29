@@ -1,6 +1,6 @@
 {%- liquid
   render 'product-template', section: section
-  assign current_variant = product.selected_or_first_available_variant
+  assign current_variant = product.selected_or_first_available_variant | default: product.variants.first
 -%}
 
 <script type="application/ld+json">
@@ -4211,6 +4211,10 @@
           "default": ""
         }
       ]
+    },
+    {
+      "name":"Subscription Widget", 
+      "type":"subscription"
     }
   ]
 }

@@ -7,3 +7,117 @@ Make sure to uncomment out the line in theme.liquid so that this css file is loa
 For more information check out this help guide:
 https://docs.switchthemes.co/shapes/advanced/custom-css.html
 */
+.mc-selling-plan-fieldset{
+    padding: 20px 0;
+}
+
+.mc-purchase-option__group{
+    display: flex; 
+    flex-wrap: wrap; 
+    width: 100%;
+    column-gap: 10px;
+    margin-bottom: 20px;
+}
+
+
+.mc-purchase-option-single{
+    flex: 1 1 calc(50% - 5px);
+    max-width: calc(50% - 5px);
+}
+label.mc-recharge__input-label--radio.purchase-option{
+    padding: 10px 15px;
+    display: inline-block;
+    text-align: center;
+    border: 2px solid;
+    border-radius: 5px;
+    width: 100%;
+    color: rgba(var(--color-scheme-text),var(--tw-bg-opacity)); 
+    background-color: rgba(var(--color-scheme-text-overlay),var(--tw-text-opacity)); 
+}
+
+input.mc-purchase-option-selector:checked ~ label{
+    background-color: rgba(var(--color-scheme-text),var(--tw-bg-opacity)); 
+    color: rgba(var(--color-scheme-text-overlay),var(--tw-text-opacity)); 
+}
+
+.mc-recharge__group{
+    margin-bottom: 20px; 
+}
+
+.mc-recharge__options{
+    display: flex; 
+    flex-wrap: wrap; 
+    column-gap: 10px;
+}
+
+.mc-recharge_fields--radio{
+    display: inline-block;
+    width: calc(100% / 3 - 20px / 3);
+}
+
+.mc-recharge_fields--radio label{
+    width: 100%;
+    padding: 10px; 
+    text-align: center;
+    border: 2px solid; 
+    border-radius: 5px; 
+    display: inline-block;
+    color: rgba(var(--color-scheme-text),var(--tw-bg-opacity)); 
+    background-color: rgba(var(--color-scheme-text-overlay),var(--tw-text-opacity)); 
+}
+
+.mc-recharge_fields--radio input:checked ~ label{
+    background-color: rgba(var(--color-scheme-text),var(--tw-bg-opacity)); 
+    color: rgba(var(--color-scheme-text-overlay),var(--tw-text-opacity)); 
+}
+
+.mc-recharge__heading{
+    margin-bottom: 10px;
+}
+
+.mc-recharge__qty-selector-group{
+    display: flex; 
+    flex-wrap: wrap;
+    column-gap: 10px;
+}
+
+.mc-recharge__qty-discount{
+    display: inline-block;
+    width: calc(100% / 3 - 20px / 3);
+}
+
+.mc-recharge__qty-discount label{
+    display: inline-block; 
+    padding: 10px; 
+    border: 2px solid; 
+    border-radius: 5px; 
+    color: rgba(var(--color-scheme-text),var(--tw-bg-opacity)); 
+    background-color: rgba(var(--color-scheme-text-overlay),var(--tw-text-opacity)); 
+    position: relative;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.mc-recharge__qty-discount input:checked ~ label{
+    background-color: rgba(var(--color-scheme-text),var(--tw-bg-opacity)); 
+    color: rgba(var(--color-scheme-text-overlay),var(--tw-text-opacity)); 
+}
+
+.mc-recharge__qty-discount-amount{
+    position:absolute;
+    left: 50%; 
+    bottom: 100%; 
+    transform: translate(-50%, 50%);
+    display: inline-block; 
+    font-size: 10px; 
+    font-weight: 400; 
+    background-color: #fab90a;
+    padding: 2px 5px;
+    border: 1px solid;
+    border-radius: 2px;
+}
+
+.mc-recharge__qty-discount input:checked ~ label .mc-recharge__qty-discount-amount{
+    color: rgba(var(--color-scheme-text),var(--tw-bg-opacity)); 
+}

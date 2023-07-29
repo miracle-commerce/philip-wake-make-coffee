@@ -6,7 +6,7 @@
 -%}
 <div
 
-  class="{{ block_base_classes }}"
+  class="{{ block_base_classes }} {% if template contains 'product' %}product-qty-old-selector{% endif %}"
   x-data="ThemeComponent_Quantity()"
   {{ block.shopify_attributes }}
 >
