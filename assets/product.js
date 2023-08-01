@@ -175,14 +175,17 @@ window['ThemeSection_Product'] = ({
         this.changeSellingPlan(e.target.value);
       });
 
-      this.$refs.mcRechargeQtySelector.addEventListener('change', (e)=>{
-        let newQuantity = parseInt(e.target.value);
-        this.quantity = e.target.value;
-        this.getMatchedRechargeQtyDiscount(newQuantity);
-        this.applyRechargeQtyDiscount(this.currentRechargeQtyDiscount);
-      });
-
-      this.changeQtySelector(this.isSubscription);
+      if(this.$refs.mcRechargeQtySelector){
+        this.$refs.mcRechargeQtySelector.addEventListener('change', (e)=>{
+          let newQuantity = parseInt(e.target.value);
+          this.quantity = e.target.value;
+          this.getMatchedRechargeQtyDiscount(newQuantity);
+          this.applyRechargeQtyDiscount(this.currentRechargeQtyDiscount);
+          
+        });
+  
+        this.changeQtySelector(this.isSubscription);
+      }
 
     },
     getAddToCartButtonHeight() {
